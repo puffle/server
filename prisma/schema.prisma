@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model auth_tokens {
+  userId    Int
+  selector  String   @db.Char(36)
+  validator String   @db.Char(60)
+  timestamp DateTime @default(now()) @db.Timestamp(0)
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "auth_tokens_ibfk_1")
+
+  @@id([userId, selector])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model bans {
+  id                            Int      @id @default(autoincrement())
+  userId                        Int
+  issued                        DateTime @default(now()) @db.Timestamp(0)
+  expires                       DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.Timestamp(0)
+  moderatorId                   Int?
+  message                       String?  @db.VarChar(60)
+  users_bans_userIdTousers      users    @relation("bans_userIdTousers", fields: [userId], references: [id], onDelete: Cascade, map: "bans_ibfk_1")
+  users_bans_moderatorIdTousers users?   @relation("bans_moderatorIdTousers", fields: [moderatorId], references: [id], onUpdate: SetNull, map: "bans_ibfk_2")
+
+  @@index([moderatorId], map: "moderatorId")
+  @@index([userId], map: "userId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model buddies {
+  userId                       Int
+  buddyId                      Int
+  users_buddies_userIdTousers  users @relation("buddies_userIdTousers", fields: [userId], references: [id], onDelete: Cascade, map: "buddies_ibfk_1")
+  users_buddies_buddyIdTousers users @relation("buddies_buddyIdTousers", fields: [buddyId], references: [id], onDelete: Cascade, map: "buddies_ibfk_2")
+
+  @@id([userId, buddyId])
+  @@index([buddyId], map: "buddies_ibfk_2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model furniture_inventories {
+  userId   Int
+  itemId   Int
+  quantity Int
+  users    users @relation(fields: [userId], references: [id], onDelete: Cascade, map: "furniture_inventories_ibfk_1")
+
+  @@id([userId, itemId])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model furnitures {
+  id          Int   @id @default(autoincrement())
+  userId      Int
+  furnitureId Int
+  x           Int   @default(0) @db.SmallInt
+  y           Int   @default(0) @db.SmallInt
+  rotation    Int   @default(1) @db.SmallInt
+  frame       Int   @default(1) @db.SmallInt
+  users       users @relation(fields: [userId], references: [id], onDelete: Cascade, map: "furnitures_ibfk_1")
+
+  @@index([userId], map: "userId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model igloo_inventories {
+  userId  Int
+  iglooId Int
+  users   users @relation(fields: [userId], references: [id], onDelete: Cascade, map: "igloo_inventories_ibfk_1")
+
+  @@id([userId, iglooId])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model igloos {
+  userId   Int     @id
+  type     Int     @default(1)
+  flooring Int     @default(0)
+  music    Int     @default(0)
+  location Int     @default(1)
+  locked   Boolean @default(true)
+  users    users   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "igloos_ibfk_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ignores {
+  userId                        Int
+  ignoreId                      Int
+  users_ignores_userIdTousers   users @relation("ignores_userIdTousers", fields: [userId], references: [id], onDelete: Cascade, map: "ignores_ibfk_1")
+  users_ignores_ignoreIdTousers users @relation("ignores_ignoreIdTousers", fields: [ignoreId], references: [id], onDelete: Cascade, map: "ignores_ibfk_2")
+
+  @@id([userId, ignoreId])
+  @@index([ignoreId], map: "ignores_ibfk_2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inventories {
+  userId Int
+  itemId Int
+  users  users @relation(fields: [userId], references: [id], onDelete: Cascade, map: "inventories_ibfk_1")
+
+  @@id([userId, itemId])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  id                              Int                     @id @default(autoincrement())
+  username                        String                  @unique(map: "username") @db.VarChar(12)
+  email                           String?                 @db.VarChar(254)
+  password                        String                  @db.Char(60)
+  loginKey                        String?                 @db.Text
+  rank                            Boolean                 @default(true)
+  permaBan                        Boolean                 @default(false)
+  joinTime                        DateTime                @default(now()) @db.Timestamp(0)
+  coins                           Int                     @default(500)
+  head                            Int                     @default(0)
+  face                            Int                     @default(0)
+  neck                            Int                     @default(0)
+  body                            Int                     @default(0)
+  hand                            Int                     @default(0)
+  feet                            Int                     @default(0)
+  color                           Int                     @default(1)
+  photo                           Int                     @default(0)
+  flag                            Int                     @default(0)
+  auth_tokens                     auth_tokens[]
+  bans_bans_userIdTousers         bans[]                  @relation("bans_userIdTousers")
+  bans_bans_moderatorIdTousers    bans[]                  @relation("bans_moderatorIdTousers")
+  buddies_buddies_userIdTousers   buddies[]               @relation("buddies_userIdTousers")
+  buddies_buddies_buddyIdTousers  buddies[]               @relation("buddies_buddyIdTousers")
+  furniture_inventories           furniture_inventories[]
+  furnitures                      furnitures[]
+  igloo_inventories               igloo_inventories[]
+  igloos                          igloos?
+  ignores_ignores_userIdTousers   ignores[]               @relation("ignores_userIdTousers")
+  ignores_ignores_ignoreIdTousers ignores[]               @relation("ignores_ignoreIdTousers")
+  inventories                     inventories[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model worlds {
+  id         String @id @db.VarChar(100)
+  population Int    @default(0) @db.SmallInt
+}

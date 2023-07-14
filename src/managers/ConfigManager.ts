@@ -1,5 +1,5 @@
-import { randomBytes } from 'crypto';
-import { readFile } from 'fs/promises';
+import { randomBytes } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 
 type Any = {
 	[key: string]: unknown,
@@ -9,6 +9,7 @@ export type TConfig = {
 	crypto: {
 		secret: string,
 		loginKeyExpiry: number,
+		rounds: number,
 	},
 	worlds: {
 		[key: string]: {
@@ -30,6 +31,7 @@ export class ConfigManager
 		crypto: {
 			secret: randomBytes(32).toString('hex'),
 			loginKeyExpiry: 300,
+			rounds: 30,
 		},
 		worlds: {
 			Login: {

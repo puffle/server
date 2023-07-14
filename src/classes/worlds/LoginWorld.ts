@@ -1,5 +1,6 @@
-import { createHash, randomBytes } from 'crypto';
+import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import { createHash, randomBytes } from 'node:crypto';
 import { Server, Socket } from 'socket.io';
 import { ConfigManager } from '../../managers/ConfigManager';
 import { BaseWorld } from './BaseWorld';
@@ -11,40 +12,62 @@ export class LoginWorld extends BaseWorld
 		super(id, server, true, configManager);
 
 		this.server.on('connection', this.onConnection);
-
-		this.server.use(async (socket: Socket, next) =>
-		{
-			// TODO: add ajv to auth
-			const auth = socket.handshake.auth as ILoginAuth;
-			console.log(auth);
-
-			if (true) // TODO: mimics isValid
-			{
-				next();
-			}
-			else
-			{
-				next(new Error('invalid credentials'));
-			}
-		});
 	}
 
 	override onConnection = async (socket: Socket) =>
 	{
-		console.log(`[${this.id}] New connection from: ${socket.id} (${socket.handshake.address}) to LOGIN WORLD`);
+		const auth = socket.handshake.auth as ILoginAuth; // TODO: add ajv validation
+		socket.send('login', await this.login(socket, auth));
+	};
+
+	private login = async (socket: Socket, auth: ILoginAuth) =>
+	{
+		const user = await this.db.users.findUnique({
+			where: {
+				username: auth.username,
+			},
+		});
+
+		if (user == null)
+		{
+			return {
+				success: false,
+				message: 'not found',
+			};
+		}
+
+		// TODO: add token login
+		const match = await compare(auth.password, user.password);
+		if (!match)
+		{
+			return {
+				success: false,
+				message: 'invalid password',
+			};
+		}
+
+		if (user.permaBan)
+		{
+			return {
+				success: false,
+				message: 'perma banned',
+			};
+		}
+
+		// TODO: add temp ban
 
 		const randomKey = randomBytes(32).toString('hex');
 		const hash = createHash('sha256')
-			.update(`${socket.id}${randomKey}${socket.handshake.address}${socket.request.headers['user-agent']}`) // TODO: replace socket.id with username
+			.update(`${auth.username}${randomKey}${socket.handshake.address}${socket.request.headers['user-agent']}`)
 			.digest('hex');
 
 		const key = sign({ hash }, this.config.data.crypto.secret, { expiresIn: this.config.data.crypto.loginKeyExpiry });
 
-		socket.send('login', {
+		return {
 			success: true,
-			username: 'username',
+			username: auth.username,
 			key,
 			populations: {},
-		});
+		};
 	};
 }

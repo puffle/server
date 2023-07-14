@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { ConfigManager } from '../../managers/ConfigManager';
+import { DatabaseManager } from '../../managers/DatabaseManager';
 import { User } from '../user';
 
 export class BaseWorld
@@ -19,6 +20,7 @@ export class BaseWorld
 	id: string;
 	server: Server;
 	config: ConfigManager;
+	db: DatabaseManager = new DatabaseManager();
 
 	onMessage = (message: IActionMessage, user: User) =>
 	{

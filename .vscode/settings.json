@@ -1,0 +1,8 @@
+{
+	"terminal.integrated.env.linux": {
+		"CHECKPOINT_DISABLE": "1"
+	},
+	"terminal.integrated.env.windows": {
+		"CHECKPOINT_DISABLE": "1"
+	}
+}
