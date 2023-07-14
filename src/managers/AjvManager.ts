@@ -1,5 +1,6 @@
 import Ajv from 'ajv';
 import { actionMessageSchema } from '../utils/schemas/actionMessage';
+import { gameAuthSchema } from '../utils/schemas/gameAuth';
 import { loginAuthSchema } from '../utils/schemas/loginAuth';
 
 export class AjvManager extends Ajv
@@ -14,6 +15,7 @@ export class AjvManager extends Ajv
 
 	validators = {
 		loginAuth: this.compile(loginAuthSchema),
+		gameAuth: this.compile(gameAuthSchema),
 		actionMessage: this.compile(actionMessageSchema),
 	};
 }

@@ -40,9 +40,11 @@ export class BaseWorld
 		console.log(`[${this.id}] Received: ${JSON.stringify(message)} from ${user.socket.id}`);
 	};
 
+	onConnectionPre = (socket: Socket) => console.log(`[${this.id}] New connection from: ${socket.id} (${socket.handshake.address})`);
+
 	onConnection = async (socket: Socket) =>
 	{
-		console.log(`[${this.id}] New connection from: ${socket.id} (${socket.handshake.address})`);
+		this.onConnectionPre(socket);
 
 		socket.data = new User(socket, this);
 		socket.on('disconnect', (socket.data as User).onDisconnect);

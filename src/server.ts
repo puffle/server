@@ -60,7 +60,7 @@ import { socketioServer } from './plugins/fastify/socket-io';
 		else if (worldName !== undefined)
 		{
 			if (configManager.data.worlds[worldName] === undefined || configManager.data.worlds[worldName]?.host === undefined || configManager.data.worlds[worldName]?.port === undefined) return;
-			const world = new GameWorld(worldName, fastify.io, false, configManager);
+			const world = new GameWorld(worldName, fastify.io, configManager);
 			await world.db.authenticate();
 			fastify.listen({ port: world.config.data.worlds[worldName]!.port, host: world.config.data.worlds[worldName]!.host });
 		}

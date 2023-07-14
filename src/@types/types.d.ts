@@ -10,3 +10,11 @@ interface ILoginAuth
 	password: string;
 	method: 'password' | 'token';
 }
+
+interface IGameAuth
+{
+	username: string;
+	key: string;
+	createToken?: boolean;
+	token?: string;
+}

@@ -1,4 +1,3 @@
-import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
 type Any = {
@@ -29,18 +28,18 @@ export class ConfigManager
 	data: TConfig;
 	defaultData: TConfig = {
 		crypto: {
-			secret: randomBytes(32).toString('hex'),
+			secret: 'UNSECURE SECRET - DO NOT USE ME',
 			loginKeyExpiry: 300,
 			rounds: 30,
 		},
 		worlds: {
 			Login: {
 				host: 'localhost',
-				port: 3000,
+				port: 6111,
 			},
 			Blizzard: {
 				host: 'localhost',
-				port: 3001,
+				port: 6112,
 			},
 		},
 	};

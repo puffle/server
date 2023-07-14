@@ -16,6 +16,8 @@ export class LoginWorld extends BaseWorld
 
 	override onConnection = async (socket: Socket) =>
 	{
+		this.onConnectionPre(socket);
+
 		const auth = socket.handshake.auth as ILoginAuth;
 		if (!this.ajv.validators.loginAuth(auth))
 		{
@@ -24,7 +26,7 @@ export class LoginWorld extends BaseWorld
 			return;
 		}
 
-		socket.send('login', await this.login(socket, auth));
+		socket.send({ action: 'login', args: await this.login(socket, auth) });
 	};
 
 	private login = async (socket: Socket, auth: ILoginAuth) =>
@@ -70,7 +72,9 @@ export class LoginWorld extends BaseWorld
 			success: true,
 			username: auth.username,
 			key,
-			populations: {},
+			populations: {
+				Blizzard: 4, // TODO: finish population
+			},
 		};
 	};
 }
