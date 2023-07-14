@@ -1,4 +1,6 @@
+import ajvKeywords from 'ajv-keywords/dist/definitions';
 import { Server, Socket } from 'socket.io';
+import { AjvManager } from '../../managers/AjvManager';
 import { ConfigManager } from '../../managers/ConfigManager';
 import { DatabaseManager } from '../../managers/DatabaseManager';
 import { User } from '../user';
@@ -21,10 +23,20 @@ export class BaseWorld
 	server: Server;
 	config: ConfigManager;
 	db: DatabaseManager = new DatabaseManager();
+	ajv: AjvManager = new AjvManager({
+		allErrors: true,
+		removeAdditional: true,
+		keywords: ajvKeywords(),
+	});
 
 	onMessage = (message: IActionMessage, user: User) =>
 	{
-		// TODO: add ajv to message
+		if (!this.ajv.validators.actionMessage(message))
+		{
+			console.log(`[${this.id}] Received [INVALID]: ${JSON.stringify(message)} from ${user.socket.id}`);
+			return;
+		}
+
 		console.log(`[${this.id}] Received: ${JSON.stringify(message)} from ${user.socket.id}`);
 	};
 

@@ -16,17 +16,20 @@ export class LoginWorld extends BaseWorld
 
 	override onConnection = async (socket: Socket) =>
 	{
-		const auth = socket.handshake.auth as ILoginAuth; // TODO: add ajv validation
+		const auth = socket.handshake.auth as ILoginAuth;
+		if (!this.ajv.validators.loginAuth(auth))
+		{
+			// TODO: send error codes
+			socket.disconnect(true);
+			return;
+		}
+
 		socket.send('login', await this.login(socket, auth));
 	};
 
 	private login = async (socket: Socket, auth: ILoginAuth) =>
 	{
-		const user = await this.db.users.findUnique({
-			where: {
-				username: auth.username,
-			},
-		});
+		const user = await this.db.users.findUnique({ where: { username: auth.username }, include: { bans_bans_userIdTousers: false } });
 
 		if (user == null)
 		{
