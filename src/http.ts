@@ -53,7 +53,7 @@ import { prismaPlugin } from './plugins/fastify/prisma';
 		});
 
 		await fastify.ready();
-		fastify.listen({ port: 6111, host: '0.0.0.0' });
+		fastify.listen({ port: fastify.configManager.data.login.port, host: fastify.configManager.data.login.host });
 	}
 	catch (err)
 	{

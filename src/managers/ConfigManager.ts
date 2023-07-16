@@ -12,6 +12,13 @@ export type TConfig = {
 		issuer: string,
 		rounds: number,
 	},
+	cors: {
+		origin: string,
+	};
+	login: {
+		host: string,
+		port: number,
+	},
 	worlds: {
 		[key: string]: {
 			host: string,
@@ -37,12 +44,14 @@ export class ConfigManager
 			issuer: 'Puffle',
 			rounds: 30,
 		},
+		cors: {
+			origin: 'http://localhost:8080',
+		},
+		login: {
+			host: 'localhost',
+			port: 6111,
+		},
 		worlds: {
-			Login: {
-				host: 'localhost',
-				port: 6111,
-				maxUsers: -1,
-			},
 			Blizzard: {
 				host: 'localhost',
 				port: 6112,

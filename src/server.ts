@@ -14,16 +14,17 @@ import { socketioServer } from './plugins/fastify/socket-io';
 
 	try
 	{
+		await fastify.register(configManagerPlugin);
 		fastify.register(socketioServer, {
 			path: '/',
 			cors: {
-				origin: '*', // TODO: only for dev purposes!
+				origin: fastify.configManager.data.cors.origin,
+				methods: ['GET', 'POST'],
 			},
 		});
 
 		fastify.register(fastifyReq);
 		fastify.register(prismaPlugin);
-		fastify.register(configManagerPlugin);
 
 		fastify.setErrorHandler((error, req, reply) =>
 		{
