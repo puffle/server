@@ -26,7 +26,7 @@ Read the [commits](../../commits) for a comprehensive list of changes.
 
 ## 📜 License
 
-Licensed under [MIT License](LICENSE.md).
+Licensed under [MIT License](LICENSE).
 
 ## 📄 Notice
 

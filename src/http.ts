@@ -1,8 +1,11 @@
 import { CustomError } from '@n0bodysec/ts-utils';
 import ajvErrors from 'ajv-errors';
 import ajvKeywords from 'ajv-keywords';
-import Fastify, { FastifyRequest } from 'fastify';
+import Fastify from 'fastify';
+import { join } from 'node:path';
+import { configManagerPlugin } from './plugins/fastify/configManager';
 import { fastifyReq } from './plugins/fastify/fastifyReq';
+import { prismaPlugin } from './plugins/fastify/prisma';
 
 (async () =>
 {
@@ -21,35 +24,18 @@ import { fastifyReq } from './plugins/fastify/fastifyReq';
 		fastify.register(import('@fastify/cors'));
 		fastify.register(import('@fastify/helmet'), { global: true, contentSecurityPolicy: false });
 		fastify.register(fastifyReq);
+		fastify.register(prismaPlugin);
+		fastify.register(configManagerPlugin);
 
-		fastify.post('/login', {
-			schema: {
-				body: {
-					type: 'object',
-					required: ['username', 'password'],
-					properties: {
-						username: {
-							type: 'string',
-							transform: ['trim'],
-							minLength: 4,
-							maxLength: 12,
-						},
-						password: {
-							type: 'string',
-							transform: ['trim'],
-							minLength: 3,
-							maxLength: 128,
-						},
-					},
-				},
-			},
-		}, async (request: FastifyRequest<{ Body: { username: string; password: string; }; }>, reply) =>
-		{
-			reply.send('OK');
+		fastify.register(import('@fastify/autoload'), {
+			dir: join(__dirname, 'routes'),
+			options: { prefix: '/api' },
+			routeParams: true,
 		});
 
 		fastify.setErrorHandler((error, req, reply) =>
 		{
+			// TODO: add custom error handling for invalid ajv schema
 			if (error instanceof CustomError)
 			{
 				reply.status(error.code).send({
@@ -67,7 +53,7 @@ import { fastifyReq } from './plugins/fastify/fastifyReq';
 		});
 
 		await fastify.ready();
-		fastify.listen({ port: 3000, host: '0.0.0.0' });
+		fastify.listen({ port: 6111, host: '0.0.0.0' });
 	}
 	catch (err)
 	{

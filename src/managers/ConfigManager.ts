@@ -8,12 +8,15 @@ export type TConfig = {
 	crypto: {
 		secret: string,
 		loginKeyExpiry: number,
+		audience: string,
+		issuer: string,
 		rounds: number,
 	},
 	worlds: {
 		[key: string]: {
 			host: string,
 			port: number,
+			maxUsers: number,
 		},
 	},
 };
@@ -29,17 +32,21 @@ export class ConfigManager
 	defaultData: TConfig = {
 		crypto: {
 			secret: 'UNSECURE SECRET - DO NOT USE ME',
-			loginKeyExpiry: 300,
+			loginKeyExpiry: 86400,
+			audience: 'localhost',
+			issuer: 'Puffle',
 			rounds: 30,
 		},
 		worlds: {
 			Login: {
 				host: 'localhost',
 				port: 6111,
+				maxUsers: -1,
 			},
 			Blizzard: {
 				host: 'localhost',
 				port: 6112,
+				maxUsers: 300,
 			},
 		},
 	};

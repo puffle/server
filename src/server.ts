@@ -1,10 +1,9 @@
 import { CustomError } from '@n0bodysec/ts-utils';
 import Fastify from 'fastify';
-import { join } from 'node:path';
-import { GameWorld } from './classes/worlds/GameWorld';
-import { LoginWorld } from './classes/worlds/LoginWorld';
-import { ConfigManager } from './managers/ConfigManager';
+import { GameWorld } from './classes/world';
+import { configManagerPlugin } from './plugins/fastify/configManager';
 import { fastifyReq } from './plugins/fastify/fastifyReq';
+import { prismaPlugin } from './plugins/fastify/prisma';
 import { socketioServer } from './plugins/fastify/socket-io';
 
 (async () =>
@@ -23,6 +22,8 @@ import { socketioServer } from './plugins/fastify/socket-io';
 		});
 
 		fastify.register(fastifyReq);
+		fastify.register(prismaPlugin);
+		fastify.register(configManagerPlugin);
 
 		fastify.setErrorHandler((error, req, reply) =>
 		{
@@ -46,22 +47,11 @@ import { socketioServer } from './plugins/fastify/socket-io';
 
 		// TODO: rewrite this, add proper error handling
 		const worldName = process.argv.slice(2)[0];
-		const configManager = new ConfigManager();
-		await configManager.load(join(__dirname, '..', 'config', 'config.json'));
-		configManager.sanitize();
 
-		if (worldName === 'Login')
+		if (worldName !== undefined)
 		{
-			if (configManager.data.worlds[worldName] === undefined || configManager.data.worlds[worldName]?.host === undefined || configManager.data.worlds[worldName]?.port === undefined) return;
-			const world = new LoginWorld(worldName, fastify.io, configManager);
-			await world.db.authenticate();
-			fastify.listen({ port: world.config.data.worlds[worldName]!.port, host: world.config.data.worlds[worldName]!.host });
-		}
-		else if (worldName !== undefined)
-		{
-			if (configManager.data.worlds[worldName] === undefined || configManager.data.worlds[worldName]?.host === undefined || configManager.data.worlds[worldName]?.port === undefined) return;
-			const world = new GameWorld(worldName, fastify.io, configManager);
-			await world.db.authenticate();
+			if (fastify.configManager.data.worlds[worldName] === undefined || fastify.configManager.data.worlds[worldName]?.host === undefined || fastify.configManager.data.worlds[worldName]?.port === undefined) return;
+			const world = new GameWorld(worldName, fastify.io, fastify.configManager, fastify.prisma);
 			fastify.listen({ port: world.config.data.worlds[worldName]!.port, host: world.config.data.worlds[worldName]!.host });
 		}
 	}
