@@ -1,3 +1,4 @@
+import { merge } from 'lodash';
 import { readFile } from 'node:fs/promises';
 
 type Any = {
@@ -70,27 +71,24 @@ export class ConfigManager
 	sanitize = () =>
 	{
 		// sanitize the typeof data loaded from config
-		Object.keys(this.data).forEach((key) =>
-		{
-			if (key in this.defaultData)
-			{
-				const type1 = typeof (this.data as Any)[key];
-				const type2 = typeof (this.defaultData as Any)[key];
+		this.sanitizeType(this.defaultData, this.data);
 
-				// check if we can actually read a default data to compare against
-				if (type2 !== 'undefined' && type1 !== type2)
-				{
-					(this.data as Any)[key] = (this.defaultData as Any)[key];
-				}
-			}
-		});
+		// merge data not found in the loaded config
+		this.data = merge(this.defaultData, this.data);
+	};
 
-		// sanitize data not found in the loaded config
-		Object.keys(this.defaultData).forEach((key) =>
+	private sanitizeType = (src: Record<string, unknown>, dst: Record<string, unknown>) =>
+	{
+		Object.keys(dst).filter((key) => key in src).forEach((key) =>
 		{
-			if (!(key in this.data))
+			const type1 = typeof (dst as Any)[key];
+			const type2 = typeof (src as Any)[key];
+
+			// check if we can actually read a default data to compare against
+			if (type2 !== 'undefined')
 			{
-				(this.data as Any)[key] = (this.defaultData as Any)[key];
+				if (type1 === 'object' && src[key] != null) this.sanitizeType(src[key] as Record<string, unknown>, dst[key] as Record<string, unknown>);
+				if (type1 !== type2) (dst as Any)[key] = (src as Any)[key];
 			}
 		});
 	};

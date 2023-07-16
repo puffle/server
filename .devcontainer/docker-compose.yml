@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  server:
+    container_name: 'puffle_devserver'
+    build: .
+    volumes:
+      - ../..:/workspaces:cached
+    networks: [ 'puffle_dev' ]
+    environment:
+      DATABASE_URL: 'mysql://user:password@mariadb:3306/puffle'
+    command: sleep infinity
+
+  mariadb:
+    image: mariadb:latest
+    user: mysql
+    networks: [ 'puffle_dev' ]
+    environment:
+      MARIADB_USER: user
+      MARIADB_PASSWORD: password
+      MARIADB_ROOT_PASSWORD: supers3cret
+      MARIADB_DATABASE: puffle
+    volumes:
+      - mariadb-data:/var/lib/mysql
+
+networks:
+  puffle_dev:
+    external: true
+
+volumes:
+  mariadb-data:
+

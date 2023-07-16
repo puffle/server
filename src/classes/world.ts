@@ -114,8 +114,9 @@ export class GameWorld
 		return this.users.size;
 	}
 
-	updatePopulation = async () => this.db.worlds.update({
+	updatePopulation = async () => this.db.worlds.upsert({
 		where: { id: this.id },
-		data: { population: this.population },
+		update: { population: this.population },
+		create: { id: this.id, population: this.population },
 	});
 }

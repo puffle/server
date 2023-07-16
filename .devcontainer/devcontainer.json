@@ -3,10 +3,12 @@
 {
 	"name": "Puffle Server",
 	
-	// More info: https://containers.dev/guide/dockerfile
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
+	// https://github.com/devcontainers/templates/blob/main/src/javascript-node-mongo/.devcontainer/devcontainer.json
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "server",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+	"initializeCommand": "docker network create puffle_dev || true",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

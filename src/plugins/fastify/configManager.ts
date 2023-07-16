@@ -15,7 +15,6 @@ export const configManagerPlugin: FastifyPluginAsync = fp(async (fastify, option
 {
 	const configManager = new ConfigManager();
 	await configManager.load(join(__dirname, '..', '..', '..', 'config', 'config.json'));
-	configManager.sanitize();
 
 	fastify.decorate('configManager', configManager);
 });
