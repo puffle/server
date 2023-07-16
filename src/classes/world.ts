@@ -3,9 +3,17 @@ import ajvKeywords from 'ajv-keywords/dist/definitions';
 import { verify } from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 import { EventEmitter } from 'stream';
+import floorings from '../data/floorings.json';
+import furnitures from '../data/furnitures.json';
+import igloos from '../data/igloos.json';
+import items from '../data/items.json';
+import rooms from '../data/rooms.json';
+import tables from '../data/tables.json';
+import waddles from '../data/waddles.json';
 import { AjvManager } from '../managers/AjvManager';
 import { ConfigManager } from '../managers/ConfigManager';
 import { PluginManager } from '../managers/PluginManager';
+import { Room } from './room/room';
 import { User } from './user';
 
 type MapKey<V> = V extends Socket ? string : number;
@@ -21,6 +29,24 @@ export class GameWorld
 
 		this.events = new EventEmitter({ captureRejections: true });
 		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
+
+		this.rooms = (() =>
+		{
+			const r = new Map<number, Room>();
+			this.crumbs.rooms.forEach((room) =>
+			{
+				r.set(room.id, new Room({
+					id: room.id,
+					name: room.name,
+					member: room.member === 1,
+					maxUsers: room.maxUsers,
+					game: room.game === 1,
+					spawn: room.spawn === 1,
+				}));
+			});
+
+			return r;
+		})();
 
 		this.server.on('connection', this.onConnection);
 
@@ -39,6 +65,16 @@ export class GameWorld
 		keywords: ajvKeywords(),
 	});
 	users: Map<MapKey<Socket | User>, Socket | User> = new Map();
+	crumbs = {
+		floorings,
+		furnitures,
+		igloos,
+		items,
+		rooms,
+		tables,
+		waddles,
+	};
+	rooms: Map<number, Room>;
 
 	onMessage = (message: IActionMessage, user: User) =>
 	{

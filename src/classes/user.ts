@@ -1,18 +1,7 @@
 import { users } from '@prisma/client';
 import { DisconnectReason, Socket } from 'socket.io';
 import { pick } from '../utils/functions';
-import { Room } from './room/room';
 import { GameWorld } from './world';
-
-// TODO: debug purposes
-const town = new Room({
-	id: 100,
-	name: 'town',
-	member: false,
-	maxUsers: 80,
-	game: false,
-	spawn: true,
-});
 
 export class User
 {
@@ -69,19 +58,19 @@ export class User
 	{
 		if (typeof roomId !== 'number' || roomId < 0 || roomId === this.room.id) return;
 
+		const room = this.world.rooms.get(roomId);
+		if (room === undefined) return;
+
 		// TODO: add proper checks
+
+		if (this.room.id !== -1) this.leaveRoom(this.room.id);
 
 		this.room.x = x;
 		this.room.y = y;
 		this.room.frame = 1;
 
-		// TODO: finish
-		town.add(this);
+		room.add(this);
 	};
 
-	leaveRoom = (roomId: number) =>
-	{
-		// TODO: finish
-		throw new Error('not implemented');
-	};
+	leaveRoom = (roomId: number) => this.world.rooms.get(roomId)?.remove(this);
 }

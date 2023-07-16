@@ -12,6 +12,7 @@ services:
     command: sleep infinity
 
   mariadb:
+    container_name: 'puffle_devdb'
     image: mariadb:latest
     user: mysql
     networks: [ 'puffle_dev' ]
