@@ -4,7 +4,6 @@ import { Server } from 'socket.io';
 import { GameWorld } from './classes/world';
 import { Config } from './managers/ConfigManager';
 import { Database } from './managers/DatabaseManager';
-import { fastifyReq } from './plugins/fastify/fastifyReq';
 
 (async () =>
 {
@@ -30,8 +29,6 @@ import { fastifyReq } from './plugins/fastify/fastifyReq';
 			io.close();
 			await Database.$disconnect();
 		});
-
-		fastify.register(fastifyReq);
 
 		fastify.setErrorHandler((error, req, reply) =>
 		{

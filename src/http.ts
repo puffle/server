@@ -5,7 +5,6 @@ import Fastify from 'fastify';
 import { join } from 'node:path';
 import { Config } from './managers/ConfigManager';
 import { Database } from './managers/DatabaseManager';
-import { fastifyReq } from './plugins/fastify/fastifyReq';
 
 (async () =>
 {
@@ -27,7 +26,6 @@ import { fastifyReq } from './plugins/fastify/fastifyReq';
 		fastify.addHook('onClose', async () => Database.$disconnect());
 		fastify.register(import('@fastify/cors'));
 		fastify.register(import('@fastify/helmet'), { global: true, contentSecurityPolicy: false });
-		fastify.register(fastifyReq);
 
 		fastify.register(import('@fastify/autoload'), {
 			dir: join(__dirname, 'routes'),
