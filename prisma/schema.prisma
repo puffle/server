@@ -7,143 +7,146 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model auth_tokens {
+model AuthToken {
   userId    Int
   selector  String   @db.Char(36)
   validator String   @db.Char(60)
   timestamp DateTime @default(now()) @db.Timestamp(0)
-  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "auth_tokens_ibfk_1")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, selector])
+  @@map(name: "auth_tokens")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model bans {
-  id                            Int      @id @default(autoincrement())
-  userId                        Int
-  issued                        DateTime @default(now()) @db.Timestamp(0)
-  expires                       DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.Timestamp(0)
-  moderatorId                   Int?
-  message                       String?  @db.VarChar(60)
-  users_bans_userIdTousers      users    @relation("bans_userIdTousers", fields: [userId], references: [id], onDelete: Cascade, map: "bans_ibfk_1")
-  users_bans_moderatorIdTousers users?   @relation("bans_moderatorIdTousers", fields: [moderatorId], references: [id], onUpdate: SetNull, map: "bans_ibfk_2")
+model Ban {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  issued      DateTime @default(now()) @db.Timestamp(0)
+  expires     DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.Timestamp(0)
+  moderatorId Int?
+  message     String?  @db.VarChar(60)
+  user        User     @relation("ban_userId", fields: [userId], references: [id], onDelete: Cascade)
+  moderator   User?    @relation("ban_moderatorId", fields: [moderatorId], references: [id], onUpdate: SetNull)
 
-  @@index([moderatorId], map: "moderatorId")
-  @@index([userId], map: "userId")
+  @@index([moderatorId])
+  @@index([userId])
+  @@map(name: "bans")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model buddies {
-  userId                       Int
-  buddyId                      Int
-  users_buddies_userIdTousers  users @relation("buddies_userIdTousers", fields: [userId], references: [id], onDelete: Cascade, map: "buddies_ibfk_1")
-  users_buddies_buddyIdTousers users @relation("buddies_buddyIdTousers", fields: [buddyId], references: [id], onDelete: Cascade, map: "buddies_ibfk_2")
+model Buddy {
+  userId  Int
+  buddyId Int
+  user    User @relation("buddy_userId", fields: [userId], references: [id], onDelete: Cascade)
+  buddy   User @relation("buddy_buddyId", fields: [buddyId], references: [id], onDelete: Cascade)
 
   @@id([userId, buddyId])
-  @@index([buddyId], map: "buddies_ibfk_2")
+  @@index([buddyId])
+  @@map(name: "buddies")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model furniture_inventories {
+model FurnitureInventory {
   userId   Int
   itemId   Int
   quantity Int
-  users    users @relation(fields: [userId], references: [id], onDelete: Cascade, map: "furniture_inventories_ibfk_1")
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itemId])
+  @@map(name: "furniture_inventories")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model furnitures {
-  id          Int   @id @default(autoincrement())
+model Furniture {
+  id          Int  @id @default(autoincrement())
   userId      Int
   furnitureId Int
-  x           Int   @default(0) @db.SmallInt
-  y           Int   @default(0) @db.SmallInt
-  rotation    Int   @default(1) @db.SmallInt
-  frame       Int   @default(1) @db.SmallInt
-  users       users @relation(fields: [userId], references: [id], onDelete: Cascade, map: "furnitures_ibfk_1")
+  x           Int  @default(0) @db.SmallInt
+  y           Int  @default(0) @db.SmallInt
+  rotation    Int  @default(1) @db.SmallInt
+  frame       Int  @default(1) @db.SmallInt
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId], map: "userId")
+  @@index([userId])
+  @@map(name: "furnitures")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model igloo_inventories {
+model IglooInventory {
   userId  Int
   iglooId Int
-  users   users @relation(fields: [userId], references: [id], onDelete: Cascade, map: "igloo_inventories_ibfk_1")
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, iglooId])
+  @@map(name: "igloo_inventories")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model igloos {
+model Igloo {
   userId   Int     @id
   type     Int     @default(1)
   flooring Int     @default(0)
   music    Int     @default(0)
   location Int     @default(1)
   locked   Boolean @default(true)
-  users    users   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "igloos_ibfk_1")
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map(name: "igloos")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model ignores {
-  userId                        Int
-  ignoreId                      Int
-  users_ignores_userIdTousers   users @relation("ignores_userIdTousers", fields: [userId], references: [id], onDelete: Cascade, map: "ignores_ibfk_1")
-  users_ignores_ignoreIdTousers users @relation("ignores_ignoreIdTousers", fields: [ignoreId], references: [id], onDelete: Cascade, map: "ignores_ibfk_2")
+model Ignore {
+  userId      Int
+  ignoreId    Int
+  user        User @relation("ignore_userId", fields: [userId], references: [id], onDelete: Cascade)
+  ignoredUser User @relation("ignore_ignoreId", fields: [ignoreId], references: [id], onDelete: Cascade)
 
   @@id([userId, ignoreId])
-  @@index([ignoreId], map: "ignores_ibfk_2")
+  @@index([ignoreId])
+  @@map(name: "ignores")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model inventories {
+model Inventory {
   userId Int
   itemId Int
-  users  users @relation(fields: [userId], references: [id], onDelete: Cascade, map: "inventories_ibfk_1")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itemId])
+  @@map(name: "inventories")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model users {
-  id                              Int                     @id @default(autoincrement())
-  username                        String                  @unique(map: "username") @db.VarChar(12)
-  email                           String?                 @db.VarChar(254)
-  password                        String                  @db.Char(60)
-  loginKey                        String?                 @db.Text
-  rank                            Int                     @default(0)
-  permaBan                        Boolean                 @default(false)
-  joinTime                        DateTime                @default(now()) @db.Timestamp(0)
-  coins                           Int                     @default(500)
-  head                            Int                     @default(0)
-  face                            Int                     @default(0)
-  neck                            Int                     @default(0)
-  body                            Int                     @default(0)
-  hand                            Int                     @default(0)
-  feet                            Int                     @default(0)
-  color                           Int                     @default(1)
-  photo                           Int                     @default(0)
-  flag                            Int                     @default(0)
-  auth_tokens                     auth_tokens[]
-  bans_bans_userIdTousers         bans[]                  @relation("bans_userIdTousers")
-  bans_bans_moderatorIdTousers    bans[]                  @relation("bans_moderatorIdTousers")
-  buddies_buddies_userIdTousers   buddies[]               @relation("buddies_userIdTousers")
-  buddies_buddies_buddyIdTousers  buddies[]               @relation("buddies_buddyIdTousers")
-  furniture_inventories           furniture_inventories[]
-  furnitures                      furnitures[]
-  igloo_inventories               igloo_inventories[]
-  igloos                          igloos?
-  ignores_ignores_userIdTousers   ignores[]               @relation("ignores_userIdTousers")
-  ignores_ignores_ignoreIdTousers ignores[]               @relation("ignores_ignoreIdTousers")
-  inventories                     inventories[]
+model User {
+  id                    Int                  @id @default(autoincrement())
+  username              String               @unique(map: "username") @db.VarChar(12)
+  email                 String?              @db.VarChar(254)
+  password              String               @db.Char(60)
+  loginKey              String?              @db.Text
+  rank                  Int                  @default(0)
+  permaBan              Boolean              @default(false)
+  joinTime              DateTime             @default(now()) @db.Timestamp(0)
+  coins                 Int                  @default(500)
+  head                  Int                  @default(0)
+  face                  Int                  @default(0)
+  neck                  Int                  @default(0)
+  body                  Int                  @default(0)
+  hand                  Int                  @default(0)
+  feet                  Int                  @default(0)
+  color                 Int                  @default(1)
+  photo                 Int                  @default(0)
+  flag                  Int                  @default(0)
+  auth_tokens           AuthToken[]
+  furniture_inventories FurnitureInventory[]
+  furnitures            Furniture[]
+  igloo_inventories     IglooInventory[]
+  igloos                Igloo?
+  inventories           Inventory[]
+  ban_userId            Ban[]                @relation("ban_userId")
+  ban_moderatorId       Ban[]                @relation("ban_moderatorId")
+  buddy_userId          Buddy[]              @relation("buddy_userId")
+  buddy_buddyId         Buddy[]              @relation("buddy_buddyId")
+  ignore_userId         Ignore[]             @relation("ignore_userId")
+  ignore_ignoreId       Ignore[]             @relation("ignore_ignoreId")
+
+  @@map(name: "users")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model worlds {
+model World {
   id         String @id @db.VarChar(100)
   population Int    @default(0) @db.SmallInt
+
+  @@map(name: "worlds")
 }

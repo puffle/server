@@ -8,7 +8,7 @@ import { constants } from '../utils/constants';
 
 const getWorldPopulations = async (isModerator: boolean) =>
 {
-	const populations = await Database.worlds.findMany();
+	const populations = await Database.world.findMany();
 	const obj = Object.create(null);
 	const maxPopulation = isModerator ? 5 : 6;
 
@@ -27,7 +27,7 @@ const getWorldPopulations = async (isModerator: boolean) =>
 
 const postLogin = async (req: FastifyRequest<{ Body: { username: string; password: string; }; }>, reply: FastifyReply) =>
 {
-	const user = await Database.users.findUnique({ where: { username: req.body.username }, include: { bans_bans_userIdTousers: false } });
+	const user = await Database.user.findUnique({ where: { username: req.body.username }, include: { ban_userId: false } });
 
 	if (user == null)
 	{

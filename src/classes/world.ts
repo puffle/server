@@ -95,7 +95,7 @@ export class GameWorld
 
 			// TODO: add the same checks as login (perma ban, etc)
 
-			const dbUser = await Database.users.findUnique({ where: { username: auth.username }, include: { bans_bans_userIdTousers: false } });
+			const dbUser = await Database.user.findUnique({ where: { username: auth.username }, include: { ban_userId: true } });
 
 			if (dbUser == null)
 			{
@@ -150,7 +150,7 @@ export class GameWorld
 		return this.users.size;
 	}
 
-	updatePopulation = async () => Database.worlds.upsert({
+	updatePopulation = async () => Database.world.upsert({
 		where: { id: this.id },
 		update: { population: this.population },
 		create: { id: this.id, population: this.population },

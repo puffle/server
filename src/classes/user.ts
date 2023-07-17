@@ -1,13 +1,19 @@
-import { users } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { DisconnectReason, Socket } from 'socket.io';
 import { constants } from '../utils/constants';
 import { pick } from '../utils/functions';
 import { Room } from './room/room';
 import { GameWorld } from './world';
 
+export type TDbUser = Prisma.UserGetPayload<{
+	include: {
+		ban_userId: true;
+	};
+}>;
+
 export class User
 {
-	constructor(socket: Socket, dbUser: users, world: GameWorld)
+	constructor(socket: Socket, dbUser: TDbUser, world: GameWorld)
 	{
 		this.socket = socket;
 		this.world = world;
@@ -16,7 +22,7 @@ export class User
 
 	socket: Socket;
 	world: GameWorld;
-	dbUser: users;
+	dbUser: TDbUser;
 
 	room: Room | undefined;
 	roomData = {

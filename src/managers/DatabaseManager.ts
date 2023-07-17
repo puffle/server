@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 export class DatabaseManager extends PrismaClient
 {
-	findAnonymousUser = async (id: number) => this.users.findUnique({
+	findAnonymousUser = async (id: number) => this.user.findUnique({
 		where: { id },
 		select: {
 			id: true,
