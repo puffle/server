@@ -1,6 +1,7 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
+import { MyAjv } from '../../managers/AjvManager';
 import { GamePlugin } from '../GamePlugin';
 
 interface ISendMessageArgs { message: string; }
@@ -22,7 +23,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		};
 
 		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['sendMessage', this.world.ajv.compile({
+			['sendMessage', MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['message'],
@@ -36,7 +37,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 				},
 			} as JSONSchemaType<ISendMessageArgs>)],
 
-			['sendSafe', this.world.ajv.compile({
+			['sendSafe', MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['safe'],
@@ -45,7 +46,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 				},
 			} as JSONSchemaType<ISendSafeArgs>)],
 
-			['sendEmote', this.world.ajv.compile({
+			['sendEmote', MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['emote'],

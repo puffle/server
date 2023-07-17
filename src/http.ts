@@ -3,9 +3,9 @@ import ajvErrors from 'ajv-errors';
 import ajvKeywords from 'ajv-keywords';
 import Fastify from 'fastify';
 import { join } from 'node:path';
-import { configManagerPlugin } from './plugins/fastify/configManager';
+import { Config } from './managers/ConfigManager';
+import { Database } from './managers/DatabaseManager';
 import { fastifyReq } from './plugins/fastify/fastifyReq';
-import { prismaPlugin } from './plugins/fastify/prisma';
 
 (async () =>
 {
@@ -21,11 +21,13 @@ import { prismaPlugin } from './plugins/fastify/prisma';
 
 	try
 	{
+		await Config.Initialize();
+		await Database.Initialize();
+
+		fastify.addHook('onClose', async () => Database.$disconnect());
 		fastify.register(import('@fastify/cors'));
 		fastify.register(import('@fastify/helmet'), { global: true, contentSecurityPolicy: false });
 		fastify.register(fastifyReq);
-		fastify.register(prismaPlugin);
-		fastify.register(configManagerPlugin);
 
 		fastify.register(import('@fastify/autoload'), {
 			dir: join(__dirname, 'routes'),
@@ -53,7 +55,7 @@ import { prismaPlugin } from './plugins/fastify/prisma';
 		});
 
 		await fastify.ready();
-		fastify.listen({ port: fastify.configManager.data.login.port, host: fastify.configManager.data.login.host });
+		fastify.listen({ port: Config.data.login.port, host: Config.data.login.host });
 	}
 	catch (err)
 	{

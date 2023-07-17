@@ -18,4 +18,8 @@ export class DatabaseManager extends PrismaClient
 			flag: true,
 		},
 	});
+
+	Initialize = async () => this.$connect();
 }
+
+export const Database = new DatabaseManager();

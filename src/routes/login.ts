@@ -2,17 +2,19 @@ import { compare } from 'bcrypt';
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import { sign } from 'jsonwebtoken';
 import { randomUUID } from 'node:crypto';
+import { Config } from '../managers/ConfigManager';
+import { Database } from '../managers/DatabaseManager';
 import { constants } from '../utils/constants';
 
-const getWorldPopulations = async (isModerator: boolean, req: FastifyRequest) =>
+const getWorldPopulations = async (isModerator: boolean) =>
 {
-	const populations = await req.fastify.prisma.worlds.findMany();
+	const populations = await Database.worlds.findMany();
 	const obj = Object.create(null);
 	const maxPopulation = isModerator ? 5 : 6;
 
 	populations.forEach((world) =>
 	{
-		const maxUsers = req.fastify.configManager.data.worlds[world.id]?.maxUsers || 0;
+		const maxUsers = Config.data.worlds[world.id]?.maxUsers || 0;
 		const populationRatio = Math.ceil(world.population / Math.round(maxUsers / 5));
 
 		obj[world.id] = world.population >= maxUsers
@@ -25,7 +27,7 @@ const getWorldPopulations = async (isModerator: boolean, req: FastifyRequest) =>
 
 const postLogin = async (req: FastifyRequest<{ Body: { username: string; password: string; }; }>, reply: FastifyReply) =>
 {
-	const user = await req.fastify.prisma.users.findUnique({ where: { username: req.body.username }, include: { bans_bans_userIdTousers: false } });
+	const user = await Database.users.findUnique({ where: { username: req.body.username }, include: { bans_bans_userIdTousers: false } });
 
 	if (user == null)
 	{
@@ -55,11 +57,11 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 
 	// TODO: add temp ban
 
-	const key = sign({}, req.fastify.configManager.data.crypto.secret, {
-		expiresIn: req.fastify.configManager.data.crypto.loginKeyExpiry,
+	const key = sign({}, Config.data.crypto.secret, {
+		expiresIn: Config.data.crypto.loginKeyExpiry,
 		jwtid: `${Date.now()}$${req.body.username}$${randomUUID()}`,
-		audience: req.fastify.configManager.data.crypto.audience,
-		issuer: req.fastify.configManager.data.crypto.issuer,
+		audience: Config.data.crypto.audience,
+		issuer: Config.data.crypto.issuer,
 		subject: user.id.toString(),
 	});
 
@@ -67,7 +69,7 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 		success: true,
 		username: req.body.username,
 		key,
-		populations: (await getWorldPopulations(user.rank >= constants.FIRST_MODERATOR_RANK, req)),
+		populations: (await getWorldPopulations(user.rank >= constants.FIRST_MODERATOR_RANK)),
 	});
 };
 

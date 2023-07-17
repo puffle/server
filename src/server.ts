@@ -1,10 +1,10 @@
 import { CustomError } from '@n0bodysec/ts-utils';
 import Fastify from 'fastify';
+import { Server } from 'socket.io';
 import { GameWorld } from './classes/world';
-import { configManagerPlugin } from './plugins/fastify/configManager';
+import { Config } from './managers/ConfigManager';
+import { Database } from './managers/DatabaseManager';
 import { fastifyReq } from './plugins/fastify/fastifyReq';
-import { prismaPlugin } from './plugins/fastify/prisma';
-import { socketioServer } from './plugins/fastify/socket-io';
 
 (async () =>
 {
@@ -14,17 +14,24 @@ import { socketioServer } from './plugins/fastify/socket-io';
 
 	try
 	{
-		await fastify.register(configManagerPlugin);
-		fastify.register(socketioServer, {
+		await Config.Initialize();
+		await Database.Initialize();
+
+		const io = new Server(fastify.server, {
 			path: '/',
 			cors: {
-				origin: fastify.configManager.data.cors.origin,
+				origin: Config.data.cors.origin,
 				methods: ['GET', 'POST'],
 			},
 		});
 
+		fastify.addHook('onClose', async () =>
+		{
+			io.close();
+			await Database.$disconnect();
+		});
+
 		fastify.register(fastifyReq);
-		fastify.register(prismaPlugin);
 
 		fastify.setErrorHandler((error, req, reply) =>
 		{
@@ -51,9 +58,11 @@ import { socketioServer } from './plugins/fastify/socket-io';
 
 		if (worldName !== undefined)
 		{
-			if (fastify.configManager.data.worlds[worldName] === undefined || fastify.configManager.data.worlds[worldName]?.host === undefined || fastify.configManager.data.worlds[worldName]?.port === undefined) return;
-			const world = new GameWorld(worldName, fastify.io, fastify.configManager, fastify.prisma);
-			fastify.listen({ port: world.config.data.worlds[worldName]!.port, host: world.config.data.worlds[worldName]!.host });
+			if (Config.data.worlds[worldName] === undefined || Config.data.worlds[worldName]?.host === undefined || Config.data.worlds[worldName]?.port === undefined) return;
+
+			// eslint-disable-next-line no-new
+			new GameWorld(worldName, io);
+			fastify.listen({ port: Config.data.worlds[worldName]!.port, host: Config.data.worlds[worldName]!.host });
 		}
 	}
 	catch (err)

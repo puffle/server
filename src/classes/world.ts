@@ -1,4 +1,3 @@
-import ajvKeywords from 'ajv-keywords/dist/definitions';
 import { verify } from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 import { EventEmitter } from 'stream';
@@ -9,21 +8,19 @@ import items from '../data/items.json';
 import rooms from '../data/rooms.json';
 import tables from '../data/tables.json';
 import waddles from '../data/waddles.json';
-import { AjvManager } from '../managers/AjvManager';
-import { ConfigManager } from '../managers/ConfigManager';
-import { DatabaseManager } from '../managers/DatabaseManager';
+import { MyAjv } from '../managers/AjvManager';
+import { Config } from '../managers/ConfigManager';
+import { Database } from '../managers/DatabaseManager';
 import { PluginManager } from '../managers/PluginManager';
 import { Room } from './room/room';
 import { User } from './user';
 
 export class GameWorld
 {
-	constructor(id: string, server: Server, configManager: ConfigManager, db: DatabaseManager, pluginsDir?: string)
+	constructor(id: string, server: Server, pluginsDir?: string)
 	{
 		this.id = id;
 		this.server = server;
-		this.config = configManager;
-		this.db = db;
 
 		this.events = new EventEmitter({ captureRejections: true });
 		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
@@ -53,15 +50,8 @@ export class GameWorld
 
 	id: string;
 	server: Server;
-	config: ConfigManager;
-	db: DatabaseManager;
 	pluginManager: PluginManager;
 	events: EventEmitter;
-	ajv: AjvManager = new AjvManager({
-		allErrors: true,
-		removeAdditional: true,
-		keywords: ajvKeywords(),
-	});
 	users: Map<number, User> = new Map();
 	crumbs = {
 		floorings,
@@ -76,7 +66,7 @@ export class GameWorld
 
 	onMessage = (message: IActionMessage, user: User) =>
 	{
-		if (!this.ajv.validators.actionMessage(message))
+		if (!MyAjv.validators.actionMessage(message))
 		{
 			console.log(`[${this.id}] Received [INVALID]: ${JSON.stringify(message)} from ${user.dbUser.username} (${user.socket.id})`);
 			return;
@@ -95,17 +85,17 @@ export class GameWorld
 			this.onConnectionPre(socket);
 
 			const auth = socket.handshake.auth as IGameAuth;
-			if (!this.ajv.validators.gameAuth(auth))
+			if (!MyAjv.validators.gameAuth(auth))
 			{
 				this.closeSocket(socket);
 				return;
 			}
 
-			verify(auth.key, this.config.data.crypto.secret);
+			verify(auth.key, Config.data.crypto.secret);
 
 			// TODO: add the same checks as login (perma ban, etc)
 
-			const dbUser = await this.db.users.findUnique({ where: { username: auth.username }, include: { bans_bans_userIdTousers: false } });
+			const dbUser = await Database.users.findUnique({ where: { username: auth.username }, include: { bans_bans_userIdTousers: false } });
 
 			if (dbUser == null)
 			{
@@ -160,7 +150,7 @@ export class GameWorld
 		return this.users.size;
 	}
 
-	updatePopulation = async () => this.db.worlds.upsert({
+	updatePopulation = async () => Database.worlds.upsert({
 		where: { id: this.id },
 		update: { population: this.population },
 		create: { id: this.id, population: this.population },

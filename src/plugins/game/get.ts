@@ -1,6 +1,8 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
+import { MyAjv } from '../../managers/AjvManager';
+import { Database } from '../../managers/DatabaseManager';
 import { GamePlugin } from '../GamePlugin';
 
 interface IGetPlayerArgs { id: number; }
@@ -18,7 +20,7 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 		};
 
 		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['getPlayer', this.world.ajv.compile({
+			['getPlayer', MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['id'],
@@ -42,7 +44,7 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 
 		// TODO: add buddy check
 
-		const anonUser = await this.world.db.findAnonymousUser(args.id);
+		const anonUser = await Database.findAnonymousUser(args.id);
 		user.send('get_player', { penguin: anonUser });
 	};
 }

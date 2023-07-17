@@ -1,5 +1,6 @@
 import { merge } from 'lodash';
 import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 type Any = {
 	[key: string]: unknown,
@@ -69,6 +70,11 @@ export class ConfigManager
 		},
 	};
 
+	Initialize = async (path?: string) =>
+	{
+		this.load(path ?? join(__dirname, '..', '..', 'config', 'config.json'));
+	};
+
 	load = async (path: string) =>
 	{
 		const file = await readFile(path, 'utf-8');
@@ -101,3 +107,5 @@ export class ConfigManager
 		});
 	};
 }
+
+export const Config = new ConfigManager();

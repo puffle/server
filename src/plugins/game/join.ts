@@ -1,6 +1,8 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
+import { MyAjv } from '../../managers/AjvManager';
+import { Config } from '../../managers/ConfigManager';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
@@ -20,7 +22,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		};
 
 		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['joinRoom', this.world.ajv.compile({
+			['joinRoom', MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['room', 'x', 'y'],
@@ -58,7 +60,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 
 	private getSpawn = () =>
 	{
-		const preferredSpawn = this.world.config.data.game.preferredSpawn;
+		const preferredSpawn = Config.data.game.preferredSpawn;
 
 		if (preferredSpawn !== 0)
 		{

@@ -1,6 +1,7 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
+import { MyAjv } from '../../managers/AjvManager';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
@@ -22,7 +23,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		};
 
 		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['sendPositionOrSnowball', this.world.ajv.compile({
+			['sendPositionOrSnowball', MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['x', 'y'],
@@ -32,7 +33,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 				},
 			} as JSONSchemaType<ISendPositionOrSnowballArgs>)],
 
-			['sendFrame', this.world.ajv.compile({
+			['sendFrame', MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['frame'],
