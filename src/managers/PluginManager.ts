@@ -39,7 +39,6 @@ export class PluginManager
 		console.log(`[${this.world.id}] Loaded ${this.plugins.size} plugins`);
 	};
 
-	// eslint-disable-next-line class-methods-use-this
 	loadEvents = (plugin: IGamePlugin) =>
 	{
 		const events = Object.keys(plugin.events);

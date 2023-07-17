@@ -25,33 +25,40 @@ export class Room
 
 	add = (user: User) =>
 	{
-		user.room.id = this.data.id;
-
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { id, ...userRoomData } = user.room;
+		user.room = this;
 
 		this.users.set(user.socket.id, {
-			...user.getSafe(),
-			...userRoomData,
+			...user.getSafeRoom(),
+			...user.roomData,
 		});
 
 		user.socket.join(this.socketRoom);
+
+		if (this.data.game)
+		{
+			user.send('join_game_room', { game: this.data.id });
+			return;
+		}
 
 		user.send('join_room', {
 			room: this.data.id,
 			users: this.userValues,
 		});
+
+		this.send(user, 'add_player', { user: user.getSafeRoom() });
 	};
 
 	remove = (user: User) =>
 	{
-		user.room.id = -1;
+		user.room = undefined;
+
+		if (!this.data.game) this.send(user, 'remove_player', { user: user.dbUser.id });
 		user.socket.leave(this.socketRoom);
 		this.users.delete(user.socket.id);
 	};
 
-	send = (user: User, message: IActionMessage) =>
+	send = (user: User, action: string, args: TActionMessageArgs) =>
 	{
-		user.sendRoom(this.socketRoom, message.action, message.args);
+		user.sendSocketRoom(this.socketRoom, action, args);
 	};
 }

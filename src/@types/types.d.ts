@@ -26,7 +26,7 @@ interface IGamePlugin
 	pluginName: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	events: Record<string, (args: TActionMessageArgs, user: any) => void>;
-	schemas: Record<string, unknown>;
+	schemas: Map<string, ValidateFunction<unknown>>;
 }
 
 interface IRoomData

@@ -1,6 +1,7 @@
 import { users } from '@prisma/client';
 import { DisconnectReason, Socket } from 'socket.io';
 import { pick } from '../utils/functions';
+import { Room } from './room/room';
 import { GameWorld } from './world';
 
 export class User
@@ -15,8 +16,9 @@ export class User
 	socket: Socket;
 	world: GameWorld;
 	dbUser: users;
-	room = {
-		id: -1,
+
+	room: Room | undefined;
+	roomData = {
 		x: 0,
 		y: 0,
 		frame: 1,
@@ -36,7 +38,10 @@ export class User
 	};
 
 	send = (action: string, args: TActionMessageArgs = {}) => this.socket.send({ action, args });
-	sendRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
+	sendSocketRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	sendRoom = (action: string, args: TActionMessageArgs | any = {}) => this.room?.send(this, action, args);
 
 	getSafe: TUserSafe = () => pick(
 		this.dbUser,
@@ -54,20 +59,27 @@ export class User
 		'flag',
 	);
 
+	getSafeRoom = () => ({
+		...this.getSafe(),
+		x: this.roomData.x,
+		y: this.roomData.y,
+		frame: this.roomData.frame,
+	});
+
 	joinRoom = (roomId: number, x = 0, y = 0) =>
 	{
-		if (typeof roomId !== 'number' || roomId < 0 || roomId === this.room.id) return;
+		if (typeof roomId !== 'number' || roomId < 0 || roomId === this.room?.data.id) return;
 
 		const room = this.world.rooms.get(roomId);
 		if (room === undefined) return;
 
 		// TODO: add proper checks
 
-		if (this.room.id !== -1) this.leaveRoom(this.room.id);
+		this.room?.remove(this);
 
-		this.room.x = x;
-		this.room.y = y;
-		this.room.frame = 1;
+		this.roomData.x = x;
+		this.roomData.y = y;
+		this.roomData.frame = 1;
 
 		room.add(this);
 	};

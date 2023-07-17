@@ -140,6 +140,8 @@ export class GameWorld
 			return;
 		}
 
+		user.room?.remove(user);
+
 		user.socket.disconnect(true);
 		this.users.delete(user.dbUser.id);
 		this.updatePopulation();
