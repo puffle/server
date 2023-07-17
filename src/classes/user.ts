@@ -44,28 +44,40 @@ export class User
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	sendRoom = (action: string, args: TActionMessageArgs | any = {}) => this.room?.send(this, action, args);
 
-	getSafe: TUserSafe = () => pick(
-		this.dbUser,
-		'id',
-		'username',
-		'joinTime',
-		'head',
-		'face',
-		'neck',
-		'body',
-		'hand',
-		'feet',
-		'color',
-		'photo',
-		'flag',
-	);
+	// see DatabaseManager > findAnonymousUser()
+	get getAnonymous(): TUserAnonymous
+	{
+		return pick(
+			this.dbUser,
+			'id',
+			'username',
+			'head',
+			'face',
+			'neck',
+			'body',
+			'hand',
+			'feet',
+			'color',
+			'photo',
+			'flag',
+		);
+	}
 
-	getSafeRoom = () => ({
-		...this.getSafe(),
-		x: this.roomData.x,
-		y: this.roomData.y,
-		frame: this.roomData.frame,
-	});
+	get getSafe(): TUserSafe
+	{
+		return {
+			...this.getAnonymous,
+			joinTime: this.dbUser.joinTime,
+		};
+	}
+
+	get getSafeRoom(): IUserSafeRoom
+	{
+		return {
+			...this.getSafe,
+			...this.roomData,
+		};
+	}
 
 	get isModerator()
 	{

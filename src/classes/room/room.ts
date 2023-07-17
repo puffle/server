@@ -10,12 +10,12 @@ export class Room
 	}
 
 	data: IRoomData;
-	users: Map<string, IUserSafeRoom>;
+	users: Map<number, IUserSafeRoom>;
 	socketRoom: string;
 
 	get userValues()
 	{
-		return Array.from(this.users.values());
+		return [...this.users.values()];
 	}
 
 	get isFull()
@@ -27,10 +27,7 @@ export class Room
 	{
 		user.room = this;
 
-		this.users.set(user.socket.id, {
-			...user.getSafeRoom(),
-			...user.roomData,
-		});
+		this.users.set(user.dbUser.id, user.getSafeRoom);
 
 		user.socket.join(this.socketRoom);
 
@@ -45,7 +42,7 @@ export class Room
 			users: this.userValues,
 		});
 
-		this.send(user, 'add_player', { user: user.getSafeRoom() });
+		this.send(user, 'add_player', { user: user.getSafeRoom });
 	};
 
 	remove = (user: User) =>
@@ -54,7 +51,7 @@ export class Room
 
 		if (!this.data.game) this.send(user, 'remove_player', { user: user.dbUser.id });
 		user.socket.leave(this.socketRoom);
-		this.users.delete(user.socket.id);
+		this.users.delete(user.dbUser.id);
 	};
 
 	send = (user: User, action: string, args: TActionMessageArgs) =>

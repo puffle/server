@@ -59,3 +59,4 @@ interface IUserSafeRoom
 }
 
 type TUserSafe = Omit<IUserSafeRoom, 'x', 'y', 'frame'>;
+type TUserAnonymous = Omit<TUserSafe, 'joinTime'>;

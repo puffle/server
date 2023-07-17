@@ -22,7 +22,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		};
 
 		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['SendPositionOrSnowball', this.world.ajv.compile({
+			['sendPositionOrSnowball', this.world.ajv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['x', 'y'],
@@ -46,7 +46,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 
 	sendPosition = (args: ISendPositionOrSnowballArgs, user: User) =>
 	{
-		if (!this.schemas.get('SendPositionOrSnowball')!(args)) return;
+		if (!this.schemas.get('sendPositionOrSnowball')!(args)) return;
 
 		user.roomData.x = args.x;
 		user.roomData.y = args.y;
@@ -64,5 +64,5 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		user.sendRoom('send_frame', { id: user.dbUser.id, ...args });
 	};
 
-	snowball = (args: ISendPositionOrSnowballArgs, user: User) => this.schemas.get('SendPositionOrSnowball')!(args) && user.sendRoom('snowball', { id: user.dbUser.id, ...args });
+	snowball = (args: ISendPositionOrSnowballArgs, user: User) => this.schemas.get('sendPositionOrSnowball')!(args) && user.sendRoom('snowball', { id: user.dbUser.id, ...args });
 }

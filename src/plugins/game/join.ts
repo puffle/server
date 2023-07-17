@@ -36,7 +36,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 	joinServer = async (args: TActionMessageArgs, user: User) =>
 	{
 		user.send('load_player', {
-			user: user.getSafe(),
+			user: user.getSafe,
 			rank: user.dbUser.rank,
 			coins: user.dbUser.coins,
 			// TODO: finish this

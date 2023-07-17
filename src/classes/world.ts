@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client';
 import ajvKeywords from 'ajv-keywords/dist/definitions';
 import { verify } from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
@@ -12,15 +11,14 @@ import tables from '../data/tables.json';
 import waddles from '../data/waddles.json';
 import { AjvManager } from '../managers/AjvManager';
 import { ConfigManager } from '../managers/ConfigManager';
+import { DatabaseManager } from '../managers/DatabaseManager';
 import { PluginManager } from '../managers/PluginManager';
 import { Room } from './room/room';
 import { User } from './user';
 
-type MapKey<V> = V extends Socket ? string : number;
-
 export class GameWorld
 {
-	constructor(id: string, server: Server, configManager: ConfigManager, db: PrismaClient, pluginsDir?: string)
+	constructor(id: string, server: Server, configManager: ConfigManager, db: DatabaseManager, pluginsDir?: string)
 	{
 		this.id = id;
 		this.server = server;
@@ -56,7 +54,7 @@ export class GameWorld
 	id: string;
 	server: Server;
 	config: ConfigManager;
-	db: PrismaClient;
+	db: DatabaseManager;
 	pluginManager: PluginManager;
 	events: EventEmitter;
 	ajv: AjvManager = new AjvManager({
@@ -64,7 +62,7 @@ export class GameWorld
 		removeAdditional: true,
 		keywords: ajvKeywords(),
 	});
-	users: Map<MapKey<Socket | User>, Socket | User> = new Map();
+	users: Map<number, User> = new Map();
 	crumbs = {
 		floorings,
 		furnitures,
@@ -99,7 +97,7 @@ export class GameWorld
 			const auth = socket.handshake.auth as IGameAuth;
 			if (!this.ajv.validators.gameAuth(auth))
 			{
-				this.close(socket);
+				this.closeSocket(socket);
 				return;
 			}
 
@@ -111,40 +109,46 @@ export class GameWorld
 
 			if (dbUser == null)
 			{
-				this.close(socket);
+				this.closeSocket(socket);
 				return;
 			}
 
 			const user = new User(socket, dbUser, this);
-			this.users.set(user.dbUser.id, user);
-			socket.data = user;
-			socket.join('joinedUsers'); // broadcast purposes
-			socket.on('disconnect', user.onDisconnect);
-			socket.on('message', user.onMessage);
-			this.updatePopulation();
+			try
+			{
+				this.users.set(user.dbUser.id, user);
+				socket.data = user;
+				socket.join('joinedUsers'); // broadcast purposes
+				socket.on('disconnect', user.onDisconnect);
+				socket.on('message', user.onMessage);
+				this.updatePopulation();
+			}
+			catch (err)
+			{
+				this.close(user);
+			}
 
 			user.send('game_auth', { success: true });
 		}
 		catch (err)
 		{
-			this.close(socket);
+			this.closeSocket(socket);
 		}
 	};
 
-	close = (user: Socket | User) =>
+	close = (user: User) =>
 	{
-		if (user instanceof Socket)
-		{
-			user.disconnect(true);
-			this.users.delete(user.id);
-			return;
-		}
-
 		user.room?.remove(user);
 
-		user.socket.disconnect(true);
+		this.closeSocket(user.socket);
 		this.users.delete(user.dbUser.id);
 		this.updatePopulation();
+	};
+
+	// eslint-disable-next-line class-methods-use-this
+	closeSocket = (socket: Socket) =>
+	{
+		socket.disconnect(true);
 	};
 
 	get population()
