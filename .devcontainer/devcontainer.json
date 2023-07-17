@@ -22,7 +22,7 @@
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
-			"extensions": [ "dbaeumer.vscode-eslint" ]
+			"extensions": [ "dbaeumer.vscode-eslint", "Prisma.prisma" ]
 		}
 	},
 

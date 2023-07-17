@@ -1,7 +1,6 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
-import { constants } from '../../utils/constants';
 import { GamePlugin } from '../templates/GamePlugin';
 
 interface ISendMessageArgs { message: string; }
@@ -42,7 +41,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['safe'],
 				properties: {
-					safe: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_SAFE },
+					safe: { type: 'integer', minimum: 0 },
 				},
 			} as JSONSchemaType<ISendSafeArgs>)],
 
@@ -51,7 +50,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['emote'],
 				properties: {
-					emote: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_SAFE },
+					emote: { type: 'integer', minimum: 0 },
 				},
 			} as JSONSchemaType<ISendEmoteArgs>)],
 		]);

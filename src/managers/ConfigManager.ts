@@ -27,6 +27,10 @@ export type TConfig = {
 			maxUsers: number,
 		},
 	},
+	game: {
+		preferredSpawn: number,
+		iglooIdOffset: number,
+	};
 };
 
 export class ConfigManager
@@ -58,6 +62,10 @@ export class ConfigManager
 				port: 6112,
 				maxUsers: 300,
 			},
+		},
+		game: {
+			preferredSpawn: 0,
+			iglooIdOffset: 2000,
 		},
 	};
 

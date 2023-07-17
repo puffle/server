@@ -15,7 +15,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			join_server: JoinPlugin.joinServer,
+			join_server: this.joinServer,
 			join_room: this.joinRoom,
 		};
 
@@ -33,7 +33,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		]);
 	}
 
-	static joinServer = async (args: TActionMessageArgs, user: User) =>
+	joinServer = async (args: TActionMessageArgs, user: User) =>
 	{
 		user.send('load_player', {
 			user: user.getSafe(),
@@ -48,10 +48,28 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		});
 
 		// TODO: update login token
+		const spawn = this.getSpawn();
+		if (spawn === undefined) return;
 
-		// TODO: get spawn
-		user.joinRoom(100);
+		user.joinRoom(spawn);
 	};
 
 	joinRoom = (args: IJoinRoomArgs, user: User) => this.schemas.get('joinRoom')!(args) && user.joinRoom(args.room as number, args.x as number, args.y as number);
+
+	private getSpawn = () =>
+	{
+		const preferredSpawn = this.world.config.data.game.preferredSpawn;
+
+		if (preferredSpawn !== 0)
+		{
+			const room = this.world.rooms.get(preferredSpawn);
+			if (room !== undefined && !room.isFull) return room.data.id;
+		}
+
+		const roomsArr = [...this.world.rooms];
+		let spawns = roomsArr.filter((room) => room[1].data.spawn && !room[1].isFull);
+		if (!spawns.length) spawns = roomsArr.filter((room) => !room[1].data.game && !room[1].isFull);
+
+		return spawns[Math.floor(Math.random() * spawns.length)]?.[0];
+	};
 }
