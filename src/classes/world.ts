@@ -113,6 +113,10 @@ export class GameWorld
 				return;
 			}
 
+			// disconnect if already logged in
+			const userFound = this.users.get(dbUser.id);
+			if (userFound !== undefined) this.close(userFound);
+
 			const user = new User(socket, dbUser, this);
 			try
 			{
