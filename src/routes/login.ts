@@ -2,6 +2,26 @@ import { compare } from 'bcrypt';
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import { sign } from 'jsonwebtoken';
 import { randomUUID } from 'node:crypto';
+import { constants } from '../utils/constants';
+
+const getWorldPopulations = async (isModerator: boolean, req: FastifyRequest) =>
+{
+	const populations = await req.fastify.prisma.worlds.findMany();
+	const obj = Object.create(null);
+	const maxPopulation = isModerator ? 5 : 6;
+
+	populations.forEach((world) =>
+	{
+		const maxUsers = req.fastify.configManager.data.worlds[world.id]?.maxUsers || 0;
+		const populationRatio = Math.ceil(world.population / Math.round(maxUsers / 5));
+
+		obj[world.id] = world.population >= maxUsers
+			? maxPopulation
+			: Math.max(populationRatio, 1);
+	});
+
+	return obj;
+};
 
 const postLogin = async (req: FastifyRequest<{ Body: { username: string; password: string; }; }>, reply: FastifyReply) =>
 {
@@ -47,9 +67,7 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 		success: true,
 		username: req.body.username,
 		key,
-		populations: {
-			Blizzard: 4, // TODO: finish population
-		},
+		populations: (await getWorldPopulations(user.rank >= constants.FIRST_MODERATOR_RANK, req)),
 	});
 };
 

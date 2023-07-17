@@ -1,5 +1,6 @@
 import { users } from '@prisma/client';
 import { DisconnectReason, Socket } from 'socket.io';
+import { constants } from '../utils/constants';
 import { pick } from '../utils/functions';
 import { Room } from './room/room';
 import { GameWorld } from './world';
@@ -65,6 +66,11 @@ export class User
 		y: this.roomData.y,
 		frame: this.roomData.frame,
 	});
+
+	get isModerator()
+	{
+		return this.dbUser.rank >= constants.FIRST_MODERATOR_RANK;
+	}
 
 	joinRoom = (roomId: number, x = 0, y = 0) =>
 	{
