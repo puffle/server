@@ -2,7 +2,7 @@ import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
 import { constants } from '../../utils/constants';
-import { GamePlugin } from '../templates/GamePlugin';
+import { GamePlugin } from '../GamePlugin';
 
 interface ISendPositionOrSnowballArgs { x: number; y: number; }
 interface ISendFrameArgs { set?: boolean; frame: number; }
@@ -38,7 +38,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 				required: ['frame'],
 				properties: {
 					set: { type: 'boolean', default: false, nullable: true },
-					frame: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_FRAME },
+					frame: { type: 'integer', minimum: 1, maximum: constants.limits.MAX_FRAME },
 				},
 			} as JSONSchemaType<ISendFrameArgs>)],
 		]);

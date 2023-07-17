@@ -1,7 +1,7 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
-import { GamePlugin } from '../templates/GamePlugin';
+import { GamePlugin } from '../GamePlugin';
 
 interface ISendMessageArgs { message: string; }
 interface ISendSafeArgs { safe: number; }

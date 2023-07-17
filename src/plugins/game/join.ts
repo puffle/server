@@ -2,7 +2,7 @@ import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
 import { constants } from '../../utils/constants';
-import { GamePlugin } from '../templates/GamePlugin';
+import { GamePlugin } from '../GamePlugin';
 
 interface IJoinRoomArgs { room: number; x: number; y: number; }
 
