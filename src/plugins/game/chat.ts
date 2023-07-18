@@ -123,7 +123,14 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (!user.isModerator) return;
 
 		const roomId = Number(args[0]);
-		if (Number.isNaN(roomId)) return;
+		if (Number.isNaN(roomId))
+		{
+			// if NaN, then the room arg is a string, so we use room name
+			const room = [...this.world.rooms.values()].find((r) => r.data.name === args[0]);
+			if (room !== undefined) user.joinRoom(room.data.id);
+
+			return;
+		}
 
 		user.joinRoom(roomId);
 	};
