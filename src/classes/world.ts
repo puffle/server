@@ -33,10 +33,10 @@ export class GameWorld
 				r.set(room.id, new Room({
 					id: room.id,
 					name: room.name,
-					member: room.member === 1,
+					member: room.member,
 					maxUsers: room.maxUsers,
-					game: room.game === 1,
-					spawn: room.spawn === 1,
+					game: room.game,
+					spawn: room.spawn,
 				}));
 			});
 
@@ -61,7 +61,7 @@ export class GameWorld
 		rooms,
 		tables,
 		waddles,
-	};
+	} as ICrumbs;
 	rooms: Map<number, Room>;
 
 	onMessage = (message: IActionMessage, user: User) =>

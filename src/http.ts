@@ -35,7 +35,6 @@ import { Database } from './managers/DatabaseManager';
 
 		fastify.setErrorHandler((error, req, reply) =>
 		{
-			// TODO: add custom error handling for invalid ajv schema
 			if (error instanceof CustomError)
 			{
 				reply.status(error.code).send({

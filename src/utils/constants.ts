@@ -3,6 +3,7 @@ export const constants = Object.freeze({
 		MAX_X: 1520,
 		MAX_Y: 960,
 		MAX_FRAME: 26,
+		MAX_COINS: 2147483647,
 	}),
 
 	FIRST_MODERATOR_RANK: 1,

@@ -29,16 +29,6 @@ interface IGamePlugin
 	schemas: Map<string, ValidateFunction<unknown>>;
 }
 
-interface IRoomData
-{
-	id: number;
-	name: string;
-	member: boolean;
-	maxUsers: number;
-	game: boolean;
-	spawn: boolean;
-}
-
 interface IUserSafeRoom
 {
 	id: number;
@@ -60,3 +50,72 @@ interface IUserSafeRoom
 
 type TUserSafe = Omit<IUserSafeRoom, 'x', 'y', 'frame'>;
 type TUserAnonymous = Omit<TUserSafe, 'joinTime'>;
+
+interface ICrumbs
+{
+	floorings: {
+		[id: number]: {
+			name: string;
+			cost: number;
+			patched: number;
+		};
+	};
+
+	furnitures: {
+		[id: number]: {
+			name: string;
+			type: number;
+			sort: number;
+			cost: number;
+			member: number;
+			bait: number;
+			patched: number;
+			max: number;
+		};
+	};
+
+	igloos: {
+		[id: number]: {
+			name: string;
+			cost: number;
+			patched: number;
+		};
+	};
+
+	items: {
+		[id: number]: {
+			name: string;
+			type: number;
+			cost: number;
+			member: number;
+			bait: number;
+			patched: number;
+			treasure: number;
+		};
+	};
+
+	rooms: {
+		id: number;
+		name: string;
+		member: number;
+		maxUsers: number;
+		game: number;
+		spawn: number;
+	}[];
+
+	tables: {
+		id: number;
+		roomId: number;
+		game: string;
+	}[];
+
+	waddles: {
+		id: number;
+		roomId: number;
+		seats: number;
+		game: string;
+	}[];
+
+}
+
+type TRoomData = ICrumbs['rooms'][0];

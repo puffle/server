@@ -1,5 +1,7 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, User as PrismaUser } from '@prisma/client';
+import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
+import { Database } from '../managers/DatabaseManager';
 import { constants } from '../utils/constants';
 import { pick } from '../utils/functions';
 import { Room } from './room/room';
@@ -97,16 +99,33 @@ export class User
 		const room = this.world.rooms.get(roomId);
 		if (room === undefined) return;
 
-		// TODO: add proper checks
+		if (!this.isModerator && room.isFull)
+		{
+			this.send('error', { error: 'Sorry this room is currently full' }); // TODO: migrate to error code
+			return;
+		}
 
 		this.room?.remove(this);
 
-		this.roomData.x = x;
-		this.roomData.y = y;
+		this.roomData.x = clamp(x, 0, constants.limits.MAX_X);
+		this.roomData.y = clamp(y, 0, constants.limits.MAX_Y);
 		this.roomData.frame = 1;
 
 		room.add(this);
 	};
 
 	leaveRoom = (roomId: number) => this.world.rooms.get(roomId)?.remove(this);
+
+	dbUpdate = async (data: Partial<PrismaUser>) => Database.user.update({ where: { id: this.dbUser.id }, data });
+
+	updateCoins = async (coins: number, gameOver = false) =>
+	{
+		const clampedCoins = clamp(this.dbUser.coins + coins, 0, constants.limits.MAX_COINS);
+
+		this.dbUpdate({
+			coins: clampedCoins,
+		});
+
+		if (gameOver) this.send('game_over', { coins: clampedCoins });
+	};
 }

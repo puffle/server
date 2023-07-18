@@ -2,14 +2,14 @@ import { User } from '../user';
 
 export class Room
 {
-	constructor(data: IRoomData)
+	constructor(data: TRoomData)
 	{
 		this.data = data;
 		this.users = new Map();
 		this.socketRoom = 'room' + this.data.id;
 	}
 
-	data: IRoomData;
+	data: TRoomData;
 	users: Map<number, IUserSafeRoom>;
 	socketRoom: string;
 
@@ -26,9 +26,7 @@ export class Room
 	add = (user: User) =>
 	{
 		user.room = this;
-
 		this.users.set(user.dbUser.id, user.getSafeRoom);
-
 		user.socket.join(this.socketRoom);
 
 		if (this.data.game)
@@ -48,12 +46,13 @@ export class Room
 	remove = (user: User) =>
 	{
 		user.room = undefined;
+		user.socket.leave(this.socketRoom);
 
 		if (!this.data.game) this.send(user, 'remove_player', { user: user.dbUser.id });
-		user.socket.leave(this.socketRoom);
 		this.users.delete(user.dbUser.id);
 	};
 
+	// TODO: restore original methods
 	send = (user: User, action: string, args: TActionMessageArgs) =>
 	{
 		user.sendSocketRoom(this.socketRoom, action, args);
