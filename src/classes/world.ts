@@ -95,7 +95,20 @@ export class GameWorld
 
 			// TODO: add the same checks as login (perma ban, etc)
 
-			const dbUser = await Database.user.findUnique({ where: { username: auth.username }, include: { ban_userId: true } });
+			const dbUser = await Database.user.findUnique({
+				where: { username: auth.username },
+				include: {
+					ban_userId: {
+						take: 1,
+						where: {
+							expires: { gt: new Date() },
+						},
+						orderBy: {
+							expires: 'desc',
+						},
+					},
+				},
+			});
 
 			if (dbUser == null)
 			{

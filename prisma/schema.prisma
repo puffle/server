@@ -15,33 +15,33 @@ model AuthToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, selector])
-  @@map(name: "auth_tokens")
+  @@map("auth_tokens")
 }
 
 model Ban {
   id          Int      @id @default(autoincrement())
   userId      Int
-  issued      DateTime @default(now()) @db.Timestamp(0)
   expires     DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.Timestamp(0)
   moderatorId Int?
   message     String?  @db.VarChar(60)
-  user        User     @relation("ban_userId", fields: [userId], references: [id], onDelete: Cascade)
+  issued      DateTime @default(now()) @db.Timestamp(0)
   moderator   User?    @relation("ban_moderatorId", fields: [moderatorId], references: [id], onUpdate: SetNull)
+  user        User     @relation("ban_userId", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([moderatorId])
   @@index([userId])
-  @@map(name: "bans")
+  @@map("bans")
 }
 
 model Buddy {
   userId  Int
   buddyId Int
-  user    User @relation("buddy_userId", fields: [userId], references: [id], onDelete: Cascade)
   buddy   User @relation("buddy_buddyId", fields: [buddyId], references: [id], onDelete: Cascade)
+  user    User @relation("buddy_userId", fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, buddyId])
   @@index([buddyId])
-  @@map(name: "buddies")
+  @@map("buddies")
 }
 
 model FurnitureInventory {
@@ -51,7 +51,7 @@ model FurnitureInventory {
   user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itemId])
-  @@map(name: "furniture_inventories")
+  @@map("furniture_inventories")
 }
 
 model Furniture {
@@ -65,7 +65,7 @@ model Furniture {
   user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@map(name: "furnitures")
+  @@map("furnitures")
 }
 
 model IglooInventory {
@@ -74,7 +74,7 @@ model IglooInventory {
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, iglooId])
-  @@map(name: "igloo_inventories")
+  @@map("igloo_inventories")
 }
 
 model Igloo {
@@ -86,18 +86,18 @@ model Igloo {
   locked   Boolean @default(true)
   user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map(name: "igloos")
+  @@map("igloos")
 }
 
 model Ignore {
   userId      Int
   ignoreId    Int
-  user        User @relation("ignore_userId", fields: [userId], references: [id], onDelete: Cascade)
   ignoredUser User @relation("ignore_ignoreId", fields: [ignoreId], references: [id], onDelete: Cascade)
+  user        User @relation("ignore_userId", fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, ignoreId])
   @@index([ignoreId])
-  @@map(name: "ignores")
+  @@map("ignores")
 }
 
 model Inventory {
@@ -106,7 +106,7 @@ model Inventory {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itemId])
-  @@map(name: "inventories")
+  @@map("inventories")
 }
 
 model User {
@@ -115,7 +115,7 @@ model User {
   email                 String?              @db.VarChar(254)
   password              String               @db.Char(60)
   loginKey              String?              @db.Text
-  rank                  Int                  @default(0)
+  rank                  Int                  @default(0) @db.TinyInt()
   permaBan              Boolean              @default(false)
   joinTime              DateTime             @default(now()) @db.Timestamp(0)
   coins                 Int                  @default(500)
@@ -129,24 +129,24 @@ model User {
   photo                 Int                  @default(0)
   flag                  Int                  @default(0)
   auth_tokens           AuthToken[]
+  ban_moderatorId       Ban[]                @relation("ban_moderatorId")
+  ban_userId            Ban[]                @relation("ban_userId")
+  buddy_buddyId         Buddy[]              @relation("buddy_buddyId")
+  buddy_userId          Buddy[]              @relation("buddy_userId")
   furniture_inventories FurnitureInventory[]
   furnitures            Furniture[]
   igloo_inventories     IglooInventory[]
   igloos                Igloo?
-  inventories           Inventory[]
-  ban_userId            Ban[]                @relation("ban_userId")
-  ban_moderatorId       Ban[]                @relation("ban_moderatorId")
-  buddy_userId          Buddy[]              @relation("buddy_userId")
-  buddy_buddyId         Buddy[]              @relation("buddy_buddyId")
-  ignore_userId         Ignore[]             @relation("ignore_userId")
   ignore_ignoreId       Ignore[]             @relation("ignore_ignoreId")
+  ignore_userId         Ignore[]             @relation("ignore_userId")
+  inventories           Inventory[]
 
-  @@map(name: "users")
+  @@map("users")
 }
 
 model World {
   id         String @id @db.VarChar(100)
   population Int    @default(0) @db.SmallInt
 
-  @@map(name: "worlds")
+  @@map("worlds")
 }
