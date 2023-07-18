@@ -8,7 +8,7 @@ datasource db {
 }
 
 model AuthToken {
-  userId    Int
+  userId    Int      @db.UnsignedInt
   selector  String   @db.Char(36)
   validator String   @db.Char(60)
   timestamp DateTime @default(now()) @db.Timestamp(0)
@@ -19,10 +19,10 @@ model AuthToken {
 }
 
 model Ban {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  expires     DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.Timestamp(0)
-  moderatorId Int?
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId      Int      @db.UnsignedInt
+  expires     DateTime @db.Timestamp(0)
+  moderatorId Int?     @db.UnsignedInt
   message     String?  @db.VarChar(60)
   issued      DateTime @default(now()) @db.Timestamp(0)
   moderator   User?    @relation("ban_moderatorId", fields: [moderatorId], references: [id], onUpdate: SetNull)
@@ -34,8 +34,8 @@ model Ban {
 }
 
 model Buddy {
-  userId  Int
-  buddyId Int
+  userId  Int  @db.UnsignedInt
+  buddyId Int  @db.UnsignedInt
   buddy   User @relation("buddy_buddyId", fields: [buddyId], references: [id], onDelete: Cascade)
   user    User @relation("buddy_userId", fields: [userId], references: [id], onDelete: Cascade)
 
@@ -45,9 +45,9 @@ model Buddy {
 }
 
 model FurnitureInventory {
-  userId   Int
-  itemId   Int
-  quantity Int
+  userId   Int  @db.UnsignedInt
+  itemId   Int  @db.UnsignedInt
+  quantity Int  @db.UnsignedInt
   user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itemId])
@@ -55,13 +55,13 @@ model FurnitureInventory {
 }
 
 model Furniture {
-  id          Int  @id @default(autoincrement())
-  userId      Int
-  furnitureId Int
-  x           Int  @default(0) @db.SmallInt
-  y           Int  @default(0) @db.SmallInt
-  rotation    Int  @default(1) @db.SmallInt
-  frame       Int  @default(1) @db.SmallInt
+  id          Int  @id @default(autoincrement()) @db.UnsignedInt
+  userId      Int  @db.UnsignedInt
+  furnitureId Int  @db.UnsignedInt
+  x           Int  @default(0) @db.UnsignedSmallInt
+  y           Int  @default(0) @db.UnsignedSmallInt
+  rotation    Int  @default(1) @db.UnsignedSmallInt
+  frame       Int  @default(1) @db.UnsignedSmallInt
   user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -69,8 +69,8 @@ model Furniture {
 }
 
 model IglooInventory {
-  userId  Int
-  iglooId Int
+  userId  Int  @db.UnsignedInt
+  iglooId Int  @db.UnsignedInt
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, iglooId])
@@ -78,11 +78,11 @@ model IglooInventory {
 }
 
 model Igloo {
-  userId   Int     @id
-  type     Int     @default(1)
-  flooring Int     @default(0)
-  music    Int     @default(0)
-  location Int     @default(1)
+  userId   Int     @id @db.UnsignedInt
+  type     Int     @default(1) @db.UnsignedInt
+  flooring Int     @default(0) @db.UnsignedInt
+  music    Int     @default(0) @db.UnsignedInt
+  location Int     @default(1) @db.UnsignedInt
   locked   Boolean @default(true)
   user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -90,8 +90,8 @@ model Igloo {
 }
 
 model Ignore {
-  userId      Int
-  ignoreId    Int
+  userId      Int  @db.UnsignedInt
+  ignoreId    Int  @db.UnsignedInt
   ignoredUser User @relation("ignore_ignoreId", fields: [ignoreId], references: [id], onDelete: Cascade)
   user        User @relation("ignore_userId", fields: [userId], references: [id], onDelete: Cascade)
 
@@ -101,8 +101,8 @@ model Ignore {
 }
 
 model Inventory {
-  userId Int
-  itemId Int
+  userId Int  @db.UnsignedInt
+  itemId Int  @db.UnsignedInt
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itemId])
@@ -110,24 +110,24 @@ model Inventory {
 }
 
 model User {
-  id                    Int                  @id @default(autoincrement())
-  username              String               @unique(map: "username") @db.VarChar(12)
+  id                    Int                  @id @default(autoincrement()) @db.UnsignedInt
+  username              String               @unique @db.VarChar(12)
   email                 String?              @db.VarChar(254)
   password              String               @db.Char(60)
   loginKey              String?              @db.Text
-  rank                  Int                  @default(0) @db.TinyInt()
+  rank                  Int                  @default(0) @db.UnsignedTinyInt
   permaBan              Boolean              @default(false)
   joinTime              DateTime             @default(now()) @db.Timestamp(0)
-  coins                 Int                  @default(500)
-  head                  Int                  @default(0)
-  face                  Int                  @default(0)
-  neck                  Int                  @default(0)
-  body                  Int                  @default(0)
-  hand                  Int                  @default(0)
-  feet                  Int                  @default(0)
-  color                 Int                  @default(1)
-  photo                 Int                  @default(0)
-  flag                  Int                  @default(0)
+  coins                 Int                  @default(500) @db.UnsignedInt
+  head                  Int                  @default(0) @db.UnsignedInt
+  face                  Int                  @default(0) @db.UnsignedInt
+  neck                  Int                  @default(0) @db.UnsignedInt
+  body                  Int                  @default(0) @db.UnsignedInt
+  hand                  Int                  @default(0) @db.UnsignedInt
+  feet                  Int                  @default(0) @db.UnsignedInt
+  color                 Int                  @default(1) @db.UnsignedInt
+  photo                 Int                  @default(0) @db.UnsignedInt
+  flag                  Int                  @default(0) @db.UnsignedInt
   auth_tokens           AuthToken[]
   ban_moderatorId       Ban[]                @relation("ban_moderatorId")
   ban_userId            Ban[]                @relation("ban_userId")
@@ -146,7 +146,7 @@ model User {
 
 model World {
   id         String @id @db.VarChar(100)
-  population Int    @default(0) @db.SmallInt
+  population Int    @default(0) @db.UnsignedSmallInt
 
   @@map("worlds")
 }
