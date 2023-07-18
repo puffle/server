@@ -122,6 +122,7 @@ export class User
 	{
 		const clampedCoins = clamp(this.dbUser.coins + coins, 0, constants.limits.MAX_COINS);
 
+		this.dbUser.coins = clampedCoins;
 		this.dbUpdate({
 			coins: clampedCoins,
 		});

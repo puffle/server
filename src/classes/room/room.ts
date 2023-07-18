@@ -10,23 +10,33 @@ export class Room
 	}
 
 	data: TRoomData;
-	users: Map<number, IUserSafeRoom>;
+	users: Map<number, User>;
 	socketRoom: string;
 
-	get userValues()
+	get userValuesUnsafe()
 	{
 		return [...this.users.values()];
 	}
 
+	get userValues()
+	{
+		return this.userValuesUnsafe.map((user) => user.getSafeRoom);
+	}
+
+	get population()
+	{
+		return this.users.size;
+	}
+
 	get isFull()
 	{
-		return this.users.size >= this.data.maxUsers;
+		return this.population >= this.data.maxUsers;
 	}
 
 	add = (user: User) =>
 	{
 		user.room = this;
-		this.users.set(user.dbUser.id, user.getSafeRoom);
+		this.users.set(user.dbUser.id, user);
 		user.socket.join(this.socketRoom);
 
 		if (this.data.game)
@@ -52,9 +62,10 @@ export class Room
 		this.users.delete(user.dbUser.id);
 	};
 
-	// TODO: restore original methods
-	send = (user: User, action: string, args: TActionMessageArgs) =>
+	sendSocketRoom = (user: User, action: string, args: TActionMessageArgs = {}) => user.sendSocketRoom(this.socketRoom, action, args);
+	send = (user: User, action: string, args: TActionMessageArgs = {}, filter = [user] /* , excludeIgnored = false */) =>
 	{
-		user.sendSocketRoom(this.socketRoom, action, args);
+		this.userValuesUnsafe.filter((u) => !filter.includes(u))
+			.forEach((u) => u.send(action, args));
 	};
 }
