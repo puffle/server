@@ -40,8 +40,8 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 	{
 		user.send('load_player', {
 			user: user.getSafe,
-			rank: user.dbUser.rank,
-			coins: user.dbUser.coins,
+			rank: user.data.rank,
+			coins: user.data.coins,
 			// TODO: finish this
 			buddies: [],
 			ignores: [],

@@ -37,7 +37,7 @@ export class Room
 	add = (user: User) =>
 	{
 		user.room = this;
-		this.users.set(user.dbUser.id, user);
+		this.users.set(user.data.id, user);
 		user.socket.join(this.socketRoom);
 
 		if (this.data.game)
@@ -59,8 +59,8 @@ export class Room
 		user.room = undefined;
 		user.socket.leave(this.socketRoom);
 
-		if (!this.data.game) this.send(user, 'remove_player', { user: user.dbUser.id });
-		this.users.delete(user.dbUser.id);
+		if (!this.data.game) this.send(user, 'remove_player', { user: user.data.id });
+		this.users.delete(user.data.id);
 	};
 
 	sendSocketRoom = (user: User, action: string, args: TActionMessageArgs = {}) => user.sendSocketRoom(this.socketRoom, action, args);

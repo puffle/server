@@ -20,14 +20,14 @@ export class User
 	{
 		this.socket = socket;
 		this.world = world;
-		this.dbUser = dbUser;
+		this.data = dbUser;
 		this.address = getSocketAddress(socket);
 	}
 
 	socket: Socket;
 	address: string;
 	world: GameWorld;
-	dbUser: TDbUser;
+	data: TDbUser;
 
 	room: Room | undefined;
 	roomData = {
@@ -36,7 +36,7 @@ export class User
 		frame: 1,
 	};
 
-	onDisconnectPre = (reason: DisconnectReason) => console.log(`[${this.world.id}] Disconnect from: ${this.dbUser.username} (${this.socket.id}), reason: ${reason}`);
+	onDisconnectPre = (reason: DisconnectReason) => console.log(`[${this.world.id}] Disconnect from: ${this.data.username} (${this.socket.id}), reason: ${reason}`);
 
 	onDisconnect = async (reason: DisconnectReason /* , description: unknown */) =>
 	{
@@ -49,6 +49,8 @@ export class User
 		this.world.onMessage(message, this);
 	};
 
+	close = async () => this.socket.disconnect(true);
+
 	send = (action: string, args: TActionMessageArgs = {}) => this.socket.send({ action, args });
 	sendSocketRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
 
@@ -59,7 +61,7 @@ export class User
 	get getAnonymous(): TUserAnonymous
 	{
 		return pick(
-			this.dbUser,
+			this.data,
 			'id',
 			'username',
 			'head',
@@ -78,7 +80,7 @@ export class User
 	{
 		return {
 			...this.getAnonymous,
-			joinTime: this.dbUser.joinTime,
+			joinTime: this.data.joinTime,
 		};
 	}
 
@@ -92,7 +94,7 @@ export class User
 
 	get isModerator()
 	{
-		return this.dbUser.rank >= constants.FIRST_MODERATOR_RANK;
+		return this.data.rank >= constants.FIRST_MODERATOR_RANK;
 	}
 
 	joinRoom = (roomId: number, x = 0, y = 0) =>
@@ -119,14 +121,14 @@ export class User
 
 	leaveRoom = (roomId: number) => this.world.rooms.get(roomId)?.remove(this);
 
-	dbUpdate = async (data: Partial<PrismaUser>) => Database.user.update({ where: { id: this.dbUser.id }, data });
+	dbUpdate = async (data: Partial<PrismaUser>) => Database.user.update({ where: { id: this.data.id }, data });
 
 	updateCoins = async (coins: number, gameOver = false) =>
 	{
-		const clampedCoins = clamp(this.dbUser.coins + coins, 0, constants.limits.MAX_COINS);
+		const clampedCoins = clamp(this.data.coins + coins, 0, constants.limits.MAX_COINS);
 
-		this.dbUser.coins = clampedCoins;
-		this.dbUpdate({
+		this.data.coins = clampedCoins;
+		await this.dbUpdate({
 			coins: clampedCoins,
 		});
 

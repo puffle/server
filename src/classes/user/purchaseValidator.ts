@@ -25,7 +25,7 @@ export class PurchaseValidator
 
 		if (item === undefined) return false;
 
-		if (item.cost > this.user.dbUser.coins)
+		if (item.cost > this.user.data.coins)
 		{
 			this.user.send('error', { error: 'You need more coins.' });
 			return false;

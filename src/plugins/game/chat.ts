@@ -87,11 +87,11 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			return;
 		}
 
-		user.sendRoom('send_message', { id: user.dbUser.id, ...args });
+		user.sendRoom('send_message', { id: user.data.id, ...args });
 	};
 
-	sendSafe = (args: ISendSafeArgs, user: User) => this.schemas.get('sendSafe')!(args) && user.sendRoom('send_safe', { id: user.dbUser.id, ...args });
-	sendEmote = (args: ISendEmoteArgs, user: User) => this.schemas.get('sendEmote')!(args) && user.sendRoom('send_emote', { id: user.dbUser.id, ...args });
+	sendSafe = (args: ISendSafeArgs, user: User) => this.schemas.get('sendSafe')!(args) && user.sendRoom('send_safe', { id: user.data.id, ...args });
+	sendEmote = (args: ISendEmoteArgs, user: User) => this.schemas.get('sendEmote')!(args) && user.sendRoom('send_emote', { id: user.data.id, ...args });
 
 	processCommand = (message: string, user: User) =>
 	{
@@ -107,7 +107,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 	// commands
 
 	cmdUsers = (args: string[], user: User) => user.send('error', { error: `Users online: ${this.world.population}` });
-	cmdId = (args: string[], user: User) => user.send('error', { error: `Your ID: ${user.dbUser.id}` }); // eslint-disable-line class-methods-use-this
+	cmdId = (args: string[], user: User) => user.send('error', { error: `Your ID: ${user.data.id}` }); // eslint-disable-line class-methods-use-this
 	cmdRoom = (args: string[], user: User) => user.send('error', { error: `Room: ${user.room?.data.name} (${user.room?.data.id})\nUsers: ${user.room?.population}` }); // eslint-disable-line class-methods-use-this
 
 	// moderator commands

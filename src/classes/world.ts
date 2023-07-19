@@ -73,11 +73,11 @@ export class GameWorld
 	{
 		if (!MyAjv.validators.actionMessage(message))
 		{
-			console.log(`[${this.id}] Received [INVALID]: ${JSON.stringify(message)} from ${user.dbUser.username} (${user.socket.id})`);
+			console.log(`[${this.id}] Received [INVALID]: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
 			return;
 		}
 
-		console.log(`[${this.id}] Received: ${JSON.stringify(message)} from ${user.dbUser.username} (${user.socket.id})`);
+		console.log(`[${this.id}] Received: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
 		this.events?.emit(message.action, message.args, user);
 	};
 
@@ -123,20 +123,22 @@ export class GameWorld
 
 			// disconnect if already logged in
 			const userFound = this.users.get(dbUser.id);
-			if (userFound !== undefined) this.close(userFound);
+			if (userFound !== undefined) userFound.close();
 
 			const user = new User(socket, dbUser, this);
 			try
 			{
-				this.users.set(user.dbUser.id, user);
+				this.users.set(user.data.id, user);
 				socket.data = user;
 				socket.join(constants.JOINEDUSERS_ROOM); // broadcast purposes
 				socket.on('disconnect', user.onDisconnect);
 				socket.on('message', user.onMessage);
-				this.updatePopulation();
+				await this.updatePopulation();
 			}
 			catch (err)
 			{
+				// we want to call GameWorld.close() instead of User.close() because
+				// an error can happen before setting the "disconnect" listener
 				this.close(user);
 			}
 
@@ -148,13 +150,13 @@ export class GameWorld
 		}
 	};
 
-	close = (user: User) =>
+	close = async (user: User) =>
 	{
 		user.room?.remove(user);
 
 		this.closeSocket(user.socket);
-		this.users.delete(user.dbUser.id);
-		this.updatePopulation();
+		this.users.delete(user.data.id);
+		await this.updatePopulation();
 	};
 
 	// eslint-disable-next-line class-methods-use-this
@@ -168,6 +170,12 @@ export class GameWorld
 		return this.users.size;
 	}
 
+	/**
+	 * Updates world's population
+	 * @warning It should be always awaited to prevent race conditions
+	 * @async
+	 * @returns {Promise}
+	 */
 	updatePopulation = async () => Database.world.upsert({
 		where: { id: this.id },
 		update: { population: this.population },
