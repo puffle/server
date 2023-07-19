@@ -71,6 +71,7 @@ interface ICrumbs
 			bait: number;
 			patched: number;
 			max: number;
+			fps?: number;
 		};
 	};
 
