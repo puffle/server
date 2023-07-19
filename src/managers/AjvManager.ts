@@ -6,11 +6,14 @@ import { loginAuthSchema } from '../utils/schemas/loginAuth';
 
 export class AjvManager extends Ajv
 {
+	initialized = false;
 	validators = {
 		loginAuth: this.compile(loginAuthSchema),
 		gameAuth: this.compile(gameAuthSchema),
 		actionMessage: this.compile(actionMessageSchema),
 	};
+
+	initialize = () => { this.initialized = true; };
 }
 
 export const MyAjv = new AjvManager({

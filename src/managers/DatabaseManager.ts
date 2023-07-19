@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 export class DatabaseManager extends PrismaClient
 {
+	initialized = false;
 	findAnonymousUser = async (id: number) => this.user.findUnique({
 		where: { id },
 		select: {
@@ -19,7 +20,11 @@ export class DatabaseManager extends PrismaClient
 		},
 	});
 
-	Initialize = async () => this.$connect();
+	Initialize = async () =>
+	{
+		await this.$connect();
+		this.initialized = true;
+	};
 }
 
 export const Database = new DatabaseManager();

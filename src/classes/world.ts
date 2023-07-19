@@ -13,6 +13,7 @@ import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 import { PluginManager } from '../managers/PluginManager';
 import { constants } from '../utils/constants';
+import { getSocketAddress } from '../utils/functions';
 import { Room } from './room/room';
 import { User } from './user';
 
@@ -22,6 +23,7 @@ export class GameWorld
 	{
 		this.id = id;
 		this.server = server;
+		this.maxUsers = Config.data.worlds[id]?.maxUsers;
 
 		this.events = new EventEmitter({ captureRejections: true });
 		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
@@ -64,6 +66,7 @@ export class GameWorld
 		waddles,
 	} as ICrumbs;
 	rooms: Map<number, Room>;
+	maxUsers: number | undefined;
 
 	onMessage = (message: IActionMessage, user: User) =>
 	{
@@ -77,7 +80,7 @@ export class GameWorld
 		this.events?.emit(message.action, message.args, user);
 	};
 
-	onConnectionPre = (socket: Socket) => console.log(`[${this.id}] New connection from: ${socket.id} (${socket.handshake.address})`);
+	onConnectionPre = (socket: Socket) => console.log(`[${this.id}] New connection from: ${socket.id} (${getSocketAddress(socket)})`);
 
 	onConnection = async (socket: Socket) =>
 	{

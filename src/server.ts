@@ -2,8 +2,10 @@ import { CustomError } from '@n0bodysec/ts-utils';
 import Fastify from 'fastify';
 import { Server } from 'socket.io';
 import { GameWorld } from './classes/world';
+import { MyAjv } from './managers/AjvManager';
 import { Config } from './managers/ConfigManager';
 import { Database } from './managers/DatabaseManager';
+import { constants } from './utils/constants';
 
 (async () =>
 {
@@ -13,8 +15,17 @@ import { Database } from './managers/DatabaseManager';
 
 	try
 	{
+		const worldName = process.argv.slice(2)[0];
+
+		MyAjv.initialize();
 		await Config.Initialize();
 		await Database.Initialize();
+
+		if (!MyAjv.initialized || !Config.initialized || !Database.initialized)
+		{
+			console.error(`[${worldName ?? 'SERVER'}] ${constants.PROJECT_NAME} is not properly initialized. Exiting...`);
+			process.exit(1);
+		}
 
 		const io = new Server(fastify.server, {
 			path: '/',
@@ -51,8 +62,6 @@ import { Database } from './managers/DatabaseManager';
 		await fastify.ready();
 
 		// TODO: rewrite this, add proper error handling
-		const worldName = process.argv.slice(2)[0];
-
 		if (worldName !== undefined)
 		{
 			if (Config.data.worlds[worldName] === undefined || Config.data.worlds[worldName]?.host === undefined || Config.data.worlds[worldName]?.port === undefined) return;

@@ -3,8 +3,10 @@ import ajvErrors from 'ajv-errors';
 import ajvKeywords from 'ajv-keywords';
 import Fastify from 'fastify';
 import { join } from 'node:path';
+import { MyAjv } from './managers/AjvManager';
 import { Config } from './managers/ConfigManager';
 import { Database } from './managers/DatabaseManager';
+import { constants } from './utils/constants';
 
 (async () =>
 {
@@ -20,8 +22,15 @@ import { Database } from './managers/DatabaseManager';
 
 	try
 	{
+		MyAjv.initialize();
 		await Config.Initialize();
 		await Database.Initialize();
+
+		if (!MyAjv.initialized || !Config.initialized || !Database.initialized)
+		{
+			console.error(`[HTTP] ${constants.PROJECT_NAME} is not properly initialized. Exiting...`);
+			process.exit(1);
+		}
 
 		fastify.addHook('onClose', async () => Database.$disconnect());
 		fastify.register(import('@fastify/cors'));

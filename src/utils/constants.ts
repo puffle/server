@@ -1,4 +1,6 @@
 export const constants = Object.freeze({
+	PROJECT_NAME: 'Puffle',
+
 	limits: Object.freeze({
 		MAX_X: 1520,
 		MAX_Y: 960,

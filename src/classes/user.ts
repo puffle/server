@@ -3,7 +3,7 @@ import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
 import { Database } from '../managers/DatabaseManager';
 import { constants } from '../utils/constants';
-import { pick } from '../utils/functions';
+import { getSocketAddress, pick } from '../utils/functions';
 import { Room } from './room/room';
 import { GameWorld } from './world';
 
@@ -20,9 +20,11 @@ export class User
 		this.socket = socket;
 		this.world = world;
 		this.dbUser = dbUser;
+		this.address = getSocketAddress(socket);
 	}
 
 	socket: Socket;
+	address: string;
 	world: GameWorld;
 	dbUser: TDbUser;
 
