@@ -90,6 +90,7 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 			password: true,
 			permaBan: true,
 			rank: true,
+			auth_tokens: true,
 			ban_userId: {
 				take: 1,
 				where: {

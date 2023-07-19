@@ -24,7 +24,7 @@ export class GameWorld
 	{
 		this.id = id;
 		this.server = server;
-		this.maxUsers = Config.data.worlds[id]?.maxUsers;
+		this.maxUsers = Config.data.worlds[id]?.maxUsers ?? constants.limits.MAX_USERS;
 
 		this.events = new EventEmitter({ captureRejections: true });
 		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
@@ -67,7 +67,7 @@ export class GameWorld
 		waddles,
 	} as ICrumbs;
 	rooms: Map<number, Room>;
-	maxUsers: number | undefined;
+	maxUsers: number;
 
 	onMessage = (message: IActionMessage, user: User) =>
 	{
@@ -98,11 +98,10 @@ export class GameWorld
 
 			verify(auth.key, Config.data.crypto.secret);
 
-			// TODO: add the same checks as login (perma ban, etc)
-
 			const dbUser = await Database.user.findUnique({
 				where: { username: auth.username },
 				include: {
+					auth_tokens: true,
 					ban_userId: {
 						take: 1,
 						where: {
@@ -115,7 +114,9 @@ export class GameWorld
 				},
 			});
 
-			if (dbUser == null)
+			if (dbUser == null // invalid user
+				|| (dbUser.rank < constants.FIRST_MODERATOR_RANK && this.population >= this.maxUsers) // max users reached
+				|| (dbUser.permaBan || dbUser.ban_userId[0] !== undefined)) // banned user
 			{
 				this.closeSocket(socket);
 				return;

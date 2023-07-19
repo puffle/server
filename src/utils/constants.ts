@@ -6,6 +6,7 @@ export const constants = Object.freeze({
 		MAX_Y: 960,
 		MAX_FRAME: 26,
 		MAX_COINS: 9999999,
+		MAX_USERS: 300, // fallback in case the loaded config world's maxUser is undefined
 	}),
 
 	FIRST_MODERATOR_RANK: 1,

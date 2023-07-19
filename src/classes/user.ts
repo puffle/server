@@ -10,7 +10,8 @@ import { GameWorld } from './world';
 
 export type TDbUser = Prisma.UserGetPayload<{
 	include: {
-		ban_userId: true;
+		auth_tokens: true,
+		ban_userId: true,
 	};
 }>;
 

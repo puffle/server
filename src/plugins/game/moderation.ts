@@ -65,10 +65,8 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	{
 		const expires = new Date(Date.now() + ((hours || 24) * 60 * 60 * 1000));
 
-		// TODO: add ban count logic
-		const count = await Database.ban.count({ where: { userId } });
-
 		// 5th ban is a permanent ban
+		const count = await Database.ban.count({ where: { userId } });
 		if (count >= 4) await Database.user.update({ where: { id: userId }, data: { permaBan: true } });
 
 		await Database.ban.create({
