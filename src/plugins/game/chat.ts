@@ -30,6 +30,8 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			['ac', this.cmdCoins],
 			['jr', this.cmdJoinRoom],
 			['rooms', this.cmdPopulation],
+			['bc', this.cmdBroadcast],
+			['rbc', this.cmdBroadcastRoom],
 		]);
 
 		this.events = {
@@ -147,4 +149,13 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 
 		user.send('error', { error: 'Users\n\n' + formattedString });
 	};
+
+	cmdBroadcast = (args: string[], user: User) => user.isModerator // eslint-disable-line class-methods-use-this
+		&& typeof args[0] === 'string'
+		&& user.sendSocketRoom(constants.JOINEDUSERS_ROOM, 'error', { error: 'Broadcast:\n\n' + args[0] });
+
+	cmdBroadcastRoom = (args: string[], user: User) => user.isModerator // eslint-disable-line class-methods-use-this
+		&& typeof args[0] === 'string'
+		&& user.room !== undefined
+		&& user.sendSocketRoom(user.room.socketRoom, 'error', { error: 'Broadcast:\n\n' + args[0] });
 }

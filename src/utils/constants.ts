@@ -8,4 +8,5 @@ export const constants = Object.freeze({
 
 	FIRST_MODERATOR_RANK: 1,
 	COMMANDS_PREFIX: '!',
+	JOINEDUSERS_ROOM: 'joinedUsers',
 });

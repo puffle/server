@@ -12,6 +12,7 @@ import { MyAjv } from '../managers/AjvManager';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 import { PluginManager } from '../managers/PluginManager';
+import { constants } from '../utils/constants';
 import { Room } from './room/room';
 import { User } from './user';
 
@@ -125,7 +126,7 @@ export class GameWorld
 			{
 				this.users.set(user.dbUser.id, user);
 				socket.data = user;
-				socket.join('joinedUsers'); // broadcast purposes
+				socket.join(constants.JOINEDUSERS_ROOM); // broadcast purposes
 				socket.on('disconnect', user.onDisconnect);
 				socket.on('message', user.onMessage);
 				this.updatePopulation();
