@@ -2,6 +2,7 @@ import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
 import { MyAjv } from '../../managers/AjvManager';
+import { IGamePlugin } from '../../types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 

@@ -1,4 +1,5 @@
 import { JSONSchemaType } from 'ajv';
+import { IActionMessage } from '../../types';
 
 export const actionMessageSchema: JSONSchemaType<IActionMessage> = {
 	type: 'object',

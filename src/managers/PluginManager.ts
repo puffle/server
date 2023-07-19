@@ -1,6 +1,7 @@
 import { readdir } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import { GameWorld } from '../classes/world';
+import { IGamePlugin } from '../types';
 
 export class PluginManager
 {

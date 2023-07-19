@@ -1,3 +1,4 @@
+import { ICrumbs } from '../../types';
 import { User } from '../user';
 
 export class PurchaseValidator

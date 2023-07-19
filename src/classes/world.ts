@@ -12,6 +12,7 @@ import { MyAjv } from '../managers/AjvManager';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 import { PluginManager } from '../managers/PluginManager';
+import { IActionMessage, ICrumbs, IGameAuth } from '../types';
 import { constants } from '../utils/constants';
 import { getSocketAddress } from '../utils/functions';
 import { Room } from './room/room';

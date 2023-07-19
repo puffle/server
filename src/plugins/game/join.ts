@@ -3,6 +3,7 @@ import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
 import { MyAjv } from '../../managers/AjvManager';
 import { Config } from '../../managers/ConfigManager';
+import { IGamePlugin, TActionMessageArgs } from '../../types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 

@@ -1,19 +1,22 @@
-type TActionMessageArgs = Record<string, unknown>;
+import { ValidateFunction } from 'ajv';
+import { User } from './classes/user';
 
-interface IActionMessage
+export type TActionMessageArgs = Record<string, unknown>;
+
+export interface IActionMessage
 {
 	action: string;
 	args: TActionMessageArgs;
 }
 
-interface ILoginAuth
+export interface ILoginAuth
 {
 	username: string;
 	password: string;
 	method: 'password' | 'token';
 }
 
-interface IGameAuth
+export interface IGameAuth
 {
 	username: string;
 	key: string;
@@ -21,19 +24,18 @@ interface IGameAuth
 	token?: string;
 }
 
-interface IGamePlugin
+export interface IGamePlugin
 {
 	pluginName: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	events: Record<string, (args: TActionMessageArgs, user: any) => void>;
+	events: Record<string, (args: TActionMessageArgs, user: User) => void>;
 	schemas: Map<string, ValidateFunction<unknown>>;
 }
 
-interface IUserSafeRoom
+export interface IUserSafeRoom
 {
 	id: number;
 	username: string;
-	joinTime: string;
+	joinTime: Date;
 	head: number;
 	face: number;
 	neck: number;
@@ -48,10 +50,10 @@ interface IUserSafeRoom
 	frame: number;
 }
 
-type TUserSafe = Omit<IUserSafeRoom, 'x', 'y', 'frame'>;
-type TUserAnonymous = Omit<TUserSafe, 'joinTime'>;
+export type TUserSafe = Omit<IUserSafeRoom, 'x' | 'y' | 'frame'>;
+export type TUserAnonymous = Omit<TUserSafe, 'joinTime'>;
 
-interface ICrumbs
+export interface ICrumbs
 {
 	floorings: {
 		[id: number]: {
@@ -119,4 +121,4 @@ interface ICrumbs
 
 }
 
-type TRoomData = ICrumbs['rooms'][0];
+export type TRoomData = ICrumbs['rooms'][0];

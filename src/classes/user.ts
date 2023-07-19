@@ -2,6 +2,7 @@ import { Prisma, User as PrismaUser } from '@prisma/client';
 import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
 import { Database } from '../managers/DatabaseManager';
+import { IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types';
 import { constants } from '../utils/constants';
 import { getSocketAddress, pick } from '../utils/functions';
 import { Room } from './room/room';
@@ -70,7 +71,7 @@ export class User
 			'color',
 			'photo',
 			'flag',
-		);
+		) as TUserAnonymous;
 	}
 
 	get getSafe(): TUserSafe

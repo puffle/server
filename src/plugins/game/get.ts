@@ -3,6 +3,7 @@ import { User } from '../../classes/user';
 import { GameWorld } from '../../classes/world';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
+import { IGamePlugin } from '../../types';
 import { GamePlugin } from '../GamePlugin';
 
 interface IGetPlayerArgs { id: number; }
