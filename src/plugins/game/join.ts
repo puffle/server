@@ -45,7 +45,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 			// TODO: finish this
 			buddies: [],
 			ignores: [],
-			inventory: user.inventory.map(),
+			inventory: user.inventory.items,
 			igloos: [],
 			furniture: [],
 		});

@@ -3,8 +3,9 @@ import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
 import { InventoryCollection } from '../collections/InventoryCollection';
 import { Database } from '../managers/DatabaseManager';
-import { IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types';
+import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types';
 import { constants } from '../utils/constants';
+import { EItemSlots } from '../utils/enums';
 import { getSocketAddress, pick } from '../utils/functions';
 import { Room } from './room/room';
 import { GameWorld } from './world';
@@ -25,6 +26,8 @@ export class User
 		this.world = world;
 		this.data = dbUser;
 		this.address = getSocketAddress(socket);
+
+		this.inventory = new InventoryCollection(this);
 	}
 
 	socket: Socket;
@@ -32,7 +35,7 @@ export class User
 	world: GameWorld;
 	data: TDbUser;
 
-	inventory = new InventoryCollection(this);
+	inventory: InventoryCollection;
 
 	room: Room | undefined;
 	roomData = {
@@ -139,5 +142,20 @@ export class User
 		this.data.coins = clampedCoins;
 
 		if (gameOver) this.send('game_over', { coins: clampedCoins });
+	};
+
+	setItem = async (slot: EItemSlots, itemId: number) =>
+	{
+		if (slot === EItemSlots.award) return;
+
+		const type = EItemSlots[slot]?.toLowerCase() as string | undefined;
+		if (type === undefined || (this.data as AnyKey)[type] === itemId) return;
+
+		this.dbUpdate({ [type]: itemId }).then(() =>
+		{
+			(this.data as AnyKey)[type] = itemId;
+		});
+
+		this.room?.send(this, 'update_player', { id: this.data.id, item: itemId, slot: type }, []);
 	};
 }

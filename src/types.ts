@@ -1,6 +1,10 @@
 import { ValidateFunction } from 'ajv';
 import { User } from './classes/user';
 
+export type AnyKey = {
+	[key: string]: unknown,
+};
+
 export type TActionMessageArgs = Record<string, unknown>;
 
 export interface IActionMessage

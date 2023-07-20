@@ -1,11 +1,8 @@
 import { merge } from 'lodash';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { AnyKey } from '../types';
 import { constants } from '../utils/constants';
-
-type Any = {
-	[key: string]: unknown,
-};
 
 export type TConfig = {
 	crypto: {
@@ -105,14 +102,14 @@ export class ConfigManager
 	{
 		Object.keys(dst).filter((key) => key in src).forEach((key) =>
 		{
-			const type1 = typeof (dst as Any)[key];
-			const type2 = typeof (src as Any)[key];
+			const type1 = typeof (dst as AnyKey)[key];
+			const type2 = typeof (src as AnyKey)[key];
 
 			// check if we can actually read a default data to compare against
 			if (type2 !== 'undefined')
 			{
 				if (type1 === 'object' && src[key] != null) this.#sanitizeType(src[key] as Record<string, unknown>, dst[key] as Record<string, unknown>);
-				if (type1 !== type2) (dst as Any)[key] = (src as Any)[key];
+				if (type1 !== type2) (dst as AnyKey)[key] = (src as AnyKey)[key];
 			}
 		});
 	};
