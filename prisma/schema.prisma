@@ -25,8 +25,8 @@ model Ban {
   moderatorId Int?     @db.UnsignedInt
   message     String?  @db.VarChar(60)
   issued      DateTime @default(now()) @db.Timestamp(0)
-  moderator   User?    @relation("ban_moderatorId", fields: [moderatorId], references: [id], onUpdate: SetNull)
-  user        User     @relation("ban_userId", fields: [userId], references: [id], onDelete: Cascade)
+  moderator   User?    @relation("bans_moderatorId", fields: [moderatorId], references: [id], onUpdate: SetNull)
+  user        User     @relation("bans_userId", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([moderatorId])
   @@index([userId])
@@ -36,8 +36,8 @@ model Ban {
 model Buddy {
   userId  Int  @db.UnsignedInt
   buddyId Int  @db.UnsignedInt
-  buddy   User @relation("buddy_buddyId", fields: [buddyId], references: [id], onDelete: Cascade)
-  user    User @relation("buddy_userId", fields: [userId], references: [id], onDelete: Cascade)
+  buddy   User @relation("buddies_buddyId", fields: [buddyId], references: [id], onDelete: Cascade)
+  user    User @relation("buddies_userId", fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, buddyId])
   @@index([buddyId])
@@ -92,8 +92,8 @@ model Igloo {
 model Ignore {
   userId      Int  @db.UnsignedInt
   ignoreId    Int  @db.UnsignedInt
-  ignoredUser User @relation("ignore_ignoreId", fields: [ignoreId], references: [id], onDelete: Cascade)
-  user        User @relation("ignore_userId", fields: [userId], references: [id], onDelete: Cascade)
+  ignoredUser User @relation("ignores_ignoreId", fields: [ignoreId], references: [id], onDelete: Cascade)
+  user        User @relation("ignores_userId", fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, ignoreId])
   @@index([ignoreId])
@@ -110,36 +110,36 @@ model Inventory {
 }
 
 model User {
-  id                    Int                  @id @default(autoincrement()) @db.UnsignedInt
-  username              String               @unique @db.VarChar(12)
-  email                 String?              @db.VarChar(254)
-  password              String               @db.Char(60)
-  loginKey              String?              @db.Text
-  rank                  Int                  @default(0) @db.UnsignedTinyInt
-  permaBan              Boolean              @default(false)
-  joinTime              DateTime             @default(now()) @db.Timestamp(0)
-  coins                 Int                  @default(500) @db.UnsignedInt
-  head                  Int                  @default(0) @db.UnsignedInt
-  face                  Int                  @default(0) @db.UnsignedInt
-  neck                  Int                  @default(0) @db.UnsignedInt
-  body                  Int                  @default(0) @db.UnsignedInt
-  hand                  Int                  @default(0) @db.UnsignedInt
-  feet                  Int                  @default(0) @db.UnsignedInt
-  color                 Int                  @default(1) @db.UnsignedInt
-  photo                 Int                  @default(0) @db.UnsignedInt
-  flag                  Int                  @default(0) @db.UnsignedInt
-  auth_tokens           AuthToken[]
-  ban_moderatorId       Ban[]                @relation("ban_moderatorId")
-  ban_userId            Ban[]                @relation("ban_userId")
-  buddy_buddyId         Buddy[]              @relation("buddy_buddyId")
-  buddy_userId          Buddy[]              @relation("buddy_userId")
-  furniture_inventories FurnitureInventory[]
-  furnitures            Furniture[]
-  igloo_inventories     IglooInventory[]
-  igloos                Igloo?
-  ignore_ignoreId       Ignore[]             @relation("ignore_ignoreId")
-  ignore_userId         Ignore[]             @relation("ignore_userId")
-  inventories           Inventory[]
+  id                   Int                  @id @default(autoincrement()) @db.UnsignedInt
+  username             String               @unique @db.VarChar(12)
+  email                String?              @db.VarChar(254)
+  password             String               @db.Char(60)
+  loginKey             String?              @db.Text
+  rank                 Int                  @default(0) @db.UnsignedTinyInt
+  permaBan             Boolean              @default(false)
+  joinTime             DateTime             @default(now()) @db.Timestamp(0)
+  coins                Int                  @default(500) @db.UnsignedInt
+  head                 Int                  @default(0) @db.UnsignedInt
+  face                 Int                  @default(0) @db.UnsignedInt
+  neck                 Int                  @default(0) @db.UnsignedInt
+  body                 Int                  @default(0) @db.UnsignedInt
+  hand                 Int                  @default(0) @db.UnsignedInt
+  feet                 Int                  @default(0) @db.UnsignedInt
+  color                Int                  @default(1) @db.UnsignedInt
+  photo                Int                  @default(0) @db.UnsignedInt
+  flag                 Int                  @default(0) @db.UnsignedInt
+  auth_tokens          AuthToken[]
+  bans_moderatorId     Ban[]                @relation("bans_moderatorId")
+  bans_userId          Ban[]                @relation("bans_userId")
+  buddies_buddyId      Buddy[]              @relation("buddies_buddyId")
+  buddies_userId       Buddy[]              @relation("buddies_userId")
+  furnitures_inventory FurnitureInventory[]
+  placed_furnitures    Furniture[]
+  igloo_inventory      IglooInventory[]
+  igloo                Igloo?
+  ignores_ignoreId     Ignore[]             @relation("ignores_ignoreId")
+  ignores_userId       Ignore[]             @relation("ignores_userId")
+  inventory            Inventory[]
 
   @@map("users")
 }

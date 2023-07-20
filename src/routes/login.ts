@@ -91,7 +91,7 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 			permaBan: true,
 			rank: true,
 			auth_tokens: true,
-			ban_userId: {
+			bans_userId: {
 				take: 1,
 				where: {
 					expires: { gt: new Date() },
@@ -129,9 +129,9 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 		});
 	}
 
-	if (user.ban_userId[0] !== undefined)
+	if (user.bans_userId[0] !== undefined)
 	{
-		const hours = Math.round((user.ban_userId[0].expires.getTime() - Date.now()) / 60 / 60 / 1000);
+		const hours = Math.round((user.bans_userId[0].expires.getTime() - Date.now()) / 60 / 60 / 1000);
 		return reply.send({
 			success: false,
 			message: `Banned:\nYou are banned for the next ${hours} hours`, // TODO: migrate to error code

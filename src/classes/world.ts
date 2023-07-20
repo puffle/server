@@ -106,8 +106,9 @@ export class GameWorld
 			const dbUser = await Database.user.findUnique({
 				where: { username: auth.username },
 				include: {
+					inventory: true,
 					auth_tokens: true,
-					ban_userId: {
+					bans_userId: {
 						take: 1,
 						where: {
 							expires: { gt: new Date() },
@@ -121,7 +122,7 @@ export class GameWorld
 
 			if (dbUser == null // invalid user
 				|| (dbUser.rank < constants.FIRST_MODERATOR_RANK && this.population >= this.maxUsers) // max users reached
-				|| (dbUser.permaBan || dbUser.ban_userId[0] !== undefined)) // banned user
+				|| (dbUser.permaBan || dbUser.bans_userId[0] !== undefined)) // banned user
 			{
 				this.closeSocket(socket);
 				return;

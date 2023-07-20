@@ -1,6 +1,7 @@
 import { Prisma, User as PrismaUser } from '@prisma/client';
 import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
+import { InventoryCollection } from '../collections/InventoryCollection';
 import { Database } from '../managers/DatabaseManager';
 import { IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types';
 import { constants } from '../utils/constants';
@@ -10,8 +11,9 @@ import { GameWorld } from './world';
 
 export type TDbUser = Prisma.UserGetPayload<{
 	include: {
+		inventory: true,
 		auth_tokens: true,
-		ban_userId: true,
+		bans_userId: true,
 	};
 }>;
 
@@ -29,6 +31,8 @@ export class User
 	address: string;
 	world: GameWorld;
 	data: TDbUser;
+
+	inventory = new InventoryCollection(this);
 
 	room: Room | undefined;
 	roomData = {
@@ -128,10 +132,11 @@ export class User
 	{
 		const clampedCoins = clamp(this.data.coins + coins, 0, constants.limits.MAX_COINS);
 
-		this.data.coins = clampedCoins;
 		await this.dbUpdate({
 			coins: clampedCoins,
 		});
+
+		this.data.coins = clampedCoins;
 
 		if (gameOver) this.send('game_over', { coins: clampedCoins });
 	};
