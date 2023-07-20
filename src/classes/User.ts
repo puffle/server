@@ -109,7 +109,7 @@ export class User
 
 	joinRoom = (roomId: number, x = 0, y = 0) =>
 	{
-		if (typeof roomId !== 'number' || roomId < 0 || roomId === this.room?.data.id) return;
+		if (roomId < 0 || roomId === this.room?.data.id) return;
 
 		const room = this.world.rooms.get(roomId);
 		if (room === undefined) return;

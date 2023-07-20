@@ -10,7 +10,7 @@ export class PurchaseValidator
 
 	private user: User;
 
-	item = (id: number) => this.validate(id, 'items', this.user.inventory.items) as false | TItemData;
+	item = (id: number) => this.validate(id, 'items', this.user.inventory.items);
 	// igloo = (id: number) => this.validate(id, 'igloos', this.user.dbUser.igloos);
 	// furniture = (id: number) => this.validate(id, 'furnitures');
 	// flooring = (id: number) => this.validate(id, 'floorings', this.user.room.flooring);
@@ -19,7 +19,7 @@ export class PurchaseValidator
 	validate = (id: number, type: keyof ICrumbs, includes: number[] = []) =>
 	{
 		if (type !== 'items' && type !== 'igloos' && type !== 'furnitures' && type !== 'floorings') return false;
-		const item = this.user.world.crumbs[type][id];
+		const item = this.user.world.crumbs[type][id] as undefined | TItemData;
 
 		if (item === undefined) return false;
 
@@ -35,7 +35,13 @@ export class PurchaseValidator
 			return false;
 		}
 
-		if (item.patched)
+		if (!this.user.isModerator && item.patched)
+		{
+			this.user.send('error', { error: 'This item is not currently available.' });
+			return false;
+		}
+
+		if (!this.user.isModerator && item.bait)
 		{
 			this.user.send('error', { error: 'This item is not currently available.' });
 			return false;
