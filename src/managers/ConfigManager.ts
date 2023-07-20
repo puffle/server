@@ -13,7 +13,6 @@ export type TConfig = {
 		loginKeyExpiry: number,
 		audience: string,
 		issuer: string,
-		rounds: number,
 	},
 	cors: {
 		origin: string,
@@ -52,10 +51,9 @@ export class ConfigManager
 	defaultData: TConfig = {
 		crypto: {
 			secret: 'UNSECURE SECRET - DO NOT USE ME',
-			loginKeyExpiry: 86400,
+			loginKeyExpiry: 600,
 			audience: 'localhost',
 			issuer: constants.PROJECT_NAME,
-			rounds: 30,
 		},
 		cors: {
 			origin: 'http://localhost:8080',

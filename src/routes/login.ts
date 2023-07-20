@@ -143,7 +143,7 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 		jwtid: `${Date.now()}$${user.username}$${randomUUID()}`,
 		audience: Config.data.crypto.audience,
 		issuer: Config.data.crypto.issuer,
-		subject: user.id.toString(),
+		subject: user.username,
 	});
 
 	return reply.send({

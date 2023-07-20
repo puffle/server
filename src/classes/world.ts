@@ -96,7 +96,12 @@ export class GameWorld
 				return;
 			}
 
-			verify(auth.key, Config.data.crypto.secret);
+			verify(auth.key, Config.data.crypto.secret, {
+				audience: Config.data.crypto.audience,
+				issuer: Config.data.crypto.issuer,
+				subject: auth.username,
+				// jwtid: '', // TODO: check jwtid too?
+			});
 
 			const dbUser = await Database.user.findUnique({
 				where: { username: auth.username },
