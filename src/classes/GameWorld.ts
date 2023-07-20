@@ -15,8 +15,8 @@ import { PluginManager } from '../managers/PluginManager';
 import { IActionMessage, ICrumbs, IGameAuth } from '../types';
 import { constants } from '../utils/constants';
 import { getSocketAddress } from '../utils/functions';
-import { Room } from './room/room';
-import { User } from './user';
+import { User } from './User';
+import { Room } from './room/Room';
 
 export class GameWorld
 {

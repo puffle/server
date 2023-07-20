@@ -1,4 +1,4 @@
-import { User } from '../classes/user';
+import { User } from '../classes/User';
 import { Database } from '../managers/DatabaseManager';
 import { Collection } from './Collection';
 

@@ -1,6 +1,6 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv';
-import { User } from '../../classes/user';
-import { GameWorld } from '../../classes/world';
+import { GameWorld } from '../../classes/GameWorld';
+import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types';
 import { EItemSlots } from '../../utils/enums';

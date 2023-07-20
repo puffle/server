@@ -1,7 +1,7 @@
 import { CustomError } from '@n0bodysec/ts-utils';
 import Fastify from 'fastify';
 import { Server } from 'socket.io';
-import { GameWorld } from './classes/world';
+import { GameWorld } from './classes/GameWorld';
 import { MyAjv } from './managers/AjvManager';
 import { Config } from './managers/ConfigManager';
 import { Database } from './managers/DatabaseManager';

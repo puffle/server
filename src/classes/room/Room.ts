@@ -1,5 +1,5 @@
 import { TActionMessageArgs, TRoomData } from '../../types';
-import { User } from '../user';
+import { User } from '../User';
 
 export class Room
 {

@@ -1,5 +1,5 @@
 import { ValidateFunction } from 'ajv';
-import { User } from './classes/user';
+import { User } from './classes/User';
 
 export type AnyKey = {
 	[key: string]: unknown,

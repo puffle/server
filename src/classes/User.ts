@@ -7,8 +7,8 @@ import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymo
 import { constants } from '../utils/constants';
 import { EItemSlots } from '../utils/enums';
 import { getSocketAddress, pick } from '../utils/functions';
-import { Room } from './room/room';
-import { GameWorld } from './world';
+import { GameWorld } from './GameWorld';
+import { Room } from './room/Room';
 
 export type TDbUser = Prisma.UserGetPayload<{
 	include: {
