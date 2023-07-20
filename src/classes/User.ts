@@ -9,6 +9,7 @@ import { EItemSlots } from '../utils/enums';
 import { getSocketAddress, pick } from '../utils/functions';
 import { GameWorld } from './GameWorld';
 import { Room } from './room/Room';
+import { PurchaseValidator } from './user/PurchaseValidator';
 
 export type TDbUser = Prisma.UserGetPayload<{
 	include: {
@@ -36,6 +37,7 @@ export class User
 	data: TDbUser;
 
 	inventory: InventoryCollection;
+	validatePurchase = new PurchaseValidator(this);
 
 	room: Room | undefined;
 	roomData = {
@@ -46,24 +48,24 @@ export class User
 
 	onDisconnectPre = (reason: DisconnectReason) => console.log(`[${this.world.id}] Disconnect from: ${this.data.username} (${this.socket.id}), reason: ${reason}`);
 
-	onDisconnect = async (reason: DisconnectReason /* , description: unknown */) =>
+	onDisconnect = (reason: DisconnectReason /* , description: unknown */) =>
 	{
 		this.onDisconnectPre(reason);
 		this.world.close(this);
 	};
 
-	onMessage = async (message: IActionMessage) =>
+	onMessage = (message: IActionMessage) =>
 	{
 		this.world.onMessage(message, this);
 	};
 
-	close = async () => this.socket.disconnect(true);
+	close = () => this.socket.disconnect(true);
 
 	send = (action: string, args: TActionMessageArgs = {}) => this.socket.send({ action, args });
 	sendSocketRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	sendRoom = (action: string, args: TActionMessageArgs | any = {}) => this.room?.send(this, action, args);
+	sendRoom = (action: string, args: TActionMessageArgs = {}) => this.room?.send(this, action, args);
 
 	// see DatabaseManager > findAnonymousUser()
 	get getAnonymous(): TUserAnonymous
@@ -144,7 +146,7 @@ export class User
 		if (gameOver) this.send('game_over', { coins: clampedCoins });
 	};
 
-	setItem = async (slot: EItemSlots, itemId: number) =>
+	setItem = (slot: EItemSlots, itemId: number) =>
 	{
 		if (slot === EItemSlots.award) return;
 

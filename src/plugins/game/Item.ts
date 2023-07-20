@@ -44,7 +44,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		]);
 	}
 
-	updatePlayer = async (args: IUpdatePlayerOrAddItemArgs, user: User) =>
+	updatePlayer = (args: IUpdatePlayerOrAddItemArgs, user: User) =>
 	{
 		if (!this.schemas.get('updatePlayerOrAddItem')!(args)) return;
 
@@ -54,7 +54,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		user.setItem(item.type - 1, args.item);
 	};
 
-	removeItem = async (args: IRemoveItemArgs, user: User) =>
+	removeItem = (args: IRemoveItemArgs, user: User) =>
 	{
 		if (!this.schemas.get('removeItem')!(args)) return;
 
@@ -65,13 +65,11 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!this.schemas.get('updatePlayerOrAddItem')!(args)) return;
 
-		const item = this.world.crumbs.items[args.item];
-		if (item === undefined || user.inventory.items.includes(args.item)) return;
+		const item = user.validatePurchase.item(args.item);
+		if (!item || user.inventory.items.includes(args.item)) return;
 
 		const slot = EItemSlots[item.type - 1];
 		if (slot === undefined) return;
-
-		// TODO: add purchase validator
 
 		user.inventory.add(args.item);
 		await user.updateCoins(-item.cost);

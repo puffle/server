@@ -36,7 +36,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		]);
 	}
 
-	joinServer = async (args: TActionMessageArgs, user: User) =>
+	joinServer = (args: TActionMessageArgs, user: User) =>
 	{
 		user.send('load_player', {
 			user: user.getSafe,
@@ -57,7 +57,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		user.joinRoom(spawn);
 	};
 
-	joinRoom = (args: IJoinRoomArgs, user: User) => this.schemas.get('joinRoom')!(args) && user.joinRoom(args.room as number, args.x as number, args.y as number);
+	joinRoom = (args: IJoinRoomArgs, user: User) => this.schemas.get('joinRoom')!(args) && user.joinRoom(args.room, args.x, args.y);
 
 	private getSpawn = () =>
 	{

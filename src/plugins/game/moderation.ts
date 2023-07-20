@@ -35,9 +35,9 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	mutePlayer = async (args: TActionMessageArgs, user: User) => user.isModerator && user.send('error', { error: 'Not implemented' }); // TODO: implement; add ajv
+	mutePlayer = (args: TActionMessageArgs, user: User) => user.isModerator && user.send('error', { error: 'Not implemented' }); // TODO: implement; add ajv
 
-	kickPlayer = async (args: IKickBanPlayerArgs, user: User) =>
+	kickPlayer = (args: IKickBanPlayerArgs, user: User) =>
 	{
 		if (!user.isModerator) return;
 		if (!this.schemas.get('kickBanPlayer')!(args)) return;
@@ -47,7 +47,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 
 		recipient.close();
 	};
-	banPlayer = async (args: IKickBanPlayerArgs, user: User) =>
+	banPlayer = (args: IKickBanPlayerArgs, user: User) =>
 	{
 		if (!user.isModerator) return;
 		if (!this.schemas.get('kickBanPlayer')!(args)) return;

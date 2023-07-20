@@ -126,3 +126,4 @@ export interface ICrumbs
 }
 
 export type TRoomData = ICrumbs['rooms'][0];
+export type TItemData = ICrumbs['items'][0];

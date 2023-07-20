@@ -1,4 +1,4 @@
-import { ICrumbs } from '../../types';
+import { ICrumbs, TItemData } from '../../types';
 import { User } from '../User';
 
 export class PurchaseValidator
@@ -10,12 +10,10 @@ export class PurchaseValidator
 
 	private user: User;
 
-	/*
-	item = (id: number) => this.validate(id, 'items', this.user.dbUser.inventory);
-	igloo = (id: number) => this.validate(id, 'igloos', this.user.dbUser.igloos);
-	furniture = (id: number) => this.validate(id, 'furnitures');
-	flooring = (id: number) => this.validate(id, 'floorings', this.user.room.flooring);
-	*/
+	item = (id: number) => this.validate(id, 'items', this.user.inventory.items) as false | TItemData;
+	// igloo = (id: number) => this.validate(id, 'igloos', this.user.dbUser.igloos);
+	// furniture = (id: number) => this.validate(id, 'furnitures');
+	// flooring = (id: number) => this.validate(id, 'floorings', this.user.room.flooring);
 
 	// TODO: migrate to error code
 	validate = (id: number, type: keyof ICrumbs, includes: number[] = []) =>

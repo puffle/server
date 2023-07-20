@@ -11,7 +11,7 @@ import { constants } from '../utils/constants';
 const getWorldPopulations = async (isModerator: boolean) =>
 {
 	const populations = await Database.world.findMany();
-	const obj = Object.create(null);
+	const obj = Object.create(null) as Record<string, unknown>;
 	const maxPopulation = isModerator ? 5 : 6;
 
 	populations.forEach((world) =>
