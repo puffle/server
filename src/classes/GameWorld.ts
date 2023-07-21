@@ -71,6 +71,9 @@ export class GameWorld
 	rooms: Map<number, Room>;
 	maxUsers: number;
 
+	// eslint-disable-next-line class-methods-use-this
+	error = (message: string | Record<string, unknown>) => Logger.error(typeof message === 'string' ? message : JSON.stringify(message));
+
 	onMessage = (message: IActionMessage, user: User) =>
 	{
 		if (!MyAjv.validators.actionMessage(message)) return;
@@ -146,6 +149,7 @@ export class GameWorld
 			{
 				// we want to call GameWorld.close() instead of User.close() because
 				// an error can happen before setting the "disconnect" listener
+				this.error(err as never);
 				this.close(user);
 			}
 
@@ -153,6 +157,7 @@ export class GameWorld
 		}
 		catch (err)
 		{
+			this.error(err as never);
 			this.closeSocket(socket);
 		}
 	};

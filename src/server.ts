@@ -97,7 +97,8 @@ import { constants } from './utils/constants';
 	}
 	catch (err)
 	{
-		Logger.error(err); // fastify.log.error(err);
+		const message = typeof err === 'object' ? JSON.stringify(err) : err;
+		Logger.error(message);
 		process.exit(1);
 	}
 })();
