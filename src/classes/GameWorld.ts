@@ -11,6 +11,7 @@ import waddles from '../data/waddles.json';
 import { MyAjv } from '../managers/AjvManager';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
+import { Logger } from '../managers/LogManager';
 import { PluginManager } from '../managers/PluginManager';
 import { ICrumbs } from '../types/crumbs';
 import { IActionMessage, IGameAuth } from '../types/types';
@@ -72,17 +73,14 @@ export class GameWorld
 
 	onMessage = (message: IActionMessage, user: User) =>
 	{
-		if (!MyAjv.validators.actionMessage(message))
-		{
-			console.log(`[${this.id}] Received [INVALID]: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
-			return;
-		}
+		if (!MyAjv.validators.actionMessage(message)) return;
 
-		console.log(`[${this.id}] Received: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
+		Logger.info(`Received: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
 		this.events?.emit(message.action, message.args, user);
 	};
 
-	onConnectionPre = (socket: Socket) => console.log(`[${this.id}] New connection from: ${socket.id} (${getSocketAddress(socket)})`);
+	// eslint-disable-next-line class-methods-use-this
+	onConnectionPre = (socket: Socket) => Logger.info(`New connection from: ${socket.id} (${getSocketAddress(socket)})`);
 
 	onConnection = async (socket: Socket) =>
 	{

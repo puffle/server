@@ -5,6 +5,7 @@ import { AnyKey } from '../types/types';
 import { constants } from '../utils/constants';
 
 export type TConfig = {
+	logLevel: string,
 	crypto: {
 		secret: string,
 		loginKeyExpiry: number,
@@ -44,6 +45,7 @@ export class ConfigManager
 	initialized = false;
 	data: TConfig;
 	defaultData: TConfig = {
+		logLevel: 'info',
 		crypto: {
 			secret: 'UNSECURE SECRET - DO NOT USE ME',
 			loginKeyExpiry: 600,

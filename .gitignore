@@ -4,6 +4,9 @@ node_modules/
 # compiled files
 dist/
 
+# logs
+logs/
+
 # secrets
 .env
 config/config.json

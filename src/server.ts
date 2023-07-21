@@ -6,6 +6,7 @@ import { GameWorld } from './classes/GameWorld';
 import { MyAjv } from './managers/AjvManager';
 import { Config } from './managers/ConfigManager';
 import { Database } from './managers/DatabaseManager';
+import { Logger } from './managers/LogManager';
 import { constants } from './utils/constants';
 
 (async () =>
@@ -16,7 +17,7 @@ import { constants } from './utils/constants';
 
 	try
 	{
-		const worldName = process.argv.slice(2)[0] ?? 'HTTP';
+		const worldName = process.argv[2] ?? 'HTTP';
 
 		MyAjv.initialize();
 		await Config.Initialize();
@@ -24,7 +25,7 @@ import { constants } from './utils/constants';
 
 		if (!MyAjv.initialized || !Config.initialized || !Database.initialized)
 		{
-			console.error(`[${worldName}] ${constants.PROJECT_NAME} is not properly initialized. Exiting...`);
+			Logger.error(`${constants.PROJECT_NAME} is not properly initialized. Exiting...`);
 			process.exit(1);
 		}
 
@@ -57,7 +58,7 @@ import { constants } from './utils/constants';
 
 			await fastify.ready();
 
-			console.log(`[${worldName}] Starting HTTP Server...`);
+			Logger.info('Starting HTTP Server...');
 			fastify.listen({ port: Config.data.http.port, host: Config.data.http.host });
 
 			return;
@@ -69,7 +70,7 @@ import { constants } from './utils/constants';
 
 		if (host === undefined || port === undefined)
 		{
-			console.error(`[${worldName}] The configuration of the world is not valid. Remember to set a value for "host" and for "port". Exiting...`);
+			Logger.error('The configuration of the world is not valid. Remember to set a value for "host" and for "port". Exiting...');
 			process.exit(1);
 		}
 
@@ -90,12 +91,12 @@ import { constants } from './utils/constants';
 		await fastify.ready();
 		new GameWorld(worldName, io); // eslint-disable-line no-new
 
-		console.log(`[${worldName}] Starting Game World Server...`);
+		Logger.info('Starting Game World Server...');
 		fastify.listen({ port, host });
 	}
 	catch (err)
 	{
-		console.error(err); // fastify.log.error(err);
+		Logger.error(err); // fastify.log.error(err);
 		process.exit(1);
 	}
 })();

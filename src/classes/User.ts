@@ -4,6 +4,7 @@ import { DisconnectReason, Socket } from 'socket.io';
 import { IglooCollection } from '../collections/IglooCollection';
 import { InventoryCollection } from '../collections/InventoryCollection';
 import { Database } from '../managers/DatabaseManager';
+import { Logger } from '../managers/LogManager';
 import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types/types';
 import { constants } from '../utils/constants';
 import { EItemSlots } from '../utils/enums';
@@ -50,7 +51,7 @@ export class User
 		frame: 1,
 	};
 
-	onDisconnectPre = (reason: DisconnectReason) => console.log(`[${this.world.id}] Disconnect from: ${this.data.username} (${this.socket.id}), reason: ${reason}`);
+	onDisconnectPre = (reason: DisconnectReason) => Logger.info(`Disconnect from: ${this.data.username} (${this.socket.id}), reason: ${reason}`);
 
 	onDisconnect = (reason: DisconnectReason /* , description: unknown */) =>
 	{
