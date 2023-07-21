@@ -4,7 +4,7 @@ import { DisconnectReason, Socket } from 'socket.io';
 import { IglooCollection } from '../collections/IglooCollection';
 import { InventoryCollection } from '../collections/InventoryCollection';
 import { Database } from '../managers/DatabaseManager';
-import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types';
+import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types/types';
 import { constants } from '../utils/constants';
 import { EItemSlots } from '../utils/enums';
 import { getSocketAddress, pick } from '../utils/functions';

@@ -3,7 +3,7 @@ import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
-import { IGamePlugin, TActionMessageArgs } from '../../types';
+import { IGamePlugin, TActionMessageArgs } from '../../types/types';
 import { GamePlugin } from '../GamePlugin';
 
 interface IKickBanPlayerArgs { id: number; }

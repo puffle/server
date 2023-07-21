@@ -1,7 +1,7 @@
 import { merge } from 'lodash';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { AnyKey } from '../types';
+import { AnyKey } from '../types/types';
 import { constants } from '../utils/constants';
 
 export type TConfig = {
@@ -23,13 +23,11 @@ export type TConfig = {
 		host: string,
 		port: number,
 	},
-	worlds: {
-		[key: string]: {
-			host: string,
-			port: number,
-			maxUsers: number,
-		},
-	},
+	worlds: Record<string, {
+		host: string,
+		port: number,
+		maxUsers: number,
+	}>,
 	game: {
 		preferredSpawn: number,
 		iglooIdOffset: number,

@@ -1,5 +1,5 @@
 import { JSONSchemaType } from 'ajv';
-import { IGameAuth } from '../../types';
+import { IGameAuth } from '../../types/types';
 
 export const gameAuthSchema: JSONSchemaType<IGameAuth> = {
 	type: 'object',

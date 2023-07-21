@@ -1,4 +1,4 @@
-import { ICrumbs, TItemData } from '../../types';
+import { ICrumbs, IItem } from '../../types/crumbs';
 import { User } from '../User';
 
 export class PurchaseValidator
@@ -10,7 +10,7 @@ export class PurchaseValidator
 
 	private user: User;
 
-	item = (id: number) => this.validate(id, 'items', this.user.inventory.items) as false | TItemData;
+	item = (id: number) => this.validate(id, 'items', this.user.inventory.items) as false | IItem;
 	igloo = (id: number) => this.validate(id, 'igloos', this.user.igloos.data);
 	// furniture = (id: number) => this.validate(id, 'furnitures');
 	// flooring = (id: number) => this.validate(id, 'floorings', this.user.room.flooring);
@@ -41,7 +41,7 @@ export class PurchaseValidator
 			return false;
 		}
 
-		if (type === 'items' && !this.user.isModerator && (data as TItemData).bait)
+		if (type === 'items' && !this.user.isModerator && (data as IItem).bait)
 		{
 			// ? ban user?
 			this.user.send('error', { error: 'This item is not currently available.' });

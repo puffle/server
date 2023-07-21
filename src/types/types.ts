@@ -1,0 +1,56 @@
+import { ValidateFunction } from 'ajv';
+import { User } from '../classes/User';
+
+export type AnyKey = Record<string, unknown>;
+
+export type TActionMessageArgs = Record<string, unknown>;
+
+export interface IActionMessage
+{
+	action: string;
+	args: TActionMessageArgs;
+}
+
+export interface ILoginAuth
+{
+	username: string;
+	password: string;
+	method: 'password' | 'token';
+}
+
+export interface IGameAuth
+{
+	username: string;
+	key: string;
+	createToken?: boolean;
+	token?: string;
+}
+
+export interface IGamePlugin
+{
+	pluginName: string;
+	events: Record<string, (args: TActionMessageArgs, user: User) => void>;
+	schemas: Map<string, ValidateFunction<unknown>>;
+}
+
+export interface IUserSafeRoom
+{
+	id: number;
+	username: string;
+	joinTime: Date;
+	head: number;
+	face: number;
+	neck: number;
+	body: number;
+	hand: number;
+	feet: number;
+	color: number;
+	photo: number;
+	flag: number;
+	x: number;
+	y: number;
+	frame: number;
+}
+
+export type TUserSafe = Omit<IUserSafeRoom, 'x' | 'y' | 'frame'>;
+export type TUserAnonymous = Omit<TUserSafe, 'joinTime'>;

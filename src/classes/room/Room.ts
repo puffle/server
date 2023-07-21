@@ -1,16 +1,17 @@
-import { TActionMessageArgs, TRoomData } from '../../types';
+import { IRoom } from '../../types/crumbs';
+import { TActionMessageArgs } from '../../types/types';
 import { User } from '../User';
 
 export class Room
 {
-	constructor(data: TRoomData)
+	constructor(data: IRoom)
 	{
 		this.data = data;
 		this.users = new Map();
 		this.socketRoom = 'room' + this.data.id;
 	}
 
-	data: TRoomData;
+	data: IRoom;
 	users: Map<number, User>;
 	socketRoom: string;
 

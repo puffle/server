@@ -1,5 +1,5 @@
 import { JSONSchemaType } from 'ajv';
-import { ILoginAuth } from '../../types';
+import { ILoginAuth } from '../../types/types';
 
 export const loginAuthSchema: JSONSchemaType<ILoginAuth> = {
 	type: 'object',
