@@ -46,7 +46,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 			buddies: [],
 			ignores: [],
 			inventory: user.inventory.items,
-			igloos: [],
+			igloos: user.igloos.data,
 			furniture: [],
 		});
 

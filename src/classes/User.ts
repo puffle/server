@@ -1,6 +1,7 @@
 import { Prisma, User as PrismaUser } from '@prisma/client';
 import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
+import { IglooCollection } from '../collections/IglooCollection';
 import { InventoryCollection } from '../collections/InventoryCollection';
 import { Database } from '../managers/DatabaseManager';
 import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types';
@@ -13,6 +14,7 @@ import { PurchaseValidator } from './user/PurchaseValidator';
 
 export type TDbUser = Prisma.UserGetPayload<{
 	include: {
+		igloo_inventory: true,
 		inventory: true,
 		auth_tokens: true,
 		bans_userId: true,
@@ -29,6 +31,7 @@ export class User
 		this.address = getSocketAddress(socket);
 
 		this.inventory = new InventoryCollection(this);
+		this.igloos = new IglooCollection(this);
 	}
 
 	socket: Socket;
@@ -37,6 +40,7 @@ export class User
 	data: TDbUser;
 
 	inventory: InventoryCollection;
+	igloos: IglooCollection;
 	validatePurchase = new PurchaseValidator(this);
 
 	room: Room | undefined;

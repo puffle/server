@@ -10,8 +10,8 @@ export class PurchaseValidator
 
 	private user: User;
 
-	item = (id: number) => this.validate(id, 'items', this.user.inventory.items);
-	// igloo = (id: number) => this.validate(id, 'igloos', this.user.dbUser.igloos);
+	item = (id: number) => this.validate(id, 'items', this.user.inventory.items) as false | TItemData;
+	igloo = (id: number) => this.validate(id, 'igloos', this.user.igloos.data);
 	// furniture = (id: number) => this.validate(id, 'furnitures');
 	// flooring = (id: number) => this.validate(id, 'floorings', this.user.room.flooring);
 
@@ -19,11 +19,11 @@ export class PurchaseValidator
 	validate = (id: number, type: keyof ICrumbs, includes: number[] = []) =>
 	{
 		if (type !== 'items' && type !== 'igloos' && type !== 'furnitures' && type !== 'floorings') return false;
-		const item = this.user.world.crumbs[type][id] as undefined | TItemData;
+		const data = this.user.world.crumbs[type][id];
 
-		if (item === undefined) return false;
+		if (data === undefined) return false;
 
-		if (item.cost > this.user.data.coins)
+		if (data.cost > this.user.data.coins)
 		{
 			this.user.send('error', { error: 'You need more coins.' });
 			return false;
@@ -35,18 +35,19 @@ export class PurchaseValidator
 			return false;
 		}
 
-		if (!this.user.isModerator && item.patched)
+		if (!this.user.isModerator && data.patched)
 		{
 			this.user.send('error', { error: 'This item is not currently available.' });
 			return false;
 		}
 
-		if (!this.user.isModerator && item.bait)
+		if (type === 'items' && !this.user.isModerator && (data as TItemData).bait)
 		{
+			// ? ban user?
 			this.user.send('error', { error: 'This item is not currently available.' });
 			return false;
 		}
 
-		return item;
+		return data;
 	};
 }

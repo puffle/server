@@ -65,7 +65,7 @@ model Furniture {
   user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@map("furnitures")
+  @@map("furniture")
 }
 
 model IglooInventory {
@@ -110,36 +110,36 @@ model Inventory {
 }
 
 model User {
-  id                   Int                  @id @default(autoincrement()) @db.UnsignedInt
-  username             String               @unique @db.VarChar(12)
-  email                String?              @db.VarChar(254)
-  password             String               @db.Char(60)
-  loginKey             String?              @db.Text
-  rank                 Int                  @default(0) @db.UnsignedTinyInt
-  permaBan             Boolean              @default(false)
-  joinTime             DateTime             @default(now()) @db.Timestamp(0)
-  coins                Int                  @default(500) @db.UnsignedInt
-  head                 Int                  @default(0) @db.UnsignedInt
-  face                 Int                  @default(0) @db.UnsignedInt
-  neck                 Int                  @default(0) @db.UnsignedInt
-  body                 Int                  @default(0) @db.UnsignedInt
-  hand                 Int                  @default(0) @db.UnsignedInt
-  feet                 Int                  @default(0) @db.UnsignedInt
-  color                Int                  @default(1) @db.UnsignedInt
-  photo                Int                  @default(0) @db.UnsignedInt
-  flag                 Int                  @default(0) @db.UnsignedInt
-  auth_tokens          AuthToken[]
-  bans_moderatorId     Ban[]                @relation("bans_moderatorId")
-  bans_userId          Ban[]                @relation("bans_userId")
-  buddies_buddyId      Buddy[]              @relation("buddies_buddyId")
-  buddies_userId       Buddy[]              @relation("buddies_userId")
-  furnitures_inventory FurnitureInventory[]
-  placed_furnitures    Furniture[]
-  igloo_inventory      IglooInventory[]
-  igloo                Igloo?
-  ignores_ignoreId     Ignore[]             @relation("ignores_ignoreId")
-  ignores_userId       Ignore[]             @relation("ignores_userId")
-  inventory            Inventory[]
+  id                  Int                  @id @default(autoincrement()) @db.UnsignedInt
+  username            String               @unique @db.VarChar(12)
+  email               String?              @db.VarChar(254)
+  password            String               @db.Char(60)
+  loginKey            String?              @db.Text
+  rank                Int                  @default(0) @db.UnsignedTinyInt
+  permaBan            Boolean              @default(false)
+  joinTime            DateTime             @default(now()) @db.Timestamp(0)
+  coins               Int                  @default(500) @db.UnsignedInt
+  head                Int                  @default(0) @db.UnsignedInt
+  face                Int                  @default(0) @db.UnsignedInt
+  neck                Int                  @default(0) @db.UnsignedInt
+  body                Int                  @default(0) @db.UnsignedInt
+  hand                Int                  @default(0) @db.UnsignedInt
+  feet                Int                  @default(0) @db.UnsignedInt
+  color               Int                  @default(1) @db.UnsignedInt
+  photo               Int                  @default(0) @db.UnsignedInt
+  flag                Int                  @default(0) @db.UnsignedInt
+  auth_tokens         AuthToken[]
+  bans_moderatorId    Ban[]                @relation("bans_moderatorId")
+  bans_userId         Ban[]                @relation("bans_userId")
+  buddies_buddyId     Buddy[]              @relation("buddies_buddyId")
+  buddies_userId      Buddy[]              @relation("buddies_userId")
+  placed_furniture    Furniture[]
+  furniture_inventory FurnitureInventory[]
+  igloo_inventory     IglooInventory[]
+  igloo               Igloo?
+  ignores_ignoreId    Ignore[]             @relation("ignores_ignoreId")
+  ignores_userId      Ignore[]             @relation("ignores_userId")
+  inventory           Inventory[]
 
   @@map("users")
 }
