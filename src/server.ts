@@ -22,6 +22,7 @@ import { constants } from './utils/constants';
 		MyAjv.initialize();
 		await Config.Initialize();
 		await Database.Initialize();
+		Logger.initialize(Config.data.logLevel);
 
 		if (!MyAjv.initialized || !Config.initialized || !Database.initialized)
 		{

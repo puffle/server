@@ -1,11 +1,11 @@
 import { greenBright } from 'colorette';
 import { addColors, createLogger, format, LeveledLogMethod, transports, Logger as WinstonLogger } from 'winston';
-import { Config } from './ConfigManager';
 
 interface ILogManager extends WinstonLogger
 {
 	fatal: LeveledLogMethod;
 	trace: LeveledLogMethod;
+	initialize: (level: string) => void;
 }
 
 const id = process.argv[2] ?? 'HTTP';
@@ -26,7 +26,7 @@ const formatFile = format.combine(
 );
 
 const options = {
-	level: Config.data.logLevel,
+	level: 'info',
 	format: defaultFormat,
 
 	levels: {
@@ -70,3 +70,5 @@ addColors({
 });
 
 export const Logger = createLogger(options) as ILogManager;
+
+Logger.initialize = (level: string) => { Logger.level = level; };
