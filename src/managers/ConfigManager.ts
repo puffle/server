@@ -19,7 +19,7 @@ export type TConfig = {
 		ipHeader?: string,
 		trustForwarded: boolean,
 	};
-	login: {
+	http: {
 		host: string,
 		port: number,
 	},
@@ -59,7 +59,7 @@ export class ConfigManager
 			enabled: false,
 			trustForwarded: false,
 		},
-		login: {
+		http: {
 			host: 'localhost',
 			port: 6111,
 		},

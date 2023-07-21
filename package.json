@@ -11,7 +11,7 @@
 	"license": "MIT",
 	"scripts": {
 		"world:blizzard": "ts-node src/server.ts Blizzard",
-		"http": "ts-node src/http.ts",
+		"http": "ts-node src/server.ts HTTP",
 		"build": "tsc"
 	},
 	"devDependencies": {
@@ -35,7 +35,6 @@
 		"@n0bodysec/ts-utils": "^1.0.1",
 		"@prisma/client": "5.0.0",
 		"ajv": "^8.12.0",
-		"ajv-errors": "^3.0.0",
 		"ajv-keywords": "^5.1.0",
 		"bcrypt": "^5.1.0",
 		"fastify": "^4.20.0",
