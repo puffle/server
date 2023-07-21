@@ -46,7 +46,7 @@ export class Room
 
 		if (this.data.game)
 		{
-			user.send('join_game_room', { game: this.data.id });
+			user.send('join_room', { game: this.data.id });
 			return;
 		}
 
