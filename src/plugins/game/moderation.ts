@@ -41,6 +41,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!user.isModerator) return;
 		if (!this.schemas.get('kickBanPlayer')!(args)) return;
+		if (user.data.id === args.id) return;
 
 		const recipient = this.world.users.get(args.id);
 		if (recipient === undefined || user.data.rank <= recipient.data.rank) return;
@@ -51,6 +52,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!user.isModerator) return;
 		if (!this.schemas.get('kickBanPlayer')!(args)) return;
+		if (user.data.id === args.id) return;
 
 		const recipient = this.world.users.get(args.id);
 		if (recipient === undefined || user.data.rank <= recipient.data.rank) return;

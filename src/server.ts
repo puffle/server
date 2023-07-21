@@ -12,7 +12,7 @@ import { constants } from './utils/constants';
 (async () =>
 {
 	const fastify = Fastify({
-		logger: Logger as never,
+		logger: true, // Logger as never, // TODO: fix print when parsed message is an object
 	});
 
 	try

@@ -8,6 +8,7 @@ import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
 interface IJoinRoomArgs { room: number; x: number; y: number; }
+interface IJoinIglooArgs { igloo: number; x: number; y: number; }
 
 export default class JoinPlugin extends GamePlugin implements IGamePlugin
 {
@@ -20,6 +21,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		this.events = {
 			join_server: this.joinServer,
 			join_room: this.joinRoom,
+			join_igloo: this.joinIgloo,
 		};
 
 		this.schemas = new Map<string, ValidateFunction<unknown>>([
@@ -33,6 +35,17 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
 				},
 			} as JSONSchemaType<IJoinRoomArgs>)],
+
+			['joinIgloo', MyAjv.compile({
+				type: 'object',
+				additionalProperties: false,
+				required: ['igloo', 'x', 'y'],
+				properties: {
+					igloo: { type: 'integer', minimum: 0 },
+					x: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
+					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
+				},
+			} as JSONSchemaType<IJoinIglooArgs>)],
 		]);
 	}
 
@@ -58,6 +71,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 	};
 
 	joinRoom = (args: IJoinRoomArgs, user: User) => this.schemas.get('joinRoom')!(args) && user.joinRoom(args.room, args.x, args.y);
+	joinIgloo = (args: IJoinIglooArgs, user: User) => this.schemas.get('joinIgloo')!(args) && user.joinIgloo(args.igloo, args.x, args.y);
 
 	private getSpawn = () =>
 	{
@@ -66,12 +80,12 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		if (preferredSpawn !== 0)
 		{
 			const room = this.world.rooms.get(preferredSpawn);
-			if (room !== undefined && !room.isFull) return room.data.id;
+			if (room !== undefined && !room.isFull && !room.isIgloo) return room.data.id;
 		}
 
 		const roomsArr = [...this.world.rooms];
-		let spawns = roomsArr.filter((room) => room[1].data.spawn && !room[1].isFull);
-		if (!spawns.length) spawns = roomsArr.filter((room) => !room[1].data.game && !room[1].isFull);
+		let spawns = roomsArr.filter((room) => room[1].data.spawn && !room[1].isFull && !room[1].isIgloo);
+		if (!spawns.length) spawns = roomsArr.filter((room) => !room[1].data.game && !room[1].isFull && !room[1].isIgloo);
 
 		return spawns[Math.floor(Math.random() * spawns.length)]?.[0];
 	};

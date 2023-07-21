@@ -35,6 +35,9 @@ export class Room
 		return this.population >= this.data.maxUsers;
 	}
 
+	// eslint-disable-next-line class-methods-use-this
+	get isIgloo() { return false; }
+
 	add = (user: User) =>
 	{
 		user.room = this;

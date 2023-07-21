@@ -12,7 +12,7 @@ export class PurchaseValidator
 
 	item = (id: number) => this.validate(id, 'items', this.user.inventory.items) as false | IItem;
 	igloo = (id: number) => this.validate(id, 'igloos', this.user.igloos.data);
-	// furniture = (id: number) => this.validate(id, 'furnitures');
+	furniture = (id: number) => this.validate(id, 'furnitures');
 	// flooring = (id: number) => this.validate(id, 'floorings', this.user.room.flooring);
 
 	// TODO: migrate to error code

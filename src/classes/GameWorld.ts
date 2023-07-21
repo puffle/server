@@ -18,6 +18,7 @@ import { IActionMessage, IGameAuth } from '../types/types';
 import { constants } from '../utils/constants';
 import { getSocketAddress } from '../utils/functions';
 import { User } from './User';
+import { Igloo } from './room/Igloo';
 import { Room } from './room/Room';
 
 export class GameWorld
@@ -68,7 +69,7 @@ export class GameWorld
 		tables,
 		waddles,
 	} as ICrumbs;
-	rooms: Map<number, Room>;
+	rooms: Map<number, Room | Igloo>;
 	maxUsers: number;
 
 	// eslint-disable-next-line class-methods-use-this
@@ -108,9 +109,14 @@ export class GameWorld
 			const dbUser = await Database.user.findUnique({
 				where: { username: auth.username },
 				include: {
-					igloo_inventory: true,
-					inventory: true,
 					auth_tokens: true,
+					buddies_userId: true,
+					placed_furniture: true,
+					furniture_inventory: true,
+					igloo_inventory: true,
+					igloo: true,
+					ignores_userId: true,
+					inventory: true,
 					bans_userId: {
 						take: 1,
 						where: {

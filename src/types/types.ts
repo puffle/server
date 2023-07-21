@@ -1,5 +1,6 @@
 import { ValidateFunction } from 'ajv';
 import { User } from '../classes/User';
+import { IRoom } from './crumbs';
 
 export type AnyKey = Record<string, unknown>;
 
@@ -54,3 +55,8 @@ export interface IUserSafeRoom
 
 export type TUserSafe = Omit<IUserSafeRoom, 'x' | 'y' | 'frame'>;
 export type TUserAnonymous = Omit<TUserSafe, 'joinTime'>;
+
+export type IRoomIgloo = Partial<IRoom> & {
+	id: number;
+	name: string;
+};

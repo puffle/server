@@ -131,7 +131,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (Number.isNaN(roomId))
 		{
 			// if NaN, then the room arg is a string, so we use room name
-			const room = [...this.world.rooms.values()].find((r) => r.data.name === args[0]);
+			const room = [...this.world.rooms.values()].find((r) => !r.isIgloo && r.data.name === args[0]);
 			if (room !== undefined) user.joinRoom(room.data.id);
 
 			return;

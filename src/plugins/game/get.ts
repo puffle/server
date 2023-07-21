@@ -35,6 +35,7 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 	getPlayer = async (args: IGetPlayerArgs, user: User) =>
 	{
 		if (!this.schemas.get('getPlayer')!(args)) return;
+		// if (user.data.id === args.id) return;
 
 		const requestedUser = this.world.users.get(args.id);
 		if (requestedUser !== undefined)
