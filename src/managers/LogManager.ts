@@ -1,24 +1,14 @@
 import { greenBright } from 'colorette';
-import { addColors, createLogger, format, transports } from 'winston';
+import { addColors, createLogger, format, LeveledLogMethod, transports, Logger as WinstonLogger } from 'winston';
 import { Config } from './ConfigManager';
 
+interface ILogManager extends WinstonLogger
+{
+	fatal: LeveledLogMethod;
+	trace: LeveledLogMethod;
+}
+
 const id = process.argv[2] ?? 'HTTP';
-
-const levels = Object.freeze({
-	error: 0,
-	warn: 1,
-	success: 2,
-	info: 3,
-	debug: 4,
-});
-
-const colors = Object.freeze({
-	error: 'red',
-	warn: 'yellow',
-	success: 'green',
-	info: 'white',
-	debug: 'gray',
-});
 
 const defaultFormat = format.combine(
 	format.timestamp({ format: 'HH:mm:ss' }),
@@ -36,9 +26,18 @@ const formatFile = format.combine(
 );
 
 const options = {
-	levels,
 	level: Config.data.logLevel,
 	format: defaultFormat,
+
+	levels: {
+		fatal: 0,
+		error: 0,
+		warn: 1,
+		success: 2,
+		info: 3,
+		trace: 4,
+		debug: 4,
+	},
 
 	transports: [
 		new transports.File({
@@ -60,6 +59,14 @@ const options = {
 	],
 };
 
-addColors(colors);
+addColors({
+	fatal: 'magenta',
+	error: 'red',
+	warn: 'yellow',
+	success: 'green',
+	info: 'white',
+	trace: 'gray',
+	debug: 'gray',
+});
 
-export const Logger = createLogger(options);
+export const Logger = createLogger(options) as ILogManager;

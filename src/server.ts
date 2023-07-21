@@ -12,7 +12,7 @@ import { constants } from './utils/constants';
 (async () =>
 {
 	const fastify = Fastify({
-		logger: true,
+		logger: Logger as never,
 	});
 
 	try
