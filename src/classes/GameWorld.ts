@@ -16,7 +16,7 @@ import { PluginManager } from '../managers/PluginManager';
 import { ICrumbs } from '../types/crumbs';
 import { IActionMessage, IGameAuth } from '../types/types';
 import { constants } from '../utils/constants';
-import { getSocketAddress } from '../utils/functions';
+import { getIglooId, getSocketAddress } from '../utils/functions';
 import { User } from './User';
 import { Igloo } from './room/Igloo';
 import { Room } from './room/Room';
@@ -111,10 +111,8 @@ export class GameWorld
 				include: {
 					auth_tokens: true,
 					buddies_userId: true,
-					placed_furniture: true,
 					furniture_inventory: true,
 					igloo_inventory: true,
-					igloo: true,
 					ignores_userId: true,
 					inventory: true,
 					bans_userId: {
@@ -171,6 +169,9 @@ export class GameWorld
 	close = async (user: User) =>
 	{
 		user.room?.remove(user);
+
+		const igloo = this.rooms.get(getIglooId(user.data.id));
+		if (igloo !== undefined && igloo.isIgloo) (igloo as Igloo).locked = true;
 
 		this.closeSocket(user.socket);
 		this.users.delete(user.data.id);

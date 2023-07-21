@@ -7,7 +7,7 @@ import { Room } from './Room';
 
 export class Igloo extends Room
 {
-	constructor(data: IRoomIgloo, dbData: PrismaIgloo, furniture: Furniture[])
+	constructor(ownerUsername: string, data: IRoomIgloo, dbData: PrismaIgloo, furniture: Furniture[])
 	{
 		data.member = 0;
 		data.maxUsers = 0;
@@ -16,14 +16,17 @@ export class Igloo extends Room
 
 		super(data as IRoom);
 
+		this.ownerUsername = ownerUsername;
 		this.dbData = dbData;
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		this.furniture = furniture.map(({ id, ...rest }) => rest);
 	}
 
+	ownerUsername: string;
 	dbData: PrismaIgloo;
 	furniture: Omit<Furniture, 'id'>[];
+	locked = true;
 
 	dbUpdate = async (data: Partial<PrismaIgloo>) => Database.igloo.update({ where: { userId: this.dbData.userId }, data });
 
@@ -58,7 +61,6 @@ export class Igloo extends Room
 		type: this.dbData.type,
 		flooring: this.dbData.flooring,
 		music: this.dbData.music,
-		location: this.dbData.location,
 		furniture: this.furniture,
 	});
 

@@ -3,7 +3,7 @@ import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
-import { IGamePlugin, TActionMessageArgs } from '../../types/types';
+import { IGamePlugin } from '../../types/types';
 import { GamePlugin } from '../GamePlugin';
 
 interface IKickBanPlayerArgs { id: number; }
@@ -35,7 +35,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	mutePlayer = (args: TActionMessageArgs, user: User) => user.isModerator && user.send('error', { error: 'Not implemented' }); // TODO: implement; add ajv
+	mutePlayer = (args: unknown, user: User) => user.isModerator && user.send('error', { error: 'Not implemented' }); // TODO: implement; add ajv
 
 	kickPlayer = (args: IKickBanPlayerArgs, user: User) =>
 	{

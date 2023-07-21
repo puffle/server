@@ -1,6 +1,8 @@
 import { Socket } from 'socket.io';
 import { Config } from '../managers/ConfigManager';
 
+export const getIglooId = (userId: number) => Config.data.game.iglooIdOffset + userId;
+
 export function pick<T extends Record<string, unknown>>(object: T, ...keys: Array<keyof T>): Partial<T>
 {
 	return keys.reduce((obj, key) =>

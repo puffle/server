@@ -8,7 +8,7 @@ datasource db {
 }
 
 model AuthToken {
-  userId    Int      @db.UnsignedInt
+  userId    Int      @map("user_id") @db.UnsignedInt
   selector  String   @db.Char(36)
   validator String   @db.Char(60)
   timestamp DateTime @default(now()) @db.Timestamp(0)
@@ -20,9 +20,9 @@ model AuthToken {
 
 model Ban {
   id          Int      @id @default(autoincrement()) @db.UnsignedInt
-  userId      Int      @db.UnsignedInt
+  userId      Int      @map("user_id") @db.UnsignedInt
   expires     DateTime @db.Timestamp(0)
-  moderatorId Int?     @db.UnsignedInt
+  moderatorId Int?     @map("moderator_id") @db.UnsignedInt
   message     String?  @db.VarChar(60)
   issued      DateTime @default(now()) @db.Timestamp(0)
   moderator   User?    @relation("bans_moderatorId", fields: [moderatorId], references: [id], onUpdate: SetNull)
@@ -34,8 +34,8 @@ model Ban {
 }
 
 model Buddy {
-  userId  Int  @db.UnsignedInt
-  buddyId Int  @db.UnsignedInt
+  userId  Int  @map("user_id") @db.UnsignedInt
+  buddyId Int  @map("buddy_id") @db.UnsignedInt
   buddy   User @relation("buddies_buddyId", fields: [buddyId], references: [id], onDelete: Cascade)
   user    User @relation("buddies_userId", fields: [userId], references: [id], onDelete: Cascade)
 
@@ -45,8 +45,8 @@ model Buddy {
 }
 
 model FurnitureInventory {
-  userId   Int  @db.UnsignedInt
-  itemId   Int  @db.UnsignedInt
+  userId   Int  @map("user_id") @db.UnsignedInt
+  itemId   Int  @map("item_id") @db.UnsignedInt
   quantity Int  @db.UnsignedInt
   user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -56,8 +56,8 @@ model FurnitureInventory {
 
 model Furniture {
   id          Int  @id @default(autoincrement()) @db.UnsignedInt
-  userId      Int  @db.UnsignedInt
-  furnitureId Int  @db.UnsignedInt
+  userId      Int  @map("user_id") @db.UnsignedInt
+  furnitureId Int  @map("furniture_id") @db.UnsignedInt
   x           Int  @default(0) @db.UnsignedSmallInt
   y           Int  @default(0) @db.UnsignedSmallInt
   rotation    Int  @default(1) @db.UnsignedSmallInt
@@ -69,8 +69,8 @@ model Furniture {
 }
 
 model IglooInventory {
-  userId  Int  @db.UnsignedInt
-  iglooId Int  @db.UnsignedInt
+  userId  Int  @map("user_id") @db.UnsignedInt
+  iglooId Int  @map("igloo_id") @db.UnsignedInt
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, iglooId])
@@ -78,20 +78,18 @@ model IglooInventory {
 }
 
 model Igloo {
-  userId   Int     @id @db.UnsignedInt
-  type     Int     @default(1) @db.UnsignedInt
-  flooring Int     @default(0) @db.UnsignedInt
-  music    Int     @default(0) @db.UnsignedInt
-  location Int     @default(1) @db.UnsignedInt
-  locked   Boolean @default(true)
-  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int  @id @map("user_id") @db.UnsignedInt
+  type     Int  @default(1) @db.UnsignedInt
+  flooring Int  @default(0) @db.UnsignedInt
+  music    Int  @default(0) @db.UnsignedInt
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("igloos")
 }
 
 model Ignore {
-  userId      Int  @db.UnsignedInt
-  ignoreId    Int  @db.UnsignedInt
+  userId      Int  @map("user_id") @db.UnsignedInt
+  ignoreId    Int  @map("ignore_id") @db.UnsignedInt
   ignoredUser User @relation("ignores_ignoreId", fields: [ignoreId], references: [id], onDelete: Cascade)
   user        User @relation("ignores_userId", fields: [userId], references: [id], onDelete: Cascade)
 
@@ -101,8 +99,8 @@ model Ignore {
 }
 
 model Inventory {
-  userId Int  @db.UnsignedInt
-  itemId Int  @db.UnsignedInt
+  userId Int  @map("user_id") @db.UnsignedInt
+  itemId Int  @map("item_id") @db.UnsignedInt
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, itemId])
@@ -114,10 +112,10 @@ model User {
   username            String               @unique @db.VarChar(12)
   email               String?              @db.VarChar(254)
   password            String               @db.Char(60)
-  loginKey            String?              @db.Text
+  loginKey            String?              @map("login_key") @db.Text
   rank                Int                  @default(0) @db.UnsignedTinyInt
-  permaBan            Boolean              @default(false)
-  joinTime            DateTime             @default(now()) @db.Timestamp(0)
+  permaBan            Boolean              @default(false) @map("perma_ban")
+  joinTime            DateTime             @default(now()) @map("join_time") @db.Timestamp(0)
   coins               Int                  @default(500) @db.UnsignedInt
   head                Int                  @default(0) @db.UnsignedInt
   face                Int                  @default(0) @db.UnsignedInt

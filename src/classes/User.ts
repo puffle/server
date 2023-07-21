@@ -1,4 +1,4 @@
-import { Prisma, Igloo as PrismaIgloo, User as PrismaUser } from '@prisma/client';
+import { Prisma, User as PrismaUser } from '@prisma/client';
 import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
 import { IglooCollection } from '../collections/IglooCollection';
@@ -9,7 +9,7 @@ import { Logger } from '../managers/LogManager';
 import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types/types';
 import { constants } from '../utils/constants';
 import { EItemSlots } from '../utils/enums';
-import { getSocketAddress, pick } from '../utils/functions';
+import { getIglooId, getSocketAddress, pick } from '../utils/functions';
 import { GameWorld } from './GameWorld';
 import { Igloo } from './room/Igloo';
 import { Room } from './room/Room';
@@ -20,10 +20,8 @@ export type TDbUser = Prisma.UserGetPayload<{
 		auth_tokens: true,
 		bans_userId: true,
 		buddies_userId: true,
-		placed_furniture: true,
 		furniture_inventory: true,
 		igloo_inventory: true,
-		igloo: true,
 		ignores_userId: true,
 		inventory: true,
 	};
@@ -143,31 +141,39 @@ export class User
 
 	leaveRoom = (roomId: number) => this.world.rooms.get(roomId)?.remove(this);
 
-	joinIgloo = (iglooId: number, x = 0, y = 0) =>
+	joinIgloo = async (userId: number, x = 0, y = 0) =>
 	{
-		const realId = iglooId + Config.data.game.iglooIdOffset;
+		const iglooId = getIglooId(userId);
+		if (iglooId < Config.data.game.iglooIdOffset) return;
 
-		const igloo = this.world.rooms.get(realId);
+		const igloo = this.world.rooms.get(iglooId);
 		if (igloo === undefined)
 		{
-			const dbData: PrismaIgloo = {
-				userId: this.data.igloo?.userId ?? this.data.id,
-				type: this.data.igloo?.type ?? 1,
-				flooring: this.data.igloo?.flooring ?? 0,
-				music: this.data.igloo?.music ?? 0,
-				location: this.data.igloo?.location ?? 1,
-				locked: this.data.igloo?.locked ?? false,
-			};
+			const res = await Database.igloo.findUnique({
+				where: { userId },
+				include: {
+					user: {
+						select: {
+							username: true,
+							placed_furniture: true,
+						},
+					},
+				},
+			});
+
+			if (res == null) return;
+
+			const { user, ...rest } = res;
 
 			const data = {
-				id: realId,
-				name: `${this.data.username}'s Igloo`,
+				id: iglooId,
+				name: `${user.username}'s Igloo`,
 			};
 
-			this.world.rooms.set(realId, new Igloo(data, dbData, this.data.placed_furniture));
+			this.world.rooms.set(iglooId, new Igloo(user.username, data, rest, user.placed_furniture ?? []));
 		}
 
-		this.joinRoom(realId, x, y);
+		this.joinRoom(iglooId, x, y);
 	};
 
 	dbUpdate = async (data: Partial<PrismaUser>) => Database.user.update({ where: { id: this.data.id }, data });

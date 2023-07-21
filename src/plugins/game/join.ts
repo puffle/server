@@ -3,7 +3,7 @@ import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Config } from '../../managers/ConfigManager';
-import { IGamePlugin, TActionMessageArgs } from '../../types/types';
+import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
@@ -49,7 +49,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		]);
 	}
 
-	joinServer = (args: TActionMessageArgs, user: User) =>
+	joinServer = (args: unknown, user: User) =>
 	{
 		user.send('load_player', {
 			user: user.getSafe,
