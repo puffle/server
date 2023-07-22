@@ -4,12 +4,14 @@ import { User } from '../../classes/User';
 import { Igloo } from '../../classes/room/Igloo';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
+import { constants } from '../../utils/constants';
 import { getIglooId } from '../../utils/functions';
 import { GamePlugin } from '../GamePlugin';
 
 interface IAddIglooOrGetIglooOpenArgs { igloo: number; }
 interface IAddFurnitureArgs { furniture: number; }
 interface IUpdateIglooArgs { type: number; }
+interface IUpdateMusicArgs { music: number; }
 
 export default class IglooPlugin extends GamePlugin implements IGamePlugin
 {
@@ -24,6 +26,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 			add_furniture: this.addFurniture,
 
 			update_igloo: this.updateIgloo,
+			update_music: this.updateMusic,
 
 			open_igloo: this.openIgloo,
 			close_igloo: this.closeIgloo,
@@ -59,6 +62,15 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 					type: { type: 'integer', minimum: 0 },
 				},
 			} as JSONSchemaType<IUpdateIglooArgs>)],
+
+			['updateMusic', MyAjv.compile({
+				type: 'object',
+				additionalProperties: false,
+				required: ['music'],
+				properties: {
+					music: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_MUSIC },
+				},
+			} as JSONSchemaType<IUpdateMusicArgs>)],
 		]);
 	}
 
@@ -90,6 +102,8 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 	updateIgloo = async (args: IUpdateIglooArgs, user: User) =>
 	{
+		if (!this.schemas.get('updateIgloo')!(args)) return;
+
 		const igloo = this.getIgloo(user.data.id);
 		if (igloo === undefined || igloo !== user.room || igloo.dbData.type === args.type) return;
 
@@ -102,7 +116,28 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		igloo.dbData.type = args.type;
 		igloo.dbData.flooring = 0;
 
+		// TODO: desync this
+		// on AS2, the igloo was updated only for the igloo owner, and no one else.
+		// however, the owner "does not re-enter the igloo" (join_igloo), but the igloo is updated with a loading screen.
+		// new event is required to handle this
 		igloo.refresh(user);
+	};
+
+	updateMusic = async (args: IUpdateMusicArgs, user: User) =>
+	{
+		if (!this.schemas.get('updateMusic')!(args)) return;
+
+		const igloo = this.getIgloo(user.data.id);
+		if (igloo === undefined || igloo !== user.room || igloo.dbData.music === args.music) return;
+
+		await igloo.dbUpdate({ music: args.music });
+		igloo.dbData.music = args.music;
+
+		user.send('update_music', { music: args.music }); // not synced, see below
+
+		// on AS2, igloo's updated music is not being sent to all other penguins in the igloo,
+		// they must rejoin to listen the new music.
+		// user.sendRoom('update_music', { music: args.music }, []);
 	};
 
 	openIgloo = (args: unknown, user: User) =>

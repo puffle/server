@@ -77,9 +77,7 @@ export class User
 
 	send = (action: string, args: TActionMessageArgs = {}) => this.socket.send({ action, args });
 	sendSocketRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	sendRoom = (action: string, args: TActionMessageArgs = {}) => this.room?.send(this, action, args);
+	sendRoom = (action: string, args: TActionMessageArgs = {}, filter = [this]) => this.room?.send(this, action, args, filter);
 
 	// see DatabaseManager > findAnonymousUser()
 	get getAnonymous(): TUserAnonymous
@@ -207,6 +205,6 @@ export class User
 			(this.data as AnyKey)[type] = itemId;
 		});
 
-		this.room?.send(this, 'update_player', { id: this.data.id, item: itemId, slot: type }, []);
+		this.sendRoom('update_player', { id: this.data.id, item: itemId, slot: type }, []);
 	};
 }

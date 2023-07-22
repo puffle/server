@@ -67,6 +67,9 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		const spawn = this.getSpawn();
 		if (spawn === undefined) return;
 
+		// sending the coordinates (x, y) = (0, 0) does not synchronize the player,
+		// causing him to be seen in a different position from where the other players see him.
+		// this is not a bug, but the normal operation in AS2.
 		user.joinRoom(spawn);
 	};
 
