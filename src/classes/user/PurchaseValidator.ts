@@ -1,5 +1,6 @@
 import { ICrumbs, IItem } from '../../types/crumbs';
 import { User } from '../User';
+import { Igloo } from '../room/Igloo';
 
 export class PurchaseValidator
 {
@@ -13,7 +14,7 @@ export class PurchaseValidator
 	item = (id: number) => this.validate(id, 'items', this.user.inventory.items) as false | IItem;
 	igloo = (id: number) => this.validate(id, 'igloos', this.user.igloos.data);
 	furniture = (id: number) => this.validate(id, 'furnitures');
-	// flooring = (id: number) => this.validate(id, 'floorings', this.user.room.flooring);
+	flooring = (id: number) => this.validate(id, 'floorings', [(this.user.room as Igloo).dbData.flooring]);
 
 	// TODO: migrate to error code
 	validate = (id: number, type: keyof ICrumbs, includes: number[] = []) =>

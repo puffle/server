@@ -9,6 +9,7 @@ import { GamePlugin } from '../GamePlugin';
 
 interface IAddIglooOrGetIglooOpenArgs { igloo: number; }
 interface IAddFurnitureArgs { furniture: number; }
+interface IUpdateIglooArgs { type: number; }
 
 export default class IglooPlugin extends GamePlugin implements IGamePlugin
 {
@@ -21,6 +22,8 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		this.events = {
 			add_igloo: this.addIgloo,
 			add_furniture: this.addFurniture,
+
+			update_igloo: this.updateIgloo,
 
 			open_igloo: this.openIgloo,
 			close_igloo: this.closeIgloo,
@@ -47,6 +50,15 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 					furniture: { type: 'integer', minimum: 0 },
 				},
 			} as JSONSchemaType<IAddFurnitureArgs>)],
+
+			['updateIgloo', MyAjv.compile({
+				type: 'object',
+				additionalProperties: false,
+				required: ['type'],
+				properties: {
+					type: { type: 'integer', minimum: 0 },
+				},
+			} as JSONSchemaType<IUpdateIglooArgs>)],
 		]);
 	}
 
@@ -74,6 +86,23 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 		await user.updateCoins(-furniture.cost);
 		user.send('add_furniture', { furniture: args.furniture, coins: user.data.coins });
+	};
+
+	updateIgloo = async (args: IUpdateIglooArgs, user: User) =>
+	{
+		const igloo = this.getIgloo(user.data.id);
+		if (igloo === undefined || igloo !== user.room || igloo.dbData.type === args.type) return;
+
+		if (!user.igloos.data.includes(args.type)) return;
+
+		// TODO: use Promise.all()
+		await igloo.clearFurniture();
+		await igloo.dbUpdate({ type: args.type, flooring: 0 });
+
+		igloo.dbData.type = args.type;
+		igloo.dbData.flooring = 0;
+
+		igloo.refresh(user);
 	};
 
 	openIgloo = (args: unknown, user: User) =>

@@ -30,7 +30,11 @@ export class Igloo extends Room
 
 	dbUpdate = async (data: Partial<PrismaIgloo>) => Database.igloo.update({ where: { userId: this.dbData.userId }, data });
 
-	clearFurniture = async () => Database.igloo.delete({ where: { userId: this.dbData.userId } });
+	clearFurniture = async () =>
+	{
+		await Database.furniture.deleteMany({ where: { userId: this.dbData.userId } });
+		this.furniture = [];
+	};
 
 	override add = (user: User) =>
 	{
