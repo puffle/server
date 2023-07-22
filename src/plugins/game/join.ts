@@ -58,9 +58,9 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 			// TODO: finish this
 			buddies: [],
 			ignores: [],
-			inventory: user.inventory.items,
-			igloos: user.igloos.data,
-			furniture: [],
+			inventory: user.inventory,
+			igloos: user.igloos,
+			furniture: user.furniture,
 		});
 
 		// TODO: update login token

@@ -1,6 +1,7 @@
 import { Prisma, User as PrismaUser } from '@prisma/client';
 import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
+import { FurnitureCollection } from '../collections/FurnitureCollection';
 import { IglooCollection } from '../collections/IglooCollection';
 import { InventoryCollection } from '../collections/InventoryCollection';
 import { Config } from '../managers/ConfigManager';
@@ -38,6 +39,8 @@ export class User
 
 		this.inventory = new InventoryCollection(this);
 		this.igloos = new IglooCollection(this);
+		this.furniture = new FurnitureCollection(this);
+		this.validatePurchase = new PurchaseValidator(this);
 	}
 
 	socket: Socket;
@@ -47,7 +50,8 @@ export class User
 
 	inventory: InventoryCollection;
 	igloos: IglooCollection;
-	validatePurchase = new PurchaseValidator(this);
+	furniture: FurnitureCollection;
+	validatePurchase: PurchaseValidator;
 
 	room: Room | undefined;
 	roomData = {

@@ -39,18 +39,18 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 	openIgloo = (args: unknown, user: User) =>
 	{
-		const igloo = this.world.rooms.get(getIglooId(user.data.id));
-		if (igloo === undefined || !igloo.isIgloo || igloo !== user.room) return;
+		const igloo = this.getIgloo(user.data.id);
+		if (igloo === undefined || igloo !== user.room) return;
 
-		(igloo as Igloo).locked = false;
+		igloo.locked = false;
 	};
 
 	closeIgloo = (args: unknown, user: User) =>
 	{
-		const igloo = this.world.rooms.get(getIglooId(user.data.id));
-		if (igloo === undefined || !igloo.isIgloo || igloo !== user.room) return;
+		const igloo = this.getIgloo(user.data.id);
+		if (igloo === undefined || igloo !== user.room) return;
 
-		(igloo as Igloo).locked = true;
+		igloo.locked = true;
 	};
 
 	getIgloos = (args: unknown, user: User) => user.send('get_igloos', {
@@ -66,8 +66,8 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!this.schemas.get('getIglooOpen')!(args)) return;
 
-		const igloo = this.world.rooms.get(getIglooId(user.data.id));
-		if (igloo === undefined || !igloo.isIgloo || (igloo as Igloo).locked)
+		const igloo = this.getIgloo(user.data.id);
+		if (igloo === undefined || igloo.locked)
 		{
 			user.send('get_igloo_open', { open: false });
 			return;
@@ -75,4 +75,6 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 		user.send('get_igloo_open', { open: true });
 	};
+
+	getIgloo = (userId: number) => this.world.rooms.get(getIglooId(userId)) as Igloo | undefined;
 }

@@ -35,4 +35,6 @@ export class IglooCollection extends Collection
 		removeItemFromArray(this.data, iglooId);
 		removeItemFromArray(this.user.data.igloo_inventory, { userId: this.user.data.id, iglooId });
 	});
+
+	toJSON = () => this.data;
 }

@@ -35,4 +35,6 @@ export class InventoryCollection extends Collection
 		removeItemFromArray(this.items, itemId);
 		removeItemFromArray(this.user.data.inventory, { userId: this.user.data.id, itemId });
 	});
+
+	toJSON = () => this.items;
 }
