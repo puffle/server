@@ -2,6 +2,9 @@
 
 **Puffle** is a next-gen [Yukon](https://github.com/wizguin/yukon-server/)-inspired "*any game*" private server.
 
+> :warning: Puffle is under development and one or more features of Yukon may not yet be available.  
+You can check the current status on the [Projects tab](https://github.com/orgs/puffle/projects/3).
+
 ## 🃏 Features
 
 - **TypeScript**: Uses TypeScript instead of JavaScript, getting all the benefits of the language.
@@ -13,6 +16,8 @@
 - **Configurable**: Highly configurable through the use of JSON-based config files.
 
 ## 🚀 Deploy
+
+> :warning: This code has [breaking changes](docs/BREAKING_CHANGES.md) that make it incompatible with the Yukon client. A modified client can be found [here](https://github.com/puffle/client).
 
 The easiest way to deploy is by using Docker!  
 For your convenience, we have a repository with recommended Docker images and scripts to run a full copy of the client and server.  
@@ -38,7 +43,3 @@ Read the [commits](../../commits) for a comprehensive list of changes.
 ## 📜 License
 
 Licensed under [MIT License](LICENSE).
-
-## 📄 Notice
-
-The project is under development and there are many things that may change (and will change) over time.
