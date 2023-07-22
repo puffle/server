@@ -3,6 +3,7 @@ import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { Igloo } from '../../classes/room/Igloo';
 import { MyAjv } from '../../managers/AjvManager';
+import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { getIglooId } from '../../utils/functions';
@@ -13,6 +14,17 @@ interface IAddFurnitureArgs { furniture: number; }
 interface IUpdateIglooArgs { type: number; }
 interface IUpdateFlooringArgs { flooring: number; }
 interface IUpdateMusicArgs { music: number; }
+
+interface IUpdateFurnitureArgs
+{
+	furniture: {
+		furnitureId: number;
+		x: number;
+		y: number;
+		rotation: number;
+		frame: number;
+	}[];
+}
 
 export default class IglooPlugin extends GamePlugin implements IGamePlugin
 {
@@ -27,6 +39,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 			add_furniture: this.addFurniture,
 
 			update_igloo: this.updateIgloo,
+			update_furniture: this.updateFurniture,
 			update_flooring: this.updateFlooring,
 			update_music: this.updateMusic,
 
@@ -64,6 +77,29 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 					type: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<IUpdateIglooArgs>)],
+
+			['updateFurniture', MyAjv.compile({
+				type: 'object',
+				additionalProperties: false,
+				required: ['furniture'],
+				properties: {
+					furniture: {
+						type: 'array',
+						items: {
+							type: 'object',
+							additionalProperties: false,
+							required: ['furnitureId', 'x', 'y', 'rotation', 'frame'],
+							properties: {
+								furnitureId: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
+								x: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_SMALLINT },
+								y: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_SMALLINT },
+								rotation: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_SMALLINT },
+								frame: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_SMALLINT },
+							},
+						},
+					},
+				},
+			} as JSONSchemaType<IUpdateFurnitureArgs>)],
 
 			['updateFlooring', MyAjv.compile({
 				type: 'object',
@@ -130,6 +166,36 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		// TODO: add fixSync (to desync this)
 		// join_igloo is not being used on AS2, a custom event was used to update the igloo
 		igloo.refresh(user);
+	};
+
+	updateFurniture = async (args: IUpdateFurnitureArgs, user: User) =>
+	{
+		if (!this.schemas.get('updateFurniture')!(args)) return;
+
+		const igloo = this.getIgloo(user.data.id);
+		if (igloo === undefined || igloo !== user.room) return;
+
+		await igloo.clearFurniture();
+
+		const quantities: Record<number, number> = {};
+
+		args.furniture.forEach((item) =>
+		{
+			const id = item.furnitureId;
+			if (!item || user.furniture.data.get(id) === undefined) return;
+
+			// update quantity
+			quantities[id] = (quantities[id] !== undefined) ? (quantities[id]! + 1) : 1;
+
+			// validate quantity
+			if (quantities[id]! > user.furniture.getQuantity(id)) return;
+
+			igloo.furniture.push({ ...item, userId: user.data.id });
+		});
+
+		await Database.furniture.createMany({ data: igloo.furniture });
+
+		// TODO: add fixSync
 	};
 
 	updateFlooring = async (args: IUpdateFlooringArgs, user: User) =>
