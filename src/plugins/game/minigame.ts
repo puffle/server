@@ -3,6 +3,7 @@ import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
+import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
 interface IGameOverArgs { coins: number; }
@@ -25,7 +26,7 @@ export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['coins'],
 				properties: {
-					coins: { type: 'integer', minimum: 0 },
+					coins: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<IGameOverArgs>)],
 		]);

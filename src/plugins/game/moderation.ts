@@ -4,6 +4,7 @@ import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
+import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
 interface IKickBanPlayerArgs { id: number; }
@@ -28,7 +29,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['id'],
 				properties: {
-					id: { type: 'integer', minimum: 0 },
+					id: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<IKickBanPlayerArgs>)],
 		]);

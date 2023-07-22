@@ -64,7 +64,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['safe'],
 				properties: {
-					safe: { type: 'integer', minimum: 0 },
+					safe: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<ISendSafeArgs>)],
 
@@ -73,7 +73,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['emote'],
 				properties: {
-					emote: { type: 'integer', minimum: 0 },
+					emote: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<ISendEmoteArgs>)],
 		]);

@@ -43,7 +43,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['igloo'],
 				properties: {
-					igloo: { type: 'integer', minimum: 0 },
+					igloo: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<IAddIglooOrGetIglooOpenArgs>)],
 
@@ -52,7 +52,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['furniture'],
 				properties: {
-					furniture: { type: 'integer', minimum: 0 },
+					furniture: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<IAddFurnitureArgs>)],
 
@@ -61,7 +61,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['type'],
 				properties: {
-					type: { type: 'integer', minimum: 0 },
+					type: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<IUpdateIglooArgs>)],
 
@@ -70,7 +70,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['flooring'],
 				properties: {
-					flooring: { type: 'integer', minimum: 0 },
+					flooring: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<IUpdateFlooringArgs>)],
 

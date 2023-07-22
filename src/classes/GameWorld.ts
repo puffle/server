@@ -1,4 +1,5 @@
 import { verify } from 'jsonwebtoken';
+import { clamp } from 'lodash';
 import { Server, Socket } from 'socket.io';
 import { EventEmitter } from 'stream';
 import floorings from '../data/floorings.json';
@@ -195,9 +196,14 @@ export class GameWorld
 	 * @async
 	 * @returns {Promise}
 	 */
-	updatePopulation = async () => Database.world.upsert({
-		where: { id: this.id },
-		update: { population: this.population },
-		create: { id: this.id, population: this.population },
-	});
+	updatePopulation = async () =>
+	{
+		const population = clamp(this.population, 0, constants.limits.sql.MAX_UNSIGNED_TINYINT);
+
+		return Database.world.upsert({
+			where: { id: this.id },
+			update: { population },
+			create: { id: this.id, population },
+		});
+	};
 }

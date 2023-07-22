@@ -3,6 +3,7 @@ import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
+import { constants } from '../../utils/constants';
 import { EItemSlots } from '../../utils/enums';
 import { GamePlugin } from '../GamePlugin';
 
@@ -29,7 +30,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['item'],
 				properties: {
-					item: { type: 'integer', minimum: 1 },
+					item: { type: 'integer', minimum: 1, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
 			} as JSONSchemaType<IUpdatePlayerOrAddItemArgs>)],
 
