@@ -13,19 +13,14 @@ export class PluginManager
 	constructor(world: GameWorld, folderName: string)
 	{
 		this.world = world;
-		this.path = join(__dirname, '..', 'plugins', folderName);
+		this.path = join('..', 'plugins', folderName);
 		this.loadPlugins();
 	}
 
 	loadPlugins = async () =>
 	{
-		const files = (await readdir(this.path)).filter((file) =>
-		{
-			const ext = extname(file);
-			return ext === '.js' || ext === '.ts';
-		});
-
-		const promises = await Promise.all(files.map((file) => import(join(this.path, file))));
+		const files = (await readdir(join(__dirname, this.path))).filter((file) => ['.js', '.ts'].includes(extname(file)));
+		const promises = await Promise.all(files.map((file) => import(`${this.path}/${file}`)));
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		promises.forEach((plugin: any) =>

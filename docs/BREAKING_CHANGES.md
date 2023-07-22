@@ -7,5 +7,6 @@ This server was designed with the idea of being as compatible as possible with Y
 - The database schema is a bit different.
 - Some game events have been modified, deleted or merged.
 - The configuration file (config.json) is different and has different options.
+- Prisma ORM does not support database triggers, so these are not included by default.
 
 Changes to the client were required to make it compatible with these features. The modified client can be found [here](https://github.com/puffle/client).

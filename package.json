@@ -10,8 +10,8 @@
 	"author": "Nobody <admin@n0bodysec.com> (https://n0bodysec.com)",
 	"license": "MIT",
 	"scripts": {
-		"world:blizzard": "ts-node src/server.ts Blizzard",
-		"http": "ts-node src/server.ts HTTP",
+		"world:blizzard": "tsx src/server.ts Blizzard",
+		"http": "tsx src/server.ts HTTP",
 		"build": "tsc"
 	},
 	"devDependencies": {
@@ -26,6 +26,7 @@
 		"eslint-plugin-import": "^2.27.5",
 		"prisma": "^5.0.0",
 		"ts-node": "^10.9.1",
+		"tsx": "^3.12.7",
 		"typescript": "^5.1.6"
 	},
 	"dependencies": {
