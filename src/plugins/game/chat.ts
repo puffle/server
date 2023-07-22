@@ -5,6 +5,7 @@ import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
+import IglooPlugin from './Igloo';
 import ItemPlugin from './Item';
 
 interface ISendMessageArgs { message: string; }
@@ -31,6 +32,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			// moderator commands
 			['ai', this.cmdItems],
 			['ac', this.cmdCoins],
+			['af', this.cmdFurniture],
 			['jr', this.cmdJoinRoom],
 			['rooms', this.cmdPopulation],
 			['bc', this.cmdBroadcast],
@@ -166,12 +168,25 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!user.isModerator) return;
 
-		const itemId = Number(args[0]);
-		if (Number.isNaN(itemId)) return;
+		const item = Number(args[0]);
+		if (Number.isNaN(item)) return;
 
 		const plugin = this.world.pluginManager.plugins.get('Item');
 		if (plugin === undefined) return;
 
-		(plugin as ItemPlugin).addItem({ item: itemId }, user);
+		(plugin as ItemPlugin).addItem({ item }, user);
+	};
+
+	cmdFurniture = (args: string[], user: User) =>
+	{
+		if (!user.isModerator) return;
+
+		const furniture = Number(args[0]);
+		if (Number.isNaN(furniture)) return;
+
+		const plugin = this.world.pluginManager.plugins.get('Igloo');
+		if (plugin === undefined) return;
+
+		(plugin as IglooPlugin).addFurniture({ furniture }, user);
 	};
 }
