@@ -3,6 +3,7 @@ import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { Igloo } from '../../classes/room/Igloo';
 import { MyAjv } from '../../managers/AjvManager';
+import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -195,7 +196,8 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 		await Database.furniture.createMany({ data: igloo.furniture });
 
-		// TODO: add fixSync
+		// TODO: add a custom event to update furniture without rejoin
+		if (Config.data.game.fixSync) igloo.refresh(user);
 	};
 
 	updateFlooring = async (args: IUpdateFlooringArgs, user: User) =>
@@ -213,9 +215,8 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 		await user.updateCoins(-flooring.cost);
 
-		// TODO: add fixSync
-
 		user.send('update_flooring', { flooring: args.flooring, coins: user.data.coins });
+		if (Config.data.game.fixSync) user.sendRoom('update_flooring', { flooring: args.flooring });
 	};
 
 	updateMusic = async (args: IUpdateMusicArgs, user: User) =>
@@ -228,10 +229,11 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		await igloo.dbUpdate({ music: args.music });
 		igloo.dbData.music = args.music;
 
-		// TODO: add fixSync
-		// if (Config.data.game.fixSync) user.sendRoom('update_music', { music: args.music }, []);
-
-		user.send('update_music', { music: args.music });
+		if (!Config.data.game.fixSync)
+		{
+			user.send('update_music', { music: args.music });
+		}
+		else user.sendRoom('update_music', { music: args.music }, []);
 	};
 
 	openIgloo = (args: unknown, user: User) =>
