@@ -7,7 +7,8 @@ import { IGamePlugin } from '../../types/types';
 import { getIglooId } from '../../utils/functions';
 import { GamePlugin } from '../GamePlugin';
 
-interface IGetIglooOpen { igloo: number; }
+interface IAddIglooOrGetIglooOpenArgs { igloo: number; }
+interface IAddFurnitureArgs { furniture: number; }
 
 export default class IglooPlugin extends GamePlugin implements IGamePlugin
 {
@@ -18,6 +19,9 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
+			add_igloo: this.addIgloo,
+			add_furniture: this.addFurniture,
+
 			open_igloo: this.openIgloo,
 			close_igloo: this.closeIgloo,
 
@@ -26,16 +30,51 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		};
 
 		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['getIglooOpen', MyAjv.compile({
+			['addIglooOrGetIglooOpen', MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['igloo'],
 				properties: {
 					igloo: { type: 'integer', minimum: 0 },
 				},
-			} as JSONSchemaType<IGetIglooOpen>)],
+			} as JSONSchemaType<IAddIglooOrGetIglooOpenArgs>)],
+
+			['addFurniture', MyAjv.compile({
+				type: 'object',
+				additionalProperties: false,
+				required: ['furniture'],
+				properties: {
+					furniture: { type: 'integer', minimum: 0 },
+				},
+			} as JSONSchemaType<IAddFurnitureArgs>)],
 		]);
 	}
+
+	addIgloo = async (args: IAddIglooOrGetIglooOpenArgs, user: User) =>
+	{
+		if (!this.schemas.get('addIglooOrGetIglooOpen')!(args)) return;
+
+		const igloo = user.validatePurchase.igloo(args.igloo);
+		if (!igloo) return;
+
+		user.igloos.add(args.igloo);
+		await user.updateCoins(-igloo.cost);
+
+		user.send('add_igloo', { igloo: args.igloo, coins: user.data.coins });
+	};
+
+	addFurniture = async (args: IAddFurnitureArgs, user: User) =>
+	{
+		if (!this.schemas.get('addFurniture')!(args)) return;
+
+		const furniture = user.validatePurchase.furniture(args.furniture);
+		if (!furniture) return;
+
+		if (!user.furniture.add(args.furniture)) return;
+
+		await user.updateCoins(-furniture.cost);
+		user.send('add_furniture', { furniture: args.furniture, coins: user.data.coins });
+	};
 
 	openIgloo = (args: unknown, user: User) =>
 	{
@@ -62,9 +101,9 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 			})),
 	});
 
-	getIglooOpen = (args: IGetIglooOpen, user: User) =>
+	getIglooOpen = (args: IAddIglooOrGetIglooOpenArgs, user: User) =>
 	{
-		if (!this.schemas.get('getIglooOpen')!(args)) return;
+		if (!this.schemas.get('addIglooOrGetIglooOpen')!(args)) return;
 
 		const igloo = this.getIgloo(user.data.id);
 		if (igloo === undefined || igloo.locked)

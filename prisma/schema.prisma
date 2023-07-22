@@ -82,6 +82,7 @@ model Igloo {
   type     Int  @default(1) @db.UnsignedInt
   flooring Int  @default(0) @db.UnsignedInt
   music    Int  @default(0) @db.UnsignedInt
+  location Int  @default(1) @db.UnsignedInt
   user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("igloos")

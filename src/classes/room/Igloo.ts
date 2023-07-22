@@ -62,6 +62,7 @@ export class Igloo extends Room
 		flooring: this.dbData.flooring,
 		music: this.dbData.music,
 		furniture: this.furniture,
+		location: this.dbData.location,
 	});
 
 	// eslint-disable-next-line class-methods-use-this
