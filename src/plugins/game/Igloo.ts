@@ -3,6 +3,7 @@ import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { Igloo } from '../../classes/room/Igloo';
 import { MyAjv } from '../../managers/AjvManager';
+import { Config } from '../../managers/ConfigManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { getIglooId } from '../../utils/functions';
@@ -116,10 +117,8 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		igloo.dbData.type = args.type;
 		igloo.dbData.flooring = 0;
 
-		// TODO: desync this
-		// on AS2, the igloo was updated only for the igloo owner, and no one else.
-		// however, the owner "does not re-enter the igloo" (join_igloo), but the igloo is updated with a loading screen.
-		// new event is required to handle this
+		// TODO: add fixSync (to desync this)
+		// join_igloo is not being used on AS2, a custom event was used to update the igloo
 		igloo.refresh(user);
 	};
 
@@ -133,11 +132,8 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		await igloo.dbUpdate({ music: args.music });
 		igloo.dbData.music = args.music;
 
-		user.send('update_music', { music: args.music }); // not synced, see below
-
-		// on AS2, igloo's updated music is not being sent to all other penguins in the igloo,
-		// they must rejoin to listen the new music.
-		// user.sendRoom('update_music', { music: args.music }, []);
+		if (Config.data.game.fixSync) user.sendRoom('update_music', { music: args.music }, []);
+		else user.send('update_music', { music: args.music });
 	};
 
 	openIgloo = (args: unknown, user: User) =>

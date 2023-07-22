@@ -42,7 +42,7 @@ export class Igloo extends Room
 		this.users.set(user.data.id, user);
 		user.socket.join(this.socketRoom);
 
-		this.send(user, 'join_igloo', this.toJSON(), []);
+		user.send('join_igloo', this.toJSON());
 		this.send(user, 'add_player', { user: user.getSafeRoom });
 	};
 

@@ -32,6 +32,7 @@ export type TConfig = {
 	game: {
 		preferredSpawn: number,
 		iglooIdOffset: number,
+		fixSync: boolean,
 	},
 };
 
@@ -73,6 +74,7 @@ export class ConfigManager
 		game: {
 			preferredSpawn: 0,
 			iglooIdOffset: 2000,
+			fixSync: false,
 		},
 	};
 

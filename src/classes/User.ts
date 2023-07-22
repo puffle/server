@@ -134,6 +134,8 @@ export class User
 
 		this.room?.remove(this);
 
+		// TODO: add fixSync
+
 		this.roomData.x = clamp(x, 0, constants.limits.MAX_X);
 		this.roomData.y = clamp(y, 0, constants.limits.MAX_Y);
 		this.roomData.frame = 1;
