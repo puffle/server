@@ -89,82 +89,64 @@ export class GameWorld
 
 	onConnection = async (socket: Socket) =>
 	{
-		try
+		this.onConnectionPre(socket);
+
+		const auth = socket.handshake.auth as IGameAuth;
+		if (!MyAjv.validators.gameAuth(auth))
 		{
-			this.onConnectionPre(socket);
+			this.closeSocket(socket);
+			return;
+		}
 
-			const auth = socket.handshake.auth as IGameAuth;
-			if (!MyAjv.validators.gameAuth(auth))
-			{
-				this.closeSocket(socket);
-				return;
-			}
+		verify(auth.key, Config.data.crypto.secret, {
+			audience: Config.data.crypto.audience,
+			issuer: Config.data.crypto.issuer,
+			subject: auth.username,
+			// jwtid: '', // TODO: check jwtid too?
+		});
 
-			verify(auth.key, Config.data.crypto.secret, {
-				audience: Config.data.crypto.audience,
-				issuer: Config.data.crypto.issuer,
-				subject: auth.username,
-				// jwtid: '', // TODO: check jwtid too?
-			});
-
-			const dbUser = await Database.user.findUnique({
-				where: { username: auth.username },
-				include: {
-					auth_tokens: true,
-					buddies_userId: true,
-					furniture_inventory: true,
-					igloo_inventory: true,
-					ignores_userId: true,
-					inventory: true,
-					bans_userId: {
-						take: 1,
-						where: {
-							expires: { gt: new Date() },
-						},
-						orderBy: {
-							expires: 'desc',
-						},
+		const dbUser = await Database.user.findUnique({
+			where: { username: auth.username },
+			include: {
+				auth_tokens: true,
+				buddies_userId: true,
+				furniture_inventory: true,
+				igloo_inventory: true,
+				ignores_userId: true,
+				inventory: true,
+				bans_userId: {
+					take: 1,
+					where: {
+						expires: { gt: new Date() },
+					},
+					orderBy: {
+						expires: 'desc',
 					},
 				},
-			});
+			},
+		});
 
-			if (dbUser == null // invalid user
-				|| (dbUser.rank < constants.FIRST_MODERATOR_RANK && this.population >= this.maxUsers) // max users reached
-				|| (dbUser.permaBan || dbUser.bans_userId[0] !== undefined)) // banned user
-			{
-				this.closeSocket(socket);
-				return;
-			}
-
-			// disconnect if already logged in
-			const userFound = this.users.get(dbUser.id);
-			if (userFound !== undefined) userFound.close();
-
-			const user = new User(socket, dbUser, this);
-			try
-			{
-				this.users.set(user.data.id, user);
-				socket.data = user;
-				socket.join(constants.JOINEDUSERS_ROOM); // broadcast purposes
-				socket.on('disconnect', user.onDisconnect);
-				socket.on('message', user.onMessage);
-				await this.updatePopulation();
-			}
-			catch (err)
-			{
-				// we want to call GameWorld.close() instead of User.close() because
-				// an error can happen before setting the "disconnect" listener
-				this.error(err as never);
-				this.close(user);
-			}
-
-			user.send('game_auth', { success: true });
-		}
-		catch (err)
+		if (dbUser == null // invalid user
+			|| (dbUser.rank < constants.FIRST_MODERATOR_RANK && this.population >= this.maxUsers) // max users reached
+			|| (dbUser.permaBan || dbUser.bans_userId[0] !== undefined)) // banned user
 		{
-			this.error(err as never);
 			this.closeSocket(socket);
+			return;
 		}
+
+		// disconnect if already logged in
+		const userFound = this.users.get(dbUser.id);
+		if (userFound !== undefined) userFound.close();
+
+		const user = new User(socket, dbUser, this);
+		this.users.set(user.data.id, user);
+		socket.data = user;
+		socket.join(constants.JOINEDUSERS_ROOM); // broadcast purposes
+		socket.on('disconnect', user.onDisconnect);
+		socket.on('message', user.onMessage);
+		await this.updatePopulation();
+
+		user.send('game_auth', { success: true });
 	};
 
 	close = async (user: User) =>

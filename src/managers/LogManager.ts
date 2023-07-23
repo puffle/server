@@ -53,6 +53,7 @@ const options = {
 			format: formatFile,
 		}),
 
+		// console transport MUST be the last one (see utils/setup.ts)
 		new transports.Console({
 			format: format.combine(format.colorize({ all: true })),
 		}),

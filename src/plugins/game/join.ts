@@ -30,7 +30,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['room', 'x', 'y'],
 				properties: {
-					room: { type: 'integer', minimum: 0 },
+					room: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 					x: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
 					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
 				},
@@ -41,7 +41,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['igloo', 'x', 'y'],
 				properties: {
-					igloo: { type: 'integer', minimum: 0 },
+					igloo: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 					x: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
 					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
 				},
