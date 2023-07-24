@@ -17,18 +17,18 @@ export function getSocketAddress(socket: Socket)
 	if (Config.data.reverseProxy.enabled)
 	{
 		const headers = socket.handshake.headers;
-
 		const ipHeader = Config.data.reverseProxy.ipHeader;
-		if (ipHeader !== undefined && headers[ipHeader] !== undefined)
-		{
-			return Array.isArray(ipHeader) ? ipHeader[0] : ipHeader;
-		}
 
-		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For#security_and_privacy_concerns
-		const forwarded = headers['x-forwarded-for'];
-		if (Config.data.reverseProxy.trustForwarded && forwarded !== undefined)
+		if (headers[ipHeader] !== undefined)
 		{
-			return Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0];
+			const header = headers[ipHeader];
+
+			if (typeof header === 'string')
+			{
+				const ips = header.split(Config.data.reverseProxy.separator);
+				if (typeof ips[0] === 'string') return ips[0];
+			}
+			else if (Array.isArray(header) && typeof header[0] === 'string') return header[0];
 		}
 	}
 

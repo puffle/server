@@ -14,6 +14,7 @@ import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 import { Logger } from '../managers/LogManager';
 import { PluginManager } from '../managers/PluginManager';
+import { Ratelimiter } from '../managers/RatelimitManager';
 import { ICrumbs } from '../types/crumbs';
 import { IActionMessage, IGameAuth } from '../types/types';
 import { constants } from '../utils/constants';
@@ -76,8 +77,14 @@ export class GameWorld
 	// eslint-disable-next-line class-methods-use-this
 	error = (message: string | Record<string, unknown>) => Logger.error(typeof message === 'string' ? message : JSON.stringify(message));
 
-	onMessage = (message: IActionMessage, user: User) =>
+	onMessage = async (message: IActionMessage, user: User) =>
 	{
+		if (Ratelimiter.limiters.messages)
+		{
+			const ret = await Ratelimiter.limiters.connections.consume(user.address).catch(() => false);
+			if (!ret) return;
+		}
+
 		if (!MyAjv.validators.actionMessage(message)) return;
 
 		Logger.info(`Received: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
@@ -90,6 +97,12 @@ export class GameWorld
 	onConnection = async (socket: Socket) =>
 	{
 		this.onConnectionPre(socket);
+
+		if (Ratelimiter.limiters.connections)
+		{
+			const ret = await Ratelimiter.limiters.connections.consume(getSocketAddress(socket)).catch(() => false);
+			if (!ret) return;
+		}
 
 		const auth = socket.handshake.auth as IGameAuth;
 		if (!MyAjv.validators.gameAuth(auth))

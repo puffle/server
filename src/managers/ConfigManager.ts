@@ -18,8 +18,19 @@ export type TConfig = {
 	},
 	reverseProxy: {
 		enabled: boolean,
-		ipHeader?: string,
-		trustForwarded: boolean,
+		ipHeader: string,
+		separator: string,
+	};
+	rateLimits: {
+		enabled: boolean,
+		connections: {
+			points: number;
+			duration: number;
+		},
+		messages: {
+			points: number;
+			duration: number;
+		},
 	};
 	http: {
 		host: string,
@@ -60,7 +71,19 @@ export class ConfigManager
 		},
 		reverseProxy: {
 			enabled: false,
-			trustForwarded: false,
+			ipHeader: 'X-Forwarded-For',
+			separator: ',',
+		},
+		rateLimits: {
+			enabled: false,
+			connections: {
+				points: 5,
+				duration: 1,
+			},
+			messages: {
+				points: 50,
+				duration: 1,
+			},
 		},
 		http: {
 			host: 'localhost',

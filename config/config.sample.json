@@ -12,7 +12,19 @@
 	},
 	"reverseProxy": {
 		"enabled": false,
-		"trustForwarded": false
+		"ipHeader": "X-Forwarded-For",
+		"separator": ","
+	},
+	"rateLimits": {
+		"enabled": false,
+		"connections": {
+			"points": 5,
+			"duration": 1
+		},
+		"messages": {
+			"points": 50,
+			"duration": 1
+		}
 	},
 	"http": {
 		"host": "localhost",
