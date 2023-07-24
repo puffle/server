@@ -45,7 +45,7 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 			return;
 		}
 
-		// TODO: add buddy check
+		if (user.buddies.data.get(args.id) === undefined) return;
 
 		const anonUser = await Database.findAnonymousUser(args.id);
 		user.send('get_player', { penguin: anonUser });

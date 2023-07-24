@@ -55,8 +55,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 			user: user.getSafe,
 			rank: user.data.rank,
 			coins: user.data.coins,
-			// TODO: finish this
-			buddies: [],
+			buddies: user.buddies,
 			ignores: [],
 			inventory: user.inventory,
 			igloos: user.igloos,
@@ -88,7 +87,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 
 		const roomsArr = [...this.world.rooms];
 		let spawns = roomsArr.filter((room) => room[1].data.spawn && !room[1].isFull && !room[1].isIgloo);
-		if (!spawns.length) spawns = roomsArr.filter((room) => !room[1].data.game && !room[1].isFull && !room[1].isIgloo);
+		if (!spawns.length) spawns = roomsArr.filter((room) => !room[1].isGame && !room[1].isFull && !room[1].isIgloo);
 
 		return spawns[Math.floor(Math.random() * spawns.length)]?.[0];
 	};

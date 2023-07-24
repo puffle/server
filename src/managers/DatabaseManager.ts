@@ -20,6 +20,18 @@ export class DatabaseManager extends PrismaClient
 		},
 	});
 
+	getUsername = async (id: number) =>
+	{
+		const user = await this.user.findUnique({
+			where: { id },
+			select: {
+				username: true,
+			},
+		});
+
+		return user?.username;
+	};
+
 	Initialize = async () =>
 	{
 		await this.$connect();

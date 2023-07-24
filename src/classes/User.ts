@@ -1,6 +1,7 @@
 import { Prisma, User as PrismaUser } from '@prisma/client';
 import { clamp } from 'lodash';
 import { DisconnectReason, Socket } from 'socket.io';
+import { BuddyCollection } from '../collections/BuddyCollection';
 import { FurnitureCollection } from '../collections/FurnitureCollection';
 import { IglooCollection } from '../collections/IglooCollection';
 import { InventoryCollection } from '../collections/InventoryCollection';
@@ -20,7 +21,12 @@ export type TDbUser = Prisma.UserGetPayload<{
 	include: {
 		auth_tokens: true,
 		bans_userId: true,
-		buddies_userId: true,
+		buddies_userId: {
+			select: {
+				buddyId: true,
+				buddy: { select: { username: true; }; },
+			},
+		},
 		furniture_inventory: true,
 		igloo_inventory: true,
 		ignores_userId: true,
@@ -40,6 +46,7 @@ export class User
 		this.inventory = new InventoryCollection(this);
 		this.igloos = new IglooCollection(this);
 		this.furniture = new FurnitureCollection(this);
+		this.buddies = new BuddyCollection(this);
 		this.validatePurchase = new PurchaseValidator(this);
 	}
 
@@ -51,6 +58,7 @@ export class User
 	inventory: InventoryCollection;
 	igloos: IglooCollection;
 	furniture: FurnitureCollection;
+	buddies: BuddyCollection;
 	validatePurchase: PurchaseValidator;
 
 	room: Room | undefined;

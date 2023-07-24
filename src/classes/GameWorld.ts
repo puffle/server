@@ -109,7 +109,12 @@ export class GameWorld
 			where: { username: auth.username },
 			include: {
 				auth_tokens: true,
-				buddies_userId: true,
+				buddies_userId: {
+					select: {
+						buddyId: true,
+						buddy: { select: { username: true } },
+					},
+				},
 				furniture_inventory: true,
 				igloo_inventory: true,
 				ignores_userId: true,
@@ -152,6 +157,7 @@ export class GameWorld
 	close = async (user: User) =>
 	{
 		user.room?.remove(user);
+		user.buddies.sendOffline();
 
 		const igloo = this.rooms.get(getIglooId(user.data.id));
 		if (igloo !== undefined && igloo.isIgloo) (igloo as Igloo).locked = true;

@@ -38,13 +38,15 @@ export class Room
 	// eslint-disable-next-line class-methods-use-this
 	get isIgloo() { return false; }
 
+	get isGame() { return this.data.game > 0; }
+
 	add = (user: User) =>
 	{
 		user.room = this;
 		this.users.set(user.data.id, user);
 		user.socket.join(this.socketRoom);
 
-		if (this.data.game)
+		if (this.isGame)
 		{
 			user.send('join_room', { game: this.data.id });
 			return;
@@ -63,7 +65,7 @@ export class Room
 		user.room = undefined;
 		user.socket.leave(this.socketRoom);
 
-		if (!this.data.game) this.send(user, 'remove_player', { user: user.data.id });
+		if (!this.isGame) this.send(user, 'remove_player', { user: user.data.id });
 		this.users.delete(user.data.id);
 	};
 
