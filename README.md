@@ -32,6 +32,14 @@ This repository has VSCode dev containers, making it possible to run the code ef
 
 You may need to edit the configuration file (`config/config.json`) to make Fastify run on any interface.
 
+## ⚙️ Configuration
+
+When starting the server, an attempt will be made to automatically load the `config/config.json` file if no file path is explicitly defined in the command (e.g.: `pnpm http config/another-config.json`).  
+All keys in the JSON file are optional, if a key is not found, the default value defined in the Config Manager will be used.
+
+> If you want to use all default values, you can create an empty but **valid** JSON file with the following content: `{}`.  
+> You can place that valid JSON on the default `config/config.json` file.
+
 ## 📝 Changelog
 
 Read the [commits](../../commits) for a comprehensive list of changes.

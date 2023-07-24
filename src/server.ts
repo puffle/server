@@ -19,7 +19,7 @@ import './utils/setup';
 	const worldName = process.argv[2] ?? 'HTTP';
 
 	MyAjv.initialize();
-	await Config.Initialize();
+	await Config.Initialize(process.argv[3]);
 	await Database.Initialize();
 	Logger.initialize(Config.data.logLevel);
 
@@ -47,7 +47,10 @@ import './utils/setup';
 	if (worldName === 'HTTP')
 	{
 		fastify.addHook('onClose', async () => Database.$disconnect());
-		fastify.register(import('@fastify/cors'));
+		fastify.register(import('@fastify/cors'), {
+			origin: Config.data.cors.origin,
+			methods: ['GET', 'POST'],
+		});
 		fastify.register(import('@fastify/helmet'), { global: true, contentSecurityPolicy: false });
 
 		fastify.register(import('@fastify/autoload'), {

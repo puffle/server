@@ -8,7 +8,7 @@ export type TConfig = {
 	logLevel: string,
 	crypto: {
 		secret: string,
-		loginKeyExpiry: number,
+		jwtExpiry: number,
 		audience: string,
 		issuer: string,
 		rounds: number,
@@ -50,7 +50,7 @@ export class ConfigManager
 		logLevel: 'info',
 		crypto: {
 			secret: 'UNSECURE SECRET - DO NOT USE ME',
-			loginKeyExpiry: 600,
+			jwtExpiry: 600,
 			audience: 'localhost',
 			issuer: constants.PROJECT_NAME,
 			rounds: 10,

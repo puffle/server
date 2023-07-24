@@ -1,0 +1,33 @@
+{
+	"logLevel": "info",
+	"crypto": {
+		"secret": "UNSECURE SECRET - DO NOT USE ME",
+		"jwtExpiry": 600,
+		"audience": "localhost",
+		"issuer": "Puffle",
+		"rounds": 10
+	},
+	"cors": {
+		"origin": "http://localhost:8080"
+	},
+	"reverseProxy": {
+		"enabled": false,
+		"trustForwarded": false
+	},
+	"http": {
+		"host": "localhost",
+		"port": 6111
+	},
+	"worlds": {
+		"Blizzard": {
+			"host": "localhost",
+			"port": 6112,
+			"maxUsers": 300
+		}
+	},
+	"game": {
+		"preferredSpawn": 0,
+		"iglooIdOffset": 2000,
+		"fixSync": false
+	}
+}

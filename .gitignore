@@ -9,4 +9,5 @@ logs/
 
 # secrets
 .env
-config/config.json
+config/*
+!config/config.sample.json

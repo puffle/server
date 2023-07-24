@@ -185,7 +185,7 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 	}
 
 	const key = sign({}, Config.data.crypto.secret, {
-		expiresIn: Config.data.crypto.loginKeyExpiry,
+		expiresIn: Config.data.crypto.jwtExpiry,
 		jwtid: `${Date.now()}$${user.username}$${randomUUID()}`,
 		audience: Config.data.crypto.audience,
 		issuer: Config.data.crypto.issuer,
