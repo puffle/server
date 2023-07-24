@@ -67,7 +67,6 @@ export class Room
 		this.users.delete(user.data.id);
 	};
 
-	sendSocketRoom = (user: User, action: string, args: TActionMessageArgs = {}) => user.sendSocketRoom(this.socketRoom, action, args);
 	send = (user: User, action: string, args: TActionMessageArgs = {}, filter = [user] /* , excludeIgnored = false */) =>
 	{
 		this.userValuesUnsafe.filter((u) => !filter.includes(u))

@@ -51,11 +51,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['message'],
 				properties: {
-					message: {
-						type: 'string',
-						minLength: 1,
-						maxLength: 48,
-					},
+					message: { type: 'string', minLength: 1, maxLength: 48 },
 				},
 			} as JSONSchemaType<ISendMessageArgs>)],
 
@@ -99,7 +95,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 
 	processCommand = (message: string, user: User) =>
 	{
-		const [command, ...args] = message.substring(1).match(/(?:[^\s"]+|"[^"]*")+/g)?.map((x: string) => x.replaceAll(/^"|"$/g, '')) || [];
+		const [command, ...args] = message.substring(1).split(' ');
 		if (!command) return;
 
 		const cmd = this.commands.get(command.toLowerCase());
@@ -156,13 +152,11 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 	};
 
 	cmdBroadcast = (args: string[], user: User) => user.isModerator // eslint-disable-line class-methods-use-this
-		&& typeof args[0] === 'string'
-		&& user.sendSocketRoom(constants.JOINEDUSERS_ROOM, 'error', { error: 'Broadcast:\n\n' + args[0] });
+		&& this.world.server.to(constants.JOINEDUSERS_ROOM).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
 
 	cmdBroadcastRoom = (args: string[], user: User) => user.isModerator // eslint-disable-line class-methods-use-this
-		&& typeof args[0] === 'string'
 		&& user.room !== undefined
-		&& user.sendSocketRoom(user.room.socketRoom, 'error', { error: 'Broadcast:\n\n' + args[0] });
+		&& this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
 
 	cmdItems = (args: string[], user: User) =>
 	{
