@@ -11,6 +11,7 @@ export type TConfig = {
 		loginKeyExpiry: number,
 		audience: string,
 		issuer: string,
+		rounds: number,
 	},
 	cors: {
 		origin: string,
@@ -52,6 +53,7 @@ export class ConfigManager
 			loginKeyExpiry: 600,
 			audience: 'localhost',
 			issuer: constants.PROJECT_NAME,
+			rounds: 10,
 		},
 		cors: {
 			origin: 'http://localhost:8080',

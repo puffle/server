@@ -17,14 +17,13 @@ export interface ILoginAuth
 	username: string;
 	password: string;
 	method: 'password' | 'token';
+	createToken: boolean;
 }
 
 export interface IGameAuth
 {
 	username: string;
 	key: string;
-	createToken?: boolean;
-	token?: string;
 }
 
 export interface IGamePlugin

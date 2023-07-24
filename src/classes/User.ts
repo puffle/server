@@ -20,7 +20,6 @@ import { PurchaseValidator } from './user/PurchaseValidator';
 
 export type TDbUser = Prisma.UserGetPayload<{
 	include: {
-		auth_tokens: true,
 		inventory: true,
 		furniture_inventory: true,
 		igloo_inventory: true,

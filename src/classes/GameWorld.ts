@@ -108,7 +108,6 @@ export class GameWorld
 		const dbUser = await Database.user.findUnique({
 			where: { username: auth.username },
 			include: {
-				auth_tokens: true,
 				inventory: true,
 				furniture_inventory: true,
 				igloo_inventory: true,

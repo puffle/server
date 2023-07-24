@@ -22,5 +22,8 @@ export const loginAuthSchema: JSONSchemaType<ILoginAuth> = {
 			type: 'string',
 			enum: ['password', 'token'],
 		},
+		createToken: {
+			type: 'boolean',
+		},
 	},
 };

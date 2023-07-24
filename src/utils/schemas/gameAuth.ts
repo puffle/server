@@ -16,13 +16,5 @@ export const gameAuthSchema: JSONSchemaType<IGameAuth> = {
 			type: 'string',
 			transform: ['trim'],
 		},
-		createToken: {
-			type: 'boolean',
-			nullable: true,
-		},
-		token: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 };

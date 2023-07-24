@@ -1,8 +1,8 @@
 import { ErrorObject } from 'ajv';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import { sign } from 'jsonwebtoken';
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { MyAjv } from '../managers/AjvManager';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
@@ -65,7 +65,16 @@ const getErrorMessage = (error?: ErrorObject) =>
 	return 'Unknown error';
 };
 
-const postLogin = async (req: FastifyRequest<{ Body: { username: string; password: string, method: 'password' | 'token'; }; }>, reply: FastifyReply) =>
+const createTokens = async () =>
+{
+	const selector = randomUUID();
+	const publicKey = randomBytes(32).toString('hex');
+	const privateKey = await hash(publicKey, Config.data.crypto.rounds);
+
+	return { selector, publicKey, privateKey };
+};
+
+const postLogin = async (req: FastifyRequest<{ Body: { username: string; password: string, method: 'password' | 'token'; }, createToken: boolean; }>, reply: FastifyReply) =>
 {
 	// TODO: find a better way to handle ajv errors (ajv-errors package is not working as expected) and then migrate to error code
 	if (req.body.username === 'string' && req.body.username.length === 0) return reply.send(returnError('You must provide your Penguin Name to enter Club Penguin'));
@@ -111,8 +120,45 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 		});
 	}
 
-	// TODO: add token login
-	const match = await compare(req.body.password, user.password);
+	let match = false;
+	let selector: string | undefined;
+	let publicKey: string | undefined;
+
+	if (req.body.method === 'password') // password login
+	{
+		match = await compare(req.body.password, user.password);
+
+		if (match && req.body.createToken) // create token if requested but only if password is valid
+		{
+			const token = await createTokens();
+			await Database.authToken.create({ data: { userId: user.id, selector: token.selector, validator: token.privateKey } }); // insert new token
+			({ selector, publicKey } = token);
+		}
+	}
+	else // token login
+	{
+		const split = req.body.password.split(':');
+		if (split.length === 2 && split[0] !== undefined && split[1] !== undefined) // only do checks if sent token has the correct format
+		{
+			const validToken = user.auth_tokens.find((token) => token.selector === split[0]);
+			if (validToken !== undefined) // if token is found with the given selector
+			{
+				match = await compare(split[1], validToken.validator);
+
+				if (match) // if token is valid, delete old token and create a new one
+				{
+					const token = await createTokens();
+					await Database.$transaction([
+						Database.authToken.deleteMany({ where: { userId: user.id, selector: split[0], validator: validToken.validator } }), // delete used token
+						Database.authToken.create({ data: { userId: user.id, selector: token.selector, validator: token.privateKey } }), // insert new token
+					]);
+
+					({ selector, publicKey } = token);
+				}
+			}
+		}
+	}
+
 	if (!match)
 	{
 		return reply.send({
@@ -151,6 +197,7 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 		username: user.username,
 		key,
 		populations: (await getWorldPopulations(user.rank >= constants.FIRST_MODERATOR_RANK)),
+		token: (selector !== undefined && publicKey !== undefined) ? `${selector}:${publicKey}` : undefined,
 	});
 };
 

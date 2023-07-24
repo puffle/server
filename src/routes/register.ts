@@ -1,6 +1,7 @@
 import { hash } from 'bcrypt';
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import { MyAjv } from '../managers/AjvManager';
+import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 
 const craftError = (error: string) => ({
@@ -27,7 +28,7 @@ const postRegister = async (req: FastifyRequest<{ Body: { username: string, pass
 	const newUser = await Database.user.create({
 		data: {
 			username: req.body.username,
-			password: await hash(req.body.password, 10),
+			password: await hash(req.body.password, Config.data.crypto.rounds),
 			email: req.body.email,
 		},
 	});

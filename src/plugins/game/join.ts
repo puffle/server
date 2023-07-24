@@ -62,7 +62,6 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 			furniture: user.furniture,
 		});
 
-		// TODO: update login token
 		const spawn = this.getSpawn();
 		if (spawn === undefined) return;
 
