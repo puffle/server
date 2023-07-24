@@ -20,6 +20,7 @@ export class PluginManager
 	loadPlugins = async () =>
 	{
 		const files = (await readdir(join(__dirname, this.path))).filter((file) => ['.js', '.ts'].includes(extname(file)));
+		if (process.platform === 'win32') this.path = this.path.replace(/\\/g, '/'); // Windows fix finding plugins
 		const promises = await Promise.all(files.map((file) => import(`${this.path}/${file}`)));
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
