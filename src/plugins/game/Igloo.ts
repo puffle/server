@@ -183,7 +183,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		args.furniture.forEach((item) =>
 		{
 			const id = item.furnitureId;
-			if (!item || user.furniture.data.get(id) === undefined) return;
+			if (!item || !user.furniture.data.has(id)) return;
 
 			// update quantity
 			quantities[id] = (quantities[id] !== undefined) ? (quantities[id]! + 1) : 1;

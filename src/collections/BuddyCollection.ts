@@ -15,7 +15,7 @@ export class BuddyCollection extends Collection
 	data = new Map<number, string>();
 	requests: number[] = [];
 
-	isOnline = (userId: number) => this.user.world.users.get(userId) !== undefined;
+	isOnline = (userId: number) => this.user.world.users.has(userId);
 
 	/**
 	 * Sends a "friend online" notification.

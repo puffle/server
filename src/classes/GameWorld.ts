@@ -109,24 +109,25 @@ export class GameWorld
 			where: { username: auth.username },
 			include: {
 				auth_tokens: true,
+				inventory: true,
+				furniture_inventory: true,
+				igloo_inventory: true,
 				buddies_userId: {
 					select: {
 						buddyId: true,
 						buddy: { select: { username: true } },
 					},
 				},
-				furniture_inventory: true,
-				igloo_inventory: true,
-				ignores_userId: true,
-				inventory: true,
+				ignores_userId: {
+					select: {
+						ignoreId: true,
+						ignoredUser: { select: { username: true } },
+					},
+				},
 				bans_userId: {
 					take: 1,
-					where: {
-						expires: { gt: new Date() },
-					},
-					orderBy: {
-						expires: 'desc',
-					},
+					where: { expires: { gt: new Date() } },
+					orderBy: { expires: 'desc' },
 				},
 			},
 		});

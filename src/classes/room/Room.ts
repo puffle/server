@@ -69,9 +69,9 @@ export class Room
 		this.users.delete(user.data.id);
 	};
 
-	send = (user: User, action: string, args: TActionMessageArgs = {}, filter = [user] /* , excludeIgnored = false */) =>
+	send = (user: User, action: string, args: TActionMessageArgs = {}, filter = [user], excludeIgnored = false) =>
 	{
-		this.userValuesUnsafe.filter((u) => !filter.includes(u))
+		this.userValuesUnsafe.filter((u) => !filter.includes(u) && !(excludeIgnored && u.ignores.data.has(user.data.id)))
 			.forEach((u) => u.send(action, args));
 	};
 }

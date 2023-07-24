@@ -4,6 +4,7 @@ import { DisconnectReason, Socket } from 'socket.io';
 import { BuddyCollection } from '../collections/BuddyCollection';
 import { FurnitureCollection } from '../collections/FurnitureCollection';
 import { IglooCollection } from '../collections/IglooCollection';
+import { IgnoreCollection } from '../collections/IgnoreCollection';
 import { InventoryCollection } from '../collections/InventoryCollection';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
@@ -20,17 +21,22 @@ import { PurchaseValidator } from './user/PurchaseValidator';
 export type TDbUser = Prisma.UserGetPayload<{
 	include: {
 		auth_tokens: true,
-		bans_userId: true,
+		inventory: true,
+		furniture_inventory: true,
+		igloo_inventory: true,
 		buddies_userId: {
 			select: {
 				buddyId: true,
 				buddy: { select: { username: true; }; },
 			},
 		},
-		furniture_inventory: true,
-		igloo_inventory: true,
-		ignores_userId: true,
-		inventory: true,
+		ignores_userId: {
+			select: {
+				ignoreId: true,
+				ignoredUser: { select: { username: true; }; },
+			},
+		},
+		bans_userId: true,
 	};
 }>;
 
@@ -47,6 +53,7 @@ export class User
 		this.igloos = new IglooCollection(this);
 		this.furniture = new FurnitureCollection(this);
 		this.buddies = new BuddyCollection(this);
+		this.ignores = new IgnoreCollection(this);
 		this.validatePurchase = new PurchaseValidator(this);
 	}
 
@@ -59,6 +66,7 @@ export class User
 	igloos: IglooCollection;
 	furniture: FurnitureCollection;
 	buddies: BuddyCollection;
+	ignores: IgnoreCollection;
 	validatePurchase: PurchaseValidator;
 
 	room: Room | undefined;
@@ -85,7 +93,7 @@ export class User
 
 	send = (action: string, args: TActionMessageArgs = {}) => this.socket.send({ action, args });
 	sendSocketRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
-	sendRoom = (action: string, args: TActionMessageArgs = {}, filter = [this]) => this.room?.send(this, action, args, filter);
+	sendRoom = (action: string, args: TActionMessageArgs = {}, filter = [this], excludeIgnored = false) => this.room?.send(this, action, args, filter, excludeIgnored);
 
 	// see DatabaseManager > findAnonymousUser()
 	get getAnonymous(): TUserAnonymous
@@ -158,8 +166,8 @@ export class User
 		const iglooId = getIglooId(userId);
 		if (iglooId < Config.data.game.iglooIdOffset) return;
 
-		const igloo = this.world.rooms.get(iglooId);
-		if (igloo === undefined)
+		const igloo = this.world.rooms.has(iglooId);
+		if (!igloo)
 		{
 			const res = await Database.igloo.findUnique({
 				where: { userId },

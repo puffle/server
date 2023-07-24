@@ -46,8 +46,8 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 			recipient === undefined
 			|| recipient.data.id === user.data.id
 			|| recipient.buddies.requests.includes(user.data.id)
-			|| recipient.buddies.data.get(user.data.id) !== undefined
-			// TODO: add ignores
+			|| recipient.buddies.data.has(user.data.id)
+			|| recipient.ignores.data.has(user.data.id)
 		) return;
 
 		recipient.buddies.requests.push(user.data.id);
@@ -58,7 +58,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!this.schemas.get('genericBuddyId')!(args)) return;
 
-		if (!user.buddies.requests.includes(args.id) || user.buddies.data.get(args.id) !== undefined) return;
+		if (!user.buddies.requests.includes(args.id) || user.buddies.data.has(args.id)) return;
 
 		user.buddies.deleteRequest(args.id);
 
@@ -97,7 +97,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!this.schemas.get('genericBuddyId')!(args)) return;
 
-		if (user.buddies.data.get(args.id) === undefined) return;
+		if (!user.buddies.data.has(args.id)) return;
 
 		user.buddies.removeBuddy(args.id);
 
