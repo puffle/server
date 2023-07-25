@@ -216,7 +216,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		await user.updateCoins(-flooring.cost);
 
 		user.send('update_flooring', { flooring: args.flooring, coins: user.data.coins });
-		if (Config.data.game.fixSync) user.sendRoom('update_flooring', { flooring: args.flooring });
+		if (Config.data.game.fixSync) user.room.send(user, 'update_flooring', { flooring: args.flooring });
 	};
 
 	updateMusic = async (args: IUpdateMusicArgs, user: User) =>
@@ -233,7 +233,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		{
 			user.send('update_music', { music: args.music });
 		}
-		else user.sendRoom('update_music', { music: args.music }, []);
+		else user.room.send(user, 'update_music', { music: args.music }, []);
 	};
 
 	openIgloo = (args: unknown, user: User) =>

@@ -91,8 +91,8 @@ export class User
 	close = () => this.socket.disconnect(true);
 
 	send = (action: string, args: TActionMessageArgs = {}) => this.socket.send({ action, args });
-	sendSocketRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
-	sendRoom = (action: string, args: TActionMessageArgs = {}, filter = [this], excludeIgnored = false) => this.room?.send(this, action, args, filter, excludeIgnored);
+	// sendSocketRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
+	// sendRoom = (action: string, args: TActionMessageArgs = {}, filter = [this], excludeIgnored = false) => this.room?.send(this, action, args, filter, excludeIgnored);
 
 	// see DatabaseManager > findAnonymousUser()
 	get getAnonymous(): TUserAnonymous
@@ -222,6 +222,6 @@ export class User
 			(this.data as AnyKey)[type] = itemId;
 		});
 
-		this.sendRoom('update_player', { id: this.data.id, item: itemId, slot: type }, []);
+		this.room?.send(this, 'update_player', { id: this.data.id, item: itemId, slot: type }, []);
 	};
 }

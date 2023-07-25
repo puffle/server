@@ -34,23 +34,17 @@ export class GameWorld
 		this.events = new EventEmitter({ captureRejections: true });
 		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
 
-		this.rooms = (() =>
+		this.crumbs.rooms.forEach((room) =>
 		{
-			const r = new Map<number, Room>();
-			this.crumbs.rooms.forEach((room) =>
-			{
-				r.set(room.id, new Room({
-					id: room.id,
-					name: room.name,
-					member: room.member,
-					maxUsers: room.maxUsers,
-					game: room.game,
-					spawn: room.spawn,
-				}));
-			});
-
-			return r;
-		})();
+			this.rooms.set(room.id, new Room({
+				id: room.id,
+				name: room.name,
+				member: room.member,
+				maxUsers: room.maxUsers,
+				game: room.game,
+				spawn: room.spawn,
+			}));
+		});
 
 		this.server.on('connection', this.onConnection);
 
@@ -71,7 +65,7 @@ export class GameWorld
 		tables,
 		waddles,
 	} as ICrumbs;
-	rooms: Map<number, Room | Igloo>;
+	rooms = new Map<number, Room | Igloo>();
 	maxUsers: number;
 
 	// eslint-disable-next-line class-methods-use-this

@@ -54,7 +54,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		user.roomData.y = args.y;
 		user.roomData.frame = 1;
 
-		user.sendRoom('send_position', { id: user.data.id, ...args });
+		user.room?.send(user, 'send_position', { id: user.data.id, ...args });
 	};
 
 	sendFrame = (args: ISendFrameArgs, user: User) =>
@@ -63,8 +63,8 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 
 		user.roomData.frame = args.set ? args.frame : 1;
 
-		user.sendRoom('send_frame', { id: user.data.id, ...args });
+		user.room?.send(user, 'send_frame', { id: user.data.id, ...args });
 	};
 
-	snowball = (args: ISendPositionOrSnowballArgs, user: User) => this.schemas.get('sendPositionOrSnowball')!(args) && user.sendRoom('snowball', { id: user.data.id, ...args });
+	snowball = (args: ISendPositionOrSnowballArgs, user: User) => this.schemas.get('sendPositionOrSnowball')!(args) && user.room?.send(user, 'snowball', { id: user.data.id, ...args });
 }

@@ -87,11 +87,11 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			return;
 		}
 
-		user.sendRoom('send_message', { id: user.data.id, ...args }, [user], true);
+		user.room?.send(user, 'send_message', { id: user.data.id, ...args }, [user], true);
 	};
 
-	sendSafe = (args: ISendSafeArgs, user: User) => this.schemas.get('sendSafe')!(args) && user.sendRoom('send_safe', { id: user.data.id, ...args }, [user], true);
-	sendEmote = (args: ISendEmoteArgs, user: User) => this.schemas.get('sendEmote')!(args) && user.sendRoom('send_emote', { id: user.data.id, ...args }, [user], true);
+	sendSafe = (args: ISendSafeArgs, user: User) => this.schemas.get('sendSafe')!(args) && user.room?.send(user, 'send_safe', { id: user.data.id, ...args }, [user], true);
+	sendEmote = (args: ISendEmoteArgs, user: User) => this.schemas.get('sendEmote')!(args) && user.room?.send(user, 'send_emote', { id: user.data.id, ...args }, [user], true);
 
 	processCommand = (message: string, user: User) =>
 	{
