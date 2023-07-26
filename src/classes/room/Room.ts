@@ -15,29 +15,11 @@ export class Room
 	users: Map<number, User>;
 	socketRoom: string;
 
-	get userValuesUnsafe()
-	{
-		return [...this.users.values()];
-	}
-
-	get userValues()
-	{
-		return this.userValuesUnsafe.map((user) => user.getSafeRoom);
-	}
-
-	get population()
-	{
-		return this.users.size;
-	}
-
-	get isFull()
-	{
-		return this.population >= this.data.maxUsers;
-	}
-
-	// eslint-disable-next-line class-methods-use-this
-	get isIgloo() { return false; }
-
+	get userValuesUnsafe() { return [...this.users.values()]; }
+	get userValues() { return this.userValuesUnsafe.map((user) => user.getSafeRoom); }
+	get population() { return this.users.size; }
+	get isFull() { return this.population >= this.data.maxUsers; }
+	get isIgloo() { return false; } // eslint-disable-line class-methods-use-this
 	get isGame() { return this.data.game > 0; }
 
 	add = (user: User) =>

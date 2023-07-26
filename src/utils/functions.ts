@@ -3,13 +3,11 @@ import { Config } from '../managers/ConfigManager';
 
 export const getIglooId = (userId: number) => Config.data.game.iglooIdOffset + userId;
 
-export function pick<T extends Record<string, unknown>>(object: T, ...keys: Array<keyof T>): Partial<T>
+export function pick<T extends Record<string, unknown>, K extends keyof T>(object: T, properties: K[]): Pick<T, K>
 {
-	return keys.reduce((obj, key) =>
-	{
-		if (object && key in object) obj[key] = object[key];
-		return obj;
-	}, {} as Partial<T>);
+	const result = {} as Pick<T, K>;
+	properties.forEach((property) => { result[property] = object[property]; });
+	return result;
 }
 
 export function getSocketAddress(socket: Socket)

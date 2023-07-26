@@ -151,10 +151,10 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		user.send('error', { error: 'Users\n\n' + formattedString });
 	};
 
-	cmdBroadcast = (args: string[], user: User) => user.isModerator // eslint-disable-line class-methods-use-this
+	cmdBroadcast = (args: string[], user: User) => user.isModerator
 		&& this.world.server.to(constants.JOINEDUSERS_ROOM).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
 
-	cmdBroadcastRoom = (args: string[], user: User) => user.isModerator // eslint-disable-line class-methods-use-this
+	cmdBroadcastRoom = (args: string[], user: User) => user.isModerator
 		&& user.room !== undefined
 		&& this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
 

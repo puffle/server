@@ -68,8 +68,7 @@ export class GameWorld
 	rooms = new Map<number, Room | Igloo>();
 	maxUsers: number;
 
-	// eslint-disable-next-line class-methods-use-this
-	error = (message: string | Record<string, unknown>) => Logger.error(typeof message === 'string' ? message : JSON.stringify(message));
+	get population() { return this.users.size; }
 
 	onMessage = async (message: IActionMessage, user: User) =>
 	{
@@ -175,15 +174,7 @@ export class GameWorld
 	};
 
 	// eslint-disable-next-line class-methods-use-this
-	closeSocket = (socket: Socket) =>
-	{
-		socket.disconnect(true);
-	};
-
-	get population()
-	{
-		return this.users.size;
-	}
+	closeSocket = (socket: Socket) => socket.disconnect(true);
 
 	/**
 	 * Updates world's population

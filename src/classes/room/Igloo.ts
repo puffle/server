@@ -18,9 +18,7 @@ export class Igloo extends Room
 
 		this.ownerUsername = ownerUsername;
 		this.dbData = dbData;
-
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		this.furniture = furniture.map(({ id, ...rest }) => rest);
+		this.furniture = furniture.map(({ id, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
 	}
 
 	ownerUsername: string;
@@ -68,9 +66,6 @@ export class Igloo extends Room
 		location: this.dbData.location,
 	});
 
-	// eslint-disable-next-line class-methods-use-this
-	override get isIgloo() { return true; }
-
-	// eslint-disable-next-line class-methods-use-this
-	override get isFull() { return false; }
+	override get isIgloo() { return true; } // eslint-disable-line class-methods-use-this
+	override get isFull() { return false; } // eslint-disable-line class-methods-use-this
 }

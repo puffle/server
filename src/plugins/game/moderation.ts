@@ -58,13 +58,12 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 		const recipient = this.world.users.get(args.id);
 		if (recipient === undefined || user.data.rank <= recipient.data.rank) return;
 
-		this.applyBan(user.data.id, args.id);
+		ModerationPlugin.applyBan(user.data.id, args.id);
 
 		recipient.close();
 	};
 
-	// eslint-disable-next-line class-methods-use-this
-	applyBan = async (moderatorId: number, userId: number, hours?: number, message?: string) =>
+	static applyBan = async (moderatorId: number, userId: number, hours?: number, message?: string) =>
 	{
 		const expires = new Date(Date.now() + ((hours || 24) * 60 * 60 * 1000));
 

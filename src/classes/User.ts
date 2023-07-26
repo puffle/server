@@ -75,6 +75,28 @@ export class User
 		frame: 1,
 	};
 
+	// see DatabaseManager > findAnonymousUser()
+	get getAnonymous(): TUserAnonymous
+	{
+		return pick(this.data, [
+			'id',
+			'username',
+			'head',
+			'face',
+			'neck',
+			'body',
+			'hand',
+			'feet',
+			'color',
+			'photo',
+			'flag',
+		]) as TUserAnonymous;
+	}
+
+	get getSafe(): TUserSafe { return { ...this.getAnonymous, joinTime: this.data.joinTime }; }
+	get getSafeRoom(): IUserSafeRoom { return { ...this.getSafe, ...this.roomData }; }
+	get isModerator() { return this.data.rank >= constants.FIRST_MODERATOR_RANK; }
+
 	onDisconnectPre = (reason: DisconnectReason) => Logger.info(`Disconnect from: ${this.data.username} (${this.socket.id}), reason: ${reason}`);
 
 	onDisconnect = (reason: DisconnectReason /* , description: unknown */) =>
@@ -93,46 +115,6 @@ export class User
 	send = (action: string, args: TActionMessageArgs = {}) => this.socket.send({ action, args });
 	// sendSocketRoom = (room: string, action: string, args: TActionMessageArgs = {}) => this.socket.to(room).emit('message', { action, args });
 	// sendRoom = (action: string, args: TActionMessageArgs = {}, filter = [this], excludeIgnored = false) => this.room?.send(this, action, args, filter, excludeIgnored);
-
-	// see DatabaseManager > findAnonymousUser()
-	get getAnonymous(): TUserAnonymous
-	{
-		return pick(
-			this.data,
-			'id',
-			'username',
-			'head',
-			'face',
-			'neck',
-			'body',
-			'hand',
-			'feet',
-			'color',
-			'photo',
-			'flag',
-		) as TUserAnonymous;
-	}
-
-	get getSafe(): TUserSafe
-	{
-		return {
-			...this.getAnonymous,
-			joinTime: this.data.joinTime,
-		};
-	}
-
-	get getSafeRoom(): IUserSafeRoom
-	{
-		return {
-			...this.getSafe,
-			...this.roomData,
-		};
-	}
-
-	get isModerator()
-	{
-		return this.data.rank >= constants.FIRST_MODERATOR_RANK;
-	}
 
 	joinRoom = (roomId: number, x = 0, y = 0) =>
 	{

@@ -55,6 +55,7 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 			user: user.getSafe,
 			rank: user.data.rank,
 			coins: user.data.coins,
+			// implicit 'toJSON()' call
 			buddies: user.buddies,
 			ignores: user.ignores,
 			inventory: user.inventory,
