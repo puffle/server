@@ -2,13 +2,12 @@ import { JSONSchemaType, ValidateFunction } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
-import { IGamePlugin } from '../../types/types';
+import { IGamePlugin, TItemSlots } from '../../types/types';
 import { constants } from '../../utils/constants';
-import { EItemSlots } from '../../utils/enums';
 import { GamePlugin } from '../GamePlugin';
 
 interface IUpdatePlayerOrAddItemArgs { item: number; }
-interface IRemoveItemArgs { type: keyof typeof EItemSlots; }
+interface IRemoveItemArgs { type: TItemSlots; }
 
 export default class ItemPlugin extends GamePlugin implements IGamePlugin
 {
@@ -39,7 +38,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 				additionalProperties: false,
 				required: ['type'],
 				properties: {
-					type: { type: 'string', enum: Object.keys(EItemSlots).filter((key) => Number.isNaN(Number(key))) },
+					type: { type: 'string', enum: constants.ITEM_SLOTS },
 				},
 			} as JSONSchemaType<IRemoveItemArgs>)],
 		]);
@@ -52,14 +51,14 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		const item = this.world.crumbs.items[args.item];
 		if (item === undefined || !user.inventory.items.includes(args.item)) return;
 
-		user.setItem(item.type - 1, args.item);
+		user.setItem(constants.ITEM_SLOTS[item.type - 1], args.item);
 	};
 
 	removeItem = (args: IRemoveItemArgs, user: User) =>
 	{
 		if (!this.schemas.get('removeItem')!(args)) return;
 
-		user.setItem(EItemSlots[args.type], 0);
+		user.setItem(args.type, 0);
 	};
 
 	addItem = async (args: IUpdatePlayerOrAddItemArgs, user: User) =>
@@ -69,7 +68,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		const item = user.validatePurchase.item(args.item);
 		if (!item || user.inventory.items.includes(args.item)) return;
 
-		const slot = EItemSlots[item.type - 1];
+		const slot = constants.ITEM_SLOTS[item.type - 1];
 		if (slot === undefined) return;
 
 		user.inventory.add(args.item);

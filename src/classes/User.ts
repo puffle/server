@@ -9,9 +9,8 @@ import { InventoryCollection } from '../collections/InventoryCollection';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 import { Logger } from '../managers/LogManager';
-import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TUserAnonymous, TUserSafe } from '../types/types';
+import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../types/types';
 import { constants } from '../utils/constants';
-import { EItemSlots } from '../utils/enums';
 import { getIglooId, getSocketAddress, pick } from '../utils/functions';
 import { GameWorld } from './GameWorld';
 import { Igloo } from './room/Igloo';
@@ -192,12 +191,12 @@ export class User
 		if (gameOver) this.send('game_over', { coins: clampedCoins });
 	};
 
-	setItem = (slot: EItemSlots, itemId: number) =>
+	setItem = (slot: TItemSlots | undefined, itemId: number) =>
 	{
-		if (slot === EItemSlots.award) return;
+		if (slot === undefined || slot === 'award') return;
 
-		const type = EItemSlots[slot]?.toLowerCase() as string | undefined;
-		if (type === undefined || (this.data as AnyKey)[type] === itemId) return;
+		const type = slot.toLowerCase();
+		if ((this.data as AnyKey)[type] === itemId) return;
 
 		this.dbUpdate({ [type]: itemId }).then(() =>
 		{

@@ -113,7 +113,6 @@ model User {
   username            String               @unique @db.VarChar(12)
   email               String?              @db.VarChar(254)
   password            String               @db.Char(60)
-  loginKey            String?              @map("login_key") @db.Text
   rank                Int                  @default(0) @db.UnsignedTinyInt
   permaBan            Boolean              @default(false) @map("perma_ban")
   joinTime            DateTime             @default(now()) @map("join_time") @db.Timestamp(0)

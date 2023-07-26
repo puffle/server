@@ -1,6 +1,19 @@
 import { ValidateFunction } from 'ajv';
 import { User } from '../classes/User';
+import { constants } from '../utils/constants';
 import { IRoom } from './crumbs';
+
+/**
+ * Object.values() at type level
+ */
+export type ValuesOf<T> = T[keyof T];
+
+/**
+ * Get all keys where the values are of type TCondition
+ */
+export type KeysOfType<TObj, TCondition> = ValuesOf<{
+	[K in keyof TObj]: TObj[K] extends TCondition ? K : never;
+}>;
 
 export type AnyKey = Record<string, unknown>;
 
@@ -59,3 +72,5 @@ export type IRoomIgloo = Partial<IRoom> & {
 	id: number;
 	name: string;
 };
+
+export type TItemSlots = typeof constants.ITEM_SLOTS[number];
