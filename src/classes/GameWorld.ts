@@ -157,7 +157,25 @@ export class GameWorld
 		socket.on('message', user.onMessage);
 		await this.updatePopulation();
 
-		user.send('game_auth', { success: true });
+		user.send('load_player', {
+			user: user.getSafe,
+			rank: user.data.rank,
+			coins: user.data.coins,
+			// implicit 'toJSON()' call
+			buddies: user.buddies,
+			ignores: user.ignores,
+			inventory: user.inventory,
+			igloos: user.igloos,
+			furniture: user.furniture,
+		});
+
+		const spawn = this.getSpawn();
+		if (spawn === undefined) return;
+
+		// sending the coordinates (x, y) = (0, 0) does not synchronize the player,
+		// causing him to be seen in a different position from where the other players see him.
+		// this is not a bug, but the normal operation in AS2.
+		user.joinRoom(spawn);
 	};
 
 	close = async (user: User) =>
@@ -191,5 +209,22 @@ export class GameWorld
 			update: { population },
 			create: { id: this.id, population },
 		});
+	};
+
+	getSpawn = () =>
+	{
+		const preferredSpawn = Config.data.game.preferredSpawn;
+
+		if (preferredSpawn !== 0)
+		{
+			const room = this.rooms.get(preferredSpawn);
+			if (room !== undefined && !room.isFull && !room.isIgloo) return room.data.id;
+		}
+
+		const roomsArr = [...this.rooms];
+		let spawns = roomsArr.filter((room) => room[1].data.spawn && !room[1].isFull && !room[1].isIgloo);
+		if (!spawns.length) spawns = roomsArr.filter((room) => !room[1].isGame && !room[1].isFull && !room[1].isIgloo);
+
+		return spawns[Math.floor(Math.random() * spawns.length)]?.[0];
 	};
 }
