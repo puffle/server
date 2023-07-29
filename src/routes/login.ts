@@ -93,12 +93,7 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 
 	const user = await Database.user.findUnique({
 		where: { username: req.body.username },
-		select: {
-			id: true,
-			username: true,
-			password: true,
-			permaBan: true,
-			rank: true,
+		include: {
 			auth_tokens: true,
 			bans_userId: {
 				take: 1,
@@ -192,12 +187,26 @@ const postLogin = async (req: FastifyRequest<{ Body: { username: string; passwor
 		subject: user.username,
 	});
 
+	const penguin = (selector !== undefined && publicKey !== undefined)
+		? {
+			head: user.head,
+			face: user.face,
+			neck: user.neck,
+			body: user.body,
+			hand: user.hand,
+			feet: user.feet,
+			color: user.color,
+			joinTime: user.joinTime,
+			token: `${selector}:${publicKey}`,
+		}
+		: undefined;
+
 	return reply.send({
 		success: true,
 		username: user.username,
 		key,
 		populations: (await getWorldPopulations(user.rank >= constants.FIRST_MODERATOR_RANK)),
-		token: (selector !== undefined && publicKey !== undefined) ? `${selector}:${publicKey}` : undefined,
+		penguin,
 	});
 };
 
