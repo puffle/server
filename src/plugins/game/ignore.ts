@@ -1,4 +1,4 @@
-import { JSONSchemaType, ValidateFunction } from 'ajv';
+import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
@@ -22,21 +22,21 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 			ignore_remove: this.ignoreRemove,
 		};
 
-		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['genericIgnoreId', MyAjv.compile({
+		this.schemas = {
+			genericIgnoreId: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['id'],
 				properties: {
 					id: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
 				},
-			} as JSONSchemaType<IGenericIgnoreArgs>)],
-		]);
+			} as JSONSchemaType<IGenericIgnoreArgs>),
+		};
 	}
 
 	ignoreAdd = async (args: IGenericIgnoreArgs, user: User) =>
 	{
-		if (!this.schemas.get('genericIgnoreId')!(args)) return;
+		if (!this.schemas.genericIgnoreId!(args)) return;
 
 		if (
 			args.id === user.data.id
@@ -65,7 +65,7 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 
 	ignoreRemove = (args: IGenericIgnoreArgs, user: User) =>
 	{
-		if (!this.schemas.get('genericIgnoreId')!(args)) return;
+		if (!this.schemas.genericIgnoreId!(args)) return;
 
 		if (!user.ignores.data.has(args.id)) return;
 

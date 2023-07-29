@@ -1,4 +1,4 @@
-import { JSONSchemaType, ValidateFunction } from 'ajv';
+import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
@@ -23,30 +23,30 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 			add_item: this.addItem,
 		};
 
-		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['updatePlayerOrAddItem', MyAjv.compile({
+		this.schemas = {
+			updatePlayerOrAddItem: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['item'],
 				properties: {
 					item: { type: 'integer', minimum: 1, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
-			} as JSONSchemaType<IUpdatePlayerOrAddItemArgs>)],
+			} as JSONSchemaType<IUpdatePlayerOrAddItemArgs>),
 
-			['removeItem', MyAjv.compile({
+			removeItem: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['type'],
 				properties: {
 					type: { type: 'string', enum: constants.ITEM_SLOTS },
 				},
-			} as JSONSchemaType<IRemoveItemArgs>)],
-		]);
+			} as JSONSchemaType<IRemoveItemArgs>),
+		};
 	}
 
 	updatePlayer = (args: IUpdatePlayerOrAddItemArgs, user: User) =>
 	{
-		if (!this.schemas.get('updatePlayerOrAddItem')!(args)) return;
+		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
 
 		const item = this.world.crumbs.items[args.item];
 		if (item === undefined || !user.inventory.items.includes(args.item)) return;
@@ -56,14 +56,14 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 
 	removeItem = (args: IRemoveItemArgs, user: User) =>
 	{
-		if (!this.schemas.get('removeItem')!(args)) return;
+		if (!this.schemas.removeItem!(args)) return;
 
 		user.setItem(args.type, 0);
 	};
 
 	addItem = async (args: IUpdatePlayerOrAddItemArgs, user: User) =>
 	{
-		if (!this.schemas.get('updatePlayerOrAddItem')!(args)) return;
+		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
 
 		const item = user.validatePurchase.item(args.item);
 		if (!item || user.inventory.items.includes(args.item)) return;

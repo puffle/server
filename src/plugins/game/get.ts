@@ -1,4 +1,4 @@
-import { JSONSchemaType, ValidateFunction } from 'ajv';
+import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
@@ -21,21 +21,21 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 			get_player: this.getPlayer,
 		};
 
-		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['getPlayer', MyAjv.compile({
+		this.schemas = {
+			getPlayer: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['id'],
 				properties: {
 					id: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
-			} as JSONSchemaType<IGetPlayerArgs>)],
-		]);
+			} as JSONSchemaType<IGetPlayerArgs>),
+		};
 	}
 
 	getPlayer = async (args: IGetPlayerArgs, user: User) =>
 	{
-		if (!this.schemas.get('getPlayer')!(args)) return;
+		if (!this.schemas.getPlayer!(args)) return;
 		// if (user.data.id === args.id) return;
 
 		const requestedUser = this.world.users.get(args.id);

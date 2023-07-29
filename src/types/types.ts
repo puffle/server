@@ -43,7 +43,7 @@ export interface IGamePlugin
 {
 	pluginName: string;
 	events: Record<string, (args: TActionMessageArgs, user: User) => void>;
-	schemas: Map<string, ValidateFunction<unknown>>;
+	schemas: Record<string, ValidateFunction<unknown>>;
 }
 
 export interface IUserSafeRoom

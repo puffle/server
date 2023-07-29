@@ -1,4 +1,4 @@
-import { JSONSchemaType, ValidateFunction } from 'ajv';
+import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
@@ -23,16 +23,16 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 			ban_player: this.banPlayer,
 		};
 
-		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['kickBanPlayer', MyAjv.compile({
+		this.schemas = {
+			kickBanPlayer: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['id'],
 				properties: {
 					id: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
-			} as JSONSchemaType<IKickBanPlayerArgs>)],
-		]);
+			} as JSONSchemaType<IKickBanPlayerArgs>),
+		};
 	}
 
 	// eslint-disable-next-line class-methods-use-this
@@ -41,7 +41,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	kickPlayer = (args: IKickBanPlayerArgs, user: User) =>
 	{
 		if (!user.isModerator) return;
-		if (!this.schemas.get('kickBanPlayer')!(args)) return;
+		if (!this.schemas.kickBanPlayer!(args)) return;
 		if (user.data.id === args.id) return;
 
 		const recipient = this.world.users.get(args.id);
@@ -52,7 +52,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	banPlayer = (args: IKickBanPlayerArgs, user: User) =>
 	{
 		if (!user.isModerator) return;
-		if (!this.schemas.get('kickBanPlayer')!(args)) return;
+		if (!this.schemas.kickBanPlayer!(args)) return;
 		if (user.data.id === args.id) return;
 
 		const recipient = this.world.users.get(args.id);

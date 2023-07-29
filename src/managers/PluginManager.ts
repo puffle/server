@@ -7,7 +7,7 @@ import { Logger } from './LogManager';
 export class PluginManager
 {
 	path: string;
-	plugins = new Map<string, IGamePlugin>();
+	plugins: Record<string, IGamePlugin> = Object.create(null);
 	world: GameWorld;
 
 	constructor(world: GameWorld, folderName: string)
@@ -27,12 +27,12 @@ export class PluginManager
 		{
 			const Plugin = plugin.default;
 			const obj = new Plugin(this.world) as IGamePlugin;
-			this.plugins.set(obj.pluginName, obj);
+			this.plugins[obj.pluginName] = obj;
 			Logger.debug(`Loaded plugin "${obj.pluginName}" with ${Object.keys(obj.events).length} registered events`);
 			this.loadEvents(obj);
 		});
 
-		Logger.info(`Loaded ${this.plugins.size} plugins`);
+		Logger.info(`Loaded ${Object.keys(this.plugins).length} plugins`);
 	};
 
 	loadEvents = (plugin: IGamePlugin) =>

@@ -1,4 +1,4 @@
-import { JSONSchemaType, ValidateFunction } from 'ajv';
+import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
@@ -22,8 +22,8 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 			join_igloo: this.joinIgloo,
 		};
 
-		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['joinRoom', MyAjv.compile({
+		this.schemas = {
+			joinRoom: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['room', 'x', 'y'],
@@ -32,9 +32,9 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 					x: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
 					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
 				},
-			} as JSONSchemaType<IJoinRoomArgs>)],
+			} as JSONSchemaType<IJoinRoomArgs>),
 
-			['joinIgloo', MyAjv.compile({
+			joinIgloo: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['igloo', 'x', 'y'],
@@ -43,10 +43,10 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 					x: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
 					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
 				},
-			} as JSONSchemaType<IJoinIglooArgs>)],
-		]);
+			} as JSONSchemaType<IJoinIglooArgs>),
+		};
 	}
 
-	joinRoom = (args: IJoinRoomArgs, user: User) => this.schemas.get('joinRoom')!(args) && user.joinRoom(args.room, args.x, args.y);
-	joinIgloo = (args: IJoinIglooArgs, user: User) => this.schemas.get('joinIgloo')!(args) && user.joinIgloo(args.igloo, args.x, args.y);
+	joinRoom = (args: IJoinRoomArgs, user: User) => this.schemas.joinRoom!(args) && user.joinRoom(args.room, args.x, args.y);
+	joinIgloo = (args: IJoinIglooArgs, user: User) => this.schemas.joinIgloo!(args) && user.joinIgloo(args.igloo, args.x, args.y);
 }

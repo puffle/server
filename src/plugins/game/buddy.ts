@@ -1,4 +1,4 @@
-import { JSONSchemaType, ValidateFunction } from 'ajv';
+import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
@@ -25,21 +25,21 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 			buddy_find: this.buddyFind,
 		};
 
-		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['genericBuddyId', MyAjv.compile({
+		this.schemas = {
+			genericBuddyId: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['id'],
 				properties: {
 					id: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
 				},
-			} as JSONSchemaType<IGenericBuddyArgs>)],
-		]);
+			} as JSONSchemaType<IGenericBuddyArgs>),
+		};
 	}
 
 	buddyRequest = (args: IGenericBuddyArgs, user: User) =>
 	{
-		if (!this.schemas.get('genericBuddyId')!(args)) return;
+		if (!this.schemas.genericBuddyId!(args)) return;
 
 		const recipient = this.world.users.get(args.id);
 		if (
@@ -56,7 +56,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 
 	buddyAccept = async (args: IGenericBuddyArgs, user: User) =>
 	{
-		if (!this.schemas.get('genericBuddyId')!(args)) return;
+		if (!this.schemas.genericBuddyId!(args)) return;
 
 		if (!user.buddies.requests.includes(args.id) || user.buddies.data.has(args.id)) return;
 
@@ -88,14 +88,14 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 
 	buddyReject = (args: IGenericBuddyArgs, user: User) =>
 	{
-		if (!this.schemas.get('genericBuddyId')!(args)) return;
+		if (!this.schemas.genericBuddyId!(args)) return;
 
 		user.buddies.deleteRequest(args.id);
 	};
 
 	buddyRemove = async (args: IGenericBuddyArgs, user: User) =>
 	{
-		if (!this.schemas.get('genericBuddyId')!(args)) return;
+		if (!this.schemas.genericBuddyId!(args)) return;
 
 		if (!user.buddies.data.has(args.id)) return;
 
@@ -120,7 +120,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 
 	buddyFind = (args: IGenericBuddyArgs, user: User) =>
 	{
-		if (!this.schemas.get('genericBuddyId')!(args)) return;
+		if (!this.schemas.genericBuddyId!(args)) return;
 
 		const buddy = this.world.users.get(args.id);
 		if (buddy === undefined || buddy.room === undefined || user.buddies.data.get(args.id) === undefined) return;

@@ -1,4 +1,4 @@
-import { JSONSchemaType, ValidateFunction } from 'ajv';
+import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/User';
 import { MyAjv } from '../../managers/AjvManager';
@@ -45,39 +45,39 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			send_emote: this.sendEmote,
 		};
 
-		this.schemas = new Map<string, ValidateFunction<unknown>>([
-			['sendMessage', MyAjv.compile({
+		this.schemas = {
+			sendMessage: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['message'],
 				properties: {
 					message: { type: 'string', minLength: 1, maxLength: 48 },
 				},
-			} as JSONSchemaType<ISendMessageArgs>)],
+			} as JSONSchemaType<ISendMessageArgs>),
 
-			['sendSafe', MyAjv.compile({
+			sendSafe: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['safe'],
 				properties: {
 					safe: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
-			} as JSONSchemaType<ISendSafeArgs>)],
+			} as JSONSchemaType<ISendSafeArgs>),
 
-			['sendEmote', MyAjv.compile({
+			sendEmote: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
 				required: ['emote'],
 				properties: {
 					emote: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
 				},
-			} as JSONSchemaType<ISendEmoteArgs>)],
-		]);
+			} as JSONSchemaType<ISendEmoteArgs>),
+		};
 	}
 
 	sendMessage = (args: ISendMessageArgs, user: User) =>
 	{
-		if (!this.schemas.get('sendMessage')!(args)) return;
+		if (!this.schemas.sendMessage!(args)) return;
 		if (/[^ -~]/i.test(args.message)) return;
 		args.message = args.message.replace(/  +/g, ' ').trim();
 
@@ -90,8 +90,8 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		user.room?.send(user, 'send_message', { id: user.data.id, ...args }, [user], true);
 	};
 
-	sendSafe = (args: ISendSafeArgs, user: User) => this.schemas.get('sendSafe')!(args) && user.room?.send(user, 'send_safe', { id: user.data.id, ...args }, [user], true);
-	sendEmote = (args: ISendEmoteArgs, user: User) => this.schemas.get('sendEmote')!(args) && user.room?.send(user, 'send_emote', { id: user.data.id, ...args }, [user], true);
+	sendSafe = (args: ISendSafeArgs, user: User) => this.schemas.sendSafe!(args) && user.room?.send(user, 'send_safe', { id: user.data.id, ...args }, [user], true);
+	sendEmote = (args: ISendEmoteArgs, user: User) => this.schemas.sendEmote!(args) && user.room?.send(user, 'send_emote', { id: user.data.id, ...args }, [user], true);
 
 	processCommand = (message: string, user: User) =>
 	{
@@ -165,7 +165,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		const item = Number(args[0]);
 		if (Number.isNaN(item)) return;
 
-		const plugin = this.world.pluginManager.plugins.get('Item');
+		const plugin = this.world.pluginManager.plugins.Item;
 		if (plugin === undefined) return;
 
 		(plugin as ItemPlugin).addItem({ item }, user);
@@ -178,7 +178,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		const furniture = Number(args[0]);
 		if (Number.isNaN(furniture)) return;
 
-		const plugin = this.world.pluginManager.plugins.get('Igloo');
+		const plugin = this.world.pluginManager.plugins.Igloo;
 		if (plugin === undefined) return;
 
 		(plugin as IglooPlugin).addFurniture({ furniture }, user);

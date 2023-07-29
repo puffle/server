@@ -8,8 +8,8 @@ export abstract class GamePlugin implements IGamePlugin
 	abstract pluginName: string;
 	world: GameWorld;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	events: Record<string, (args: any, user: User) => void> = {};
-	schemas = new Map<string, ValidateFunction<unknown>>();
+	events: Record<string, (args: any, user: User) => void> = Object.create(null);
+	schemas: Record<string, ValidateFunction<unknown>> = Object.create(null);
 
 	constructor(world: GameWorld)
 	{
