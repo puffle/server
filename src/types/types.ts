@@ -68,7 +68,7 @@ export interface IUserSafeRoom
 export type TUserSafe = Omit<IUserSafeRoom, 'x' | 'y' | 'frame'>;
 export type TUserAnonymous = Omit<TUserSafe, 'joinTime'>;
 
-export type IRoomIgloo = Partial<IRoom> & {
+export type TRoomIgloo = Partial<IRoom> & {
 	id: number;
 	name: string;
 };

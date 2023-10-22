@@ -1624,7 +1624,7 @@
         "value": 3
     },
     "331": {
-        "name": 101,
+        "name": "101 Days of Fun",
         "setId": 4,
         "powerId": 0,
         "element": "s",
@@ -2864,7 +2864,7 @@
         "value": 4
     },
     "604": {
-        "name": 5,
+        "name": "5th Anniversary Party",
         "setId": 7,
         "powerId": 0,
         "element": "f",
@@ -2872,7 +2872,7 @@
         "value": 5
     },
     "605": {
-        "name": 5,
+        "name": "5th Anniversary Cake",
         "setId": 7,
         "powerId": 0,
         "element": "f",
@@ -2880,7 +2880,7 @@
         "value": 6
     },
     "606": {
-        "name": 5,
+        "name": "5th Anniversary Yearbook",
         "setId": 7,
         "powerId": 0,
         "element": "f",

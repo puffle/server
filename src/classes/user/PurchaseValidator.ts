@@ -11,8 +11,8 @@ export class PurchaseValidator
 
 	private user: User;
 
-	item = (id: number) => this.validate(id, 'items', this.user.inventory.items) as false | IItem;
-	igloo = (id: number) => this.validate(id, 'igloos', this.user.igloos.data);
+	item = (id: number) => this.validate(id, 'items', this.user.inventory.collection.map((x) => x.itemId)) as false | IItem;
+	igloo = (id: number) => this.validate(id, 'igloos', this.user.igloos.collection.map((x) => x.iglooId));
 	furniture = (id: number) => this.validate(id, 'furnitures');
 	flooring = (id: number) => this.validate(id, 'floorings', [(this.user.room as Igloo).dbData.flooring]);
 

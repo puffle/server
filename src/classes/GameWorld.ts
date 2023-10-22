@@ -123,6 +123,7 @@ export class GameWorld
 				inventory: true,
 				furniture_inventory: true,
 				igloo_inventory: true,
+				cards: true,
 				buddies_userId: {
 					select: {
 						buddyId: true,

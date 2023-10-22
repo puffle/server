@@ -53,7 +53,7 @@ export class Room
 
 	send = (user: User, action: string, args: TActionMessageArgs = {}, filter = [user], excludeIgnored = false) =>
 	{
-		this.userValuesUnsafe.filter((u) => !filter.includes(u) && !(excludeIgnored && u.ignores.data.has(user.data.id)))
+		this.userValuesUnsafe.filter((u) => !filter.includes(u) && !(excludeIgnored && u.ignores.has(user.data.id)))
 			.forEach((u) => u.send(action, args));
 	};
 }

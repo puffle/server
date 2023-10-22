@@ -63,7 +63,7 @@ export interface IWadle
 
 export interface ICard
 {
-	name: number | string;
+	name: string;
 	setId: number;
 	powerId: number;
 	element: 'f' | 's' | 'w';
