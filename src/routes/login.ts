@@ -1,4 +1,3 @@
-import { ErrorObject } from 'ajv';
 import { compare, hash } from 'bcrypt';
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import { sign } from 'jsonwebtoken';
@@ -6,6 +5,7 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { MyAjv } from '../managers/AjvManager';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
+import { ILoginAuth } from '../types/types';
 import { constants } from '../utils/constants';
 
 const getWorldPopulations = async (isModerator: boolean) =>
@@ -29,40 +29,29 @@ const getWorldPopulations = async (isModerator: boolean) =>
 
 const returnError = (message: string, errors?: string) => ({ success: false, message, errors });
 
-const getErrorMessage = (error?: ErrorObject) =>
+const errorMessages = Object.create({
+	username: Object.create({
+		type: 'Invalid username',
+		minLength: 'Your Penguin Name is too short. Please try again',
+		maxLength: 'Your Penguin Name is too long. Please try again',
+		stringEmpty: 'You must provide your Penguin Name to enter Club Penguin',
+	}),
+
+	password: Object.create({
+		type: 'Invalid password',
+		minLength: 'Your password is too short. Please try again',
+		maxLength: 'Your password is too long. Please try again',
+		stringEmpty: 'You must provide your password to enter Club Penguin',
+	}),
+});
+
+const getErrorMessage = (key: string, keyword: string) =>
 {
-	if (error === undefined) return 'Unknown error';
+	const errorKey = errorMessages[key];
 
-	switch (error.instancePath.slice(1))
-	{
-		case 'username': {
-			switch (error.keyword)
-			{
-				case 'type': return 'Invalid username';
-				case 'minLength': return 'Your Penguin Name is too short. Please try again';
-				case 'maxLength': return 'Your Penguin Name is too long. Please try again';
-				default: break;
-			}
-
-			break;
-		}
-
-		case 'password': {
-			switch (error.keyword)
-			{
-				case 'type': return 'Invalid password';
-				case 'minLength': return 'Your password is too short. Please try again';
-				case 'maxLength': return 'Your password is too long. Please try again';
-				default: break;
-			}
-
-			break;
-		}
-
-		default: return 'Unknown error';
-	}
-
-	return 'Unknown error';
+	return errorKey !== undefined && keyword !== undefined && errorKey[keyword] !== undefined
+		? errorKey[keyword] as string | undefined || 'Unknown error'
+		: 'Unknown error';
 };
 
 const createTokens = async () =>
@@ -74,18 +63,18 @@ const createTokens = async () =>
 	return { selector, publicKey, privateKey };
 };
 
-const postLogin = async (req: FastifyRequest<{ Body: { username: string; password: string, method: 'password' | 'token'; }, createToken: boolean; }>, reply: FastifyReply) =>
+const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: FastifyReply) =>
 {
 	// TODO: find a better way to handle ajv errors (ajv-errors package is not working as expected) and then migrate to error code
-	if (req.body.username === 'string' && req.body.username.length === 0) return reply.send(returnError('You must provide your Penguin Name to enter Club Penguin'));
-	if (req.body.password === 'string' && req.body.password.length === 0) return reply.send(returnError('Your Penguin Name is too short. Please try again'));
-	if (req.body.method !== 'password' && req.body.method !== 'token') return reply.code(400).send(returnError('Invalid auth method'));
+	if (typeof req.body.username !== 'string' || req.body.username.length === 0) return reply.send(returnError(getErrorMessage('username', 'stringEmpty')));
+	if (typeof req.body.password !== 'string' || req.body.password.length === 0) return reply.send(returnError(getErrorMessage('password', 'stringEmpty')));
 
 	if (!MyAjv.validators.loginAuth(req.body))
 	{
+		const firstError = MyAjv.validators.loginAuth.errors?.at(0);
 		return reply.send(
 			returnError(
-				getErrorMessage(MyAjv.validators.loginAuth.errors?.at(0)),
+				getErrorMessage(firstError?.instancePath.slice(1) ?? '', firstError?.keyword ?? ''),
 				MyAjv.errorsText(MyAjv.validators.loginAuth.errors),
 			),
 		);

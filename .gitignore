@@ -11,3 +11,6 @@ logs/
 .env
 config/*
 !config/config.sample.json
+
+# pnpm
+.pnpm-store
