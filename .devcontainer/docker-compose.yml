@@ -5,7 +5,7 @@ services:
     container_name: 'puffle_devserver'
     build: .
     volumes:
-      - ../..:/workspaces:cached
+      - ../:/workspaces/server:cached
     networks: [ 'puffle_dev' ]
     environment:
       DATABASE_URL: 'mysql://user:password@mariadb:3306/puffle'
