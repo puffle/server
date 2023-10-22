@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin, TItemSlots } from '../../types/types';
 import { constants } from '../../utils/constants';

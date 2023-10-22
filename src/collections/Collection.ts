@@ -1,4 +1,4 @@
-import { User } from '../classes/User';
+import { User } from '../classes/user/User';
 
 export class Collection
 {

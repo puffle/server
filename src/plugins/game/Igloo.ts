@@ -1,7 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
 import { Igloo } from '../../classes/room/Igloo';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';

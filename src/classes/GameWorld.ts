@@ -22,9 +22,9 @@ import { ICrumbs } from '../types/crumbs';
 import { IActionMessage, IGameAuth } from '../types/types';
 import { constants } from '../utils/constants';
 import { getIglooId, getSocketAddress } from '../utils/functions';
-import { User } from './User';
 import { Igloo } from './room/Igloo';
 import { Room } from './room/Room';
+import { User } from './user/User';
 
 export class GameWorld
 {

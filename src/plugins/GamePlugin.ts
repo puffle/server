@@ -1,6 +1,6 @@
 import { ValidateFunction } from 'ajv';
 import { GameWorld } from '../classes/GameWorld';
-import { User } from '../classes/User';
+import { User } from '../classes/user/User';
 import { IGamePlugin } from '../types/types';
 
 export abstract class GamePlugin implements IGamePlugin

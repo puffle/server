@@ -1,5 +1,5 @@
 import { ValidateFunction } from 'ajv';
-import { User } from '../classes/User';
+import { User } from '../classes/user/User';
 import { constants } from '../utils/constants';
 import { IRoom } from './crumbs';
 

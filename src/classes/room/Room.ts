@@ -1,6 +1,6 @@
 import { IRoom } from '../../types/crumbs';
 import { TActionMessageArgs } from '../../types/types';
-import { User } from '../User';
+import { User } from '../user/User';
 
 export class Room
 {
