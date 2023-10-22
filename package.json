@@ -12,7 +12,8 @@
 	"scripts": {
 		"world:blizzard": "tsx src/server.ts Blizzard",
 		"http": "tsx src/server.ts HTTP",
-		"build": "tsc"
+		"build": "tsc",
+		"pushdb": "prisma db push"
 	},
 	"devDependencies": {
 		"@n0bodysec/eslint-config": "^2.1.1",
