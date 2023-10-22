@@ -1,7 +1,9 @@
 import { Prisma, User as PrismaUser } from '@prisma/client';
 import { clamp } from 'lodash';
+import EventEmitter from 'node:events';
 import { DisconnectReason, Socket } from 'socket.io';
 import { BuddyCollection } from '../collections/BuddyCollection';
+import { CardCollection } from '../collections/CardCollection';
 import { FurnitureCollection } from '../collections/FurnitureCollection';
 import { IglooCollection } from '../collections/IglooCollection';
 import { IgnoreCollection } from '../collections/IgnoreCollection';
@@ -53,6 +55,9 @@ export class User
 		this.buddies = new BuddyCollection(this);
 		this.ignores = new IgnoreCollection(this);
 		this.validatePurchase = new PurchaseValidator(this);
+		this.cards = new CardCollection(this);
+
+		// this.events.on('error', (error) => Logger.error(error));
 	}
 
 	socket: Socket;
@@ -65,6 +70,7 @@ export class User
 	furniture: FurnitureCollection;
 	buddies: BuddyCollection;
 	ignores: IgnoreCollection;
+	cards: CardCollection;
 	validatePurchase: PurchaseValidator;
 
 	room: Room | undefined;
@@ -73,6 +79,9 @@ export class User
 		y: 0,
 		frame: 1,
 	};
+
+	// used for dynamic/temporary events
+	events = new EventEmitter({ captureRejections: true });
 
 	// see DatabaseManager > findAnonymousUser()
 	get getAnonymous(): TUserAnonymous

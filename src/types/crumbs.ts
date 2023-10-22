@@ -76,8 +76,6 @@ export interface IMatchMaker
 	game: 'card';
 }
 
-export type TDeck = number[];
-
 export interface ICrumbs
 {
 	floorings: Record<number, IFlooring>;
@@ -88,7 +86,6 @@ export interface ICrumbs
 	tables: ITable[];
 	waddles: IWadle[];
 	cards: Record<number, ICard>;
-
-	decks: Record<number, TDeck[]>;
+	decks: Record<number, number[]>;
 	matchMakers: Record<number, IMatchMaker>,
 }

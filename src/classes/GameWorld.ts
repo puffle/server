@@ -1,11 +1,14 @@
 import { verify } from 'jsonwebtoken';
 import { clamp } from 'lodash';
+import { EventEmitter } from 'node:events';
 import { Server, Socket } from 'socket.io';
-import { EventEmitter } from 'stream';
+import cards from '../data/cards.json';
+import decks from '../data/decks.json';
 import floorings from '../data/floorings.json';
 import furnitures from '../data/furnitures.json';
 import igloos from '../data/igloos.json';
 import items from '../data/items.json';
+import matchMakers from '../data/matchmakers.json';
 import rooms from '../data/rooms.json';
 import tables from '../data/tables.json';
 import waddles from '../data/waddles.json';
@@ -30,8 +33,6 @@ export class GameWorld
 		this.id = id;
 		this.server = server;
 		this.maxUsers = Config.data.worlds[id]?.maxUsers ?? constants.limits.MAX_USERS;
-
-		this.events = new EventEmitter({ captureRejections: true });
 		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
 
 		this.crumbs.rooms.forEach((room) =>
@@ -47,6 +48,7 @@ export class GameWorld
 		});
 
 		this.server.on('connection', this.onConnection);
+		// this.events.on('error', (error) => Logger.error(error));
 
 		this.updatePopulation();
 	}
@@ -54,7 +56,7 @@ export class GameWorld
 	id: string;
 	server: Server;
 	pluginManager: PluginManager;
-	events: EventEmitter;
+	events = new EventEmitter({ captureRejections: true });
 	users: Map<number, User> = new Map();
 	crumbs = {
 		floorings,
@@ -64,6 +66,9 @@ export class GameWorld
 		rooms,
 		tables,
 		waddles,
+		cards,
+		decks,
+		matchMakers,
 	} as ICrumbs;
 	rooms = new Map<number, Room | Igloo>();
 	maxUsers: number;
@@ -81,7 +86,8 @@ export class GameWorld
 		if (!MyAjv.validators.actionMessage(message)) return;
 
 		Logger.info(`Received: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
-		this.events?.emit(message.action, message.args, user);
+		this.events.emit(message.action, message.args, user);
+		user.events.emit(message.action, message.args, user);
 	};
 
 	// eslint-disable-next-line class-methods-use-this
