@@ -108,6 +108,17 @@ model Inventory {
   @@map("inventories")
 }
 
+model Card {
+  userId         Int  @map("user_id") @db.UnsignedInt
+  cardId         Int  @map("card_id") @db.UnsignedInt
+  quantity       Int  @db.UnsignedInt
+  memberQuantity Int  @map("member_quantity") @db.UnsignedInt
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, cardId])
+  @@map("cards")
+}
+
 model User {
   id                  Int                  @id @default(autoincrement()) @db.UnsignedInt
   username            String               @unique @db.VarChar(12)
@@ -126,11 +137,14 @@ model User {
   color               Int                  @default(1) @db.UnsignedInt
   photo               Int                  @default(0) @db.UnsignedInt
   flag                Int                  @default(0) @db.UnsignedInt
+  ninjaProgress       Int                  @default(0) @db.UnsignedTinyInt
+  ninjaRank           Int                  @default(0) @db.UnsignedTinyInt
   auth_tokens         AuthToken[]
   bans_moderatorId    Ban[]                @relation("bans_moderatorId")
   bans_userId         Ban[]                @relation("bans_userId")
   buddies_buddyId     Buddy[]              @relation("buddies_buddyId")
   buddies_userId      Buddy[]              @relation("buddies_userId")
+  cards               Card[]
   placed_furniture    Furniture[]
   furniture_inventory FurnitureInventory[]
   igloo_inventory     IglooInventory[]

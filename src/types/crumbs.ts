@@ -58,8 +58,25 @@ export interface IWadle
 	id: number;
 	roomId: number;
 	seats: number;
-	game: 'sled';
+	game: 'sled' | 'card';
 }
+
+export interface ICard
+{
+	name: number | string;
+	setId: number;
+	powerId: number;
+	element: 'f' | 's' | 'w';
+	color: 'b' | 'g' | 'o' | 'p' | 'r' | 'y';
+	value: number;
+}
+
+export interface IMatchMaker
+{
+	game: 'card';
+}
+
+export type TDeck = number[];
 
 export interface ICrumbs
 {
@@ -70,4 +87,8 @@ export interface ICrumbs
 	rooms: IRoom[];
 	tables: ITable[];
 	waddles: IWadle[];
+	cards: Record<number, ICard>;
+
+	decks: Record<number, TDeck[]>;
+	matchMakers: Record<number, IMatchMaker>,
 }
