@@ -33,6 +33,8 @@ export interface ILoginAuth
 	createToken: boolean;
 }
 
+export type TForgetAuth = Omit<ILoginAuth, 'method' | 'createToken'>;
+
 export interface IGameAuth
 {
 	username: string;

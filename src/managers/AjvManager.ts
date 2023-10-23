@@ -1,6 +1,7 @@
 import Ajv, { Options } from 'ajv';
 import ajvKeywords from 'ajv-keywords/dist/definitions';
 import { actionMessageSchema } from '../utils/schemas/actionMessage';
+import { forgetAuthSchema } from '../utils/schemas/forgetAuth';
 import { gameAuthSchema } from '../utils/schemas/gameAuth';
 import { loginAuthSchema } from '../utils/schemas/loginAuth';
 import { registerAccountSchema } from '../utils/schemas/registerAccount';
@@ -22,6 +23,7 @@ export class AjvManager extends Ajv
 			registerAccount: this.compile(registerAccountSchema),
 			loginAuth: this.compile(loginAuthSchema),
 			gameAuth: this.compile(gameAuthSchema),
+			forgetAuth: this.compile(forgetAuthSchema),
 			actionMessage: this.compile(actionMessageSchema),
 		};
 	}
