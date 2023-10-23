@@ -46,6 +46,10 @@ export type TConfig = {
 		iglooIdOffset: number,
 		fixSync: boolean,
 	},
+	login: {
+		tokenDuration: number, // in days
+		enableExpiration: boolean,
+	};
 };
 
 export class ConfigManager
@@ -100,6 +104,10 @@ export class ConfigManager
 			preferredSpawn: 0,
 			iglooIdOffset: 2000,
 			fixSync: false,
+		},
+		login: {
+			tokenDuration: 30,
+			enableExpiration: true,
 		},
 	};
 
