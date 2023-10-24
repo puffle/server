@@ -8,13 +8,14 @@ datasource db {
 }
 
 model AuthToken {
-  userId    Int      @map("user_id") @db.UnsignedInt
-  selector  String   @db.Char(36)
-  validator String   @db.Char(60)
-  timestamp DateTime @default(now()) @db.Timestamp(0)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int      @map("user_id") @db.UnsignedInt
+  tokenId    String   @map("token_id") @db.Char(36)
+  token      String   @db.Char(60)
+  timestamp  DateTime @default(now()) @db.Timestamp(0)
+  validUntil DateTime @map("valid_until") @db.Timestamp(0)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, selector])
+  @@id([userId, tokenId])
   @@map("auth_tokens")
 }
 

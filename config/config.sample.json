@@ -41,5 +41,9 @@
 		"preferredSpawn": 0,
 		"iglooIdOffset": 2000,
 		"fixSync": false
+	},
+	"login": {
+		"tokenDuration": 30,
+		"enableExpiration": true
 	}
 }

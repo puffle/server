@@ -29,6 +29,7 @@ const getWorldPopulations = async (isModerator: boolean) =>
 
 const returnError = (message: string, errors?: string) => ({ success: false, message, errors });
 
+// TODO: migrate to error code
 const errorMessages = Object.create({
 	username: Object.create({
 		type: 'Invalid username',
@@ -56,11 +57,20 @@ const getErrorMessage = (key: string, keyword: string) =>
 
 const createTokens = async () =>
 {
-	const selector = randomUUID();
+	const tokenId = randomUUID();
 	const publicKey = randomBytes(32).toString('hex');
 	const privateKey = await hash(publicKey, Config.data.crypto.rounds);
 
-	return { selector, publicKey, privateKey };
+	return { tokenId, publicKey, privateKey };
+};
+
+const genTokenDates = () =>
+{
+	const currentDate = new Date();
+	const validUntil = new Date(currentDate);
+	if (Config.data.login.enableExpiration) validUntil.setDate(validUntil.getDate() + Config.data.login.tokenDuration);
+
+	return { currentDate, validUntil };
 };
 
 const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: FastifyReply) =>
@@ -105,7 +115,7 @@ const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: Fast
 	}
 
 	let match = false;
-	let selector: string | undefined;
+	let tokenId: string | undefined;
 	let publicKey: string | undefined;
 
 	if (req.body.method === 'password') // password login
@@ -115,8 +125,21 @@ const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: Fast
 		if (match && req.body.createToken) // create token if requested but only if password is valid
 		{
 			const token = await createTokens();
-			await Database.authToken.create({ data: { userId: user.id, selector: token.selector, validator: token.privateKey } }); // insert new token
-			({ selector, publicKey } = token);
+			const dates = genTokenDates();
+
+			const tokenData = {
+				userId: user.id,
+				tokenId: token.tokenId,
+				token: token.privateKey,
+				timestamp: dates.currentDate,
+				validUntil: dates.validUntil,
+			};
+
+			// insert a new token
+			await Database.authToken.create({ data: tokenData });
+			user.auth_tokens.push(tokenData);
+
+			({ tokenId, publicKey } = token);
 		}
 	}
 	else // token login
@@ -124,20 +147,35 @@ const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: Fast
 		const split = req.body.password.split(':');
 		if (split.length === 2 && split[0] !== undefined && split[1] !== undefined) // only do checks if sent token has the correct format
 		{
-			const validToken = user.auth_tokens.find((token) => token.selector === split[0]);
-			if (validToken !== undefined) // if token is found with the given selector
+			const dates = genTokenDates();
+
+			// delete expired tokens
+			if (Config.data.login.enableExpiration)
 			{
-				match = await compare(split[1], validToken.validator);
+				await Database.authToken.deleteMany({
+					where: {
+						userId: user.id,
+						validUntil: { lt: dates.currentDate },
+					},
+				});
 
-				if (match) // if token is valid, delete old token and create a new one
+				user.auth_tokens = user.auth_tokens.filter((x) => x.validUntil >= dates.currentDate);
+			}
+
+			const validToken = user.auth_tokens.find((token) => token.tokenId === split[0]);
+			if (validToken !== undefined) // if token is found with the given tokenId
+			{
+				match = await compare(split[1], validToken.token);
+
+				// update token expiration date
+				if (match && Config.data.login.enableExpiration)
 				{
-					const token = await createTokens();
-					await Database.$transaction([
-						Database.authToken.deleteMany({ where: { userId: user.id, selector: split[0], validator: validToken.validator } }), // delete used token
-						Database.authToken.create({ data: { userId: user.id, selector: token.selector, validator: token.privateKey } }), // insert new token
-					]);
+					await Database.authToken.updateMany({
+						where: { tokenId: validToken.tokenId },
+						data: { validUntil: dates.validUntil },
+					});
 
-					({ selector, publicKey } = token);
+					validToken.validUntil = dates.validUntil;
 				}
 			}
 		}
@@ -176,19 +214,20 @@ const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: Fast
 		subject: user.username,
 	});
 
-	const penguin = (selector !== undefined && publicKey !== undefined)
-		? {
-			head: user.head,
-			face: user.face,
-			neck: user.neck,
-			body: user.body,
-			hand: user.hand,
-			feet: user.feet,
-			color: user.color,
-			joinTime: user.joinTime,
-			token: `${selector}:${publicKey}`,
-		}
-		: undefined;
+	const penguinData = {
+		head: user.head,
+		face: user.face,
+		neck: user.neck,
+		body: user.body,
+		hand: user.hand,
+		feet: user.feet,
+		color: user.color,
+		joinTime: user.joinTime,
+	};
+
+	const penguin = (tokenId !== undefined && publicKey !== undefined)
+		? { ...penguinData, token: `${tokenId}:${publicKey}` }
+		: penguinData;
 
 	return reply.send({
 		success: true,
