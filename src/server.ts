@@ -40,7 +40,7 @@ import './utils/setup';
 				code: error.code,
 			});
 		}
-		else reply.send(error);
+		else reply.status(500).send(error);
 	});
 
 	// HTTP server

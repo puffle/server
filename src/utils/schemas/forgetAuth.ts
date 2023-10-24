@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { JSONSchemaType } from 'ajv';
 import { TForgetAuth } from '../../types/types';
 import { loginAuthSchema } from './loginAuth';

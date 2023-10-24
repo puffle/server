@@ -53,6 +53,8 @@ export class Room
 
 	send = (user: User, action: string, args: TActionMessageArgs = {}, filter = [user], excludeIgnored = false) =>
 	{
+		// if (user.room?.isGame) return; // ignore if the player is in a game room
+
 		this.userValuesUnsafe.filter((u) => !filter.includes(u) && !(excludeIgnored && u.ignores.has(user.data.id)))
 			.forEach((u) => u.send(action, args));
 	};

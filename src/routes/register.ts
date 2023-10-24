@@ -23,7 +23,7 @@ const postRegister = async (req: FastifyRequest<{ Body: { username: string, pass
 		},
 	});
 
-	if (user.length !== 0) return reply.code(200).send(craftError('The username or e-mail address is already registered in our database.'));
+	if (user.length !== 0) return reply.status(409).send(craftError('The username or e-mail address is already registered in our database.'));
 
 	const newUser = await Database.user.create({
 		data: {
