@@ -26,6 +26,7 @@ export class CardCollection extends Collection
 		return hasStarterDeck && hasCards;
 	}
 
+	// TODO: add a method to add multiple cards at once
 	add = async (cardId: number, quantity = 1) =>
 	{
 		const card = this.collection.find((x) => x.cardId === cardId);

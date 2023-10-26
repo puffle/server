@@ -37,6 +37,8 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			['rooms', this.cmdPopulation],
 			['bc', this.cmdBroadcast],
 			['rbc', this.cmdBroadcastRoom],
+			['ajc', this.cmdAddJitsuCard],
+			['aja', this.cmdAddAllJitsuCards],
 		]);
 
 		this.events = {
@@ -156,7 +158,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 
 	cmdBroadcastRoom = (args: string[], user: User) => user.isModerator
 		&& user.room !== undefined
-		&& this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
+		&& this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast (Current Room):\n\n' + args.join(' ') } });
 
 	cmdItems = (args: string[], user: User) =>
 	{
@@ -182,5 +184,29 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (plugin === undefined) return;
 
 		(plugin as IglooPlugin).addFurniture({ furniture }, user);
+	};
+
+	cmdAddJitsuCard = (args: string[], user: User) =>
+	{
+		if (!user.isModerator) return;
+
+		const cardId = Number(args[0]);
+		const card = this.world.crumbs.cards[cardId];
+		if (card === undefined)
+		{
+			user.send('error', { error: 'Card not found!' });
+			return;
+		}
+
+		user.cards.add(cardId);
+		user.send('error', { error: `Adding card: ${card.name}` });
+	};
+
+	cmdAddAllJitsuCards = (args: string[], user: User) =>
+	{
+		if (!user.isModerator) return;
+		Object.keys(this.world.crumbs.cards).forEach((card) => user.cards.add(Number(card)));
+
+		user.send('error', { error: 'Adding all cards...' });
 	};
 }
