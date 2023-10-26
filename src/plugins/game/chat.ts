@@ -33,12 +33,13 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			['ai', this.cmdItems],
 			['ac', this.cmdCoins],
 			['af', this.cmdFurniture],
+			['aig', this.cmdIgloo],
 			['jr', this.cmdJoinRoom],
 			['rooms', this.cmdPopulation],
 			['bc', this.cmdBroadcast],
 			['rbc', this.cmdBroadcastRoom],
-			['ajc', this.cmdAddJitsuCard],
-			['aja', this.cmdAddAllJitsuCards],
+			['ajc', this.cmdJitsuCard],
+			['aja', this.cmdAllJitsuCards],
 		]);
 
 		this.events = {
@@ -186,7 +187,20 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		(plugin as IglooPlugin).addFurniture({ furniture }, user);
 	};
 
-	cmdAddJitsuCard = (args: string[], user: User) =>
+	cmdIgloo = (args: string[], user: User) =>
+	{
+		if (!user.isModerator) return;
+
+		const igloo = Number(args[0]);
+		if (Number.isNaN(igloo)) return;
+
+		const plugin = this.world.pluginManager.plugins.Igloo;
+		if (plugin === undefined) return;
+
+		(plugin as IglooPlugin).addIgloo({ igloo }, user);
+	};
+
+	cmdJitsuCard = (args: string[], user: User) =>
 	{
 		if (!user.isModerator) return;
 
@@ -202,7 +216,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		user.send('error', { error: `Adding card: ${card.name}` });
 	};
 
-	cmdAddAllJitsuCards = (args: string[], user: User) =>
+	cmdAllJitsuCards = (args: string[], user: User) =>
 	{
 		if (!user.isModerator) return;
 		Object.keys(this.world.crumbs.cards).forEach((card) => user.cards.add(Number(card)));
