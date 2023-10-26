@@ -53,7 +53,7 @@ export interface ITable
 	game: 'four' | 'mancala';
 }
 
-export interface IWadle
+export interface IWaddle
 {
 	id: number;
 	roomId: number;
@@ -71,7 +71,7 @@ export interface ICard
 	value: number;
 }
 
-export interface IMatchMaker
+export interface IMatchmaker
 {
 	game: 'card';
 }
@@ -84,8 +84,8 @@ export interface ICrumbs
 	items: Record<number, IItem>;
 	rooms: IRoom[];
 	tables: ITable[];
-	waddles: IWadle[];
+	waddles: IWaddle[];
 	cards: Record<number, ICard>;
 	decks: Record<number, number[]>;
-	matchMakers: Record<number, IMatchMaker>,
+	matchmakers: Record<number, IMatchmaker>,
 }

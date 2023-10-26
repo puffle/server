@@ -32,4 +32,6 @@ export const constants = {
 		'photo',
 		'award',
 	],
+
+	STARTER_DECK_ID: 821,
 } as const;

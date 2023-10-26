@@ -8,7 +8,7 @@ import floorings from '../data/floorings.json';
 import furnitures from '../data/furnitures.json';
 import igloos from '../data/igloos.json';
 import items from '../data/items.json';
-import matchMakers from '../data/matchmakers.json';
+import matchmakers from '../data/matchmakers.json';
 import rooms from '../data/rooms.json';
 import tables from '../data/tables.json';
 import waddles from '../data/waddles.json';
@@ -24,6 +24,8 @@ import { constants } from '../utils/constants';
 import { getIglooId, getSocketAddress } from '../utils/functions';
 import { Igloo } from './room/Igloo';
 import { Room } from './room/Room';
+import { MatchmakerFactory } from './room/matchmaker/MatchmakerFactory';
+import { Waddle } from './room/waddle/Waddle';
 import { User } from './user/User';
 
 export class GameWorld
@@ -35,17 +37,10 @@ export class GameWorld
 		this.maxUsers = Config.data.worlds[id]?.maxUsers ?? constants.limits.MAX_USERS;
 		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
 
-		this.crumbs.rooms.forEach((room) =>
-		{
-			this.rooms.set(room.id, new Room({
-				id: room.id,
-				name: room.name,
-				member: room.member,
-				maxUsers: room.maxUsers,
-				game: room.game,
-				spawn: room.spawn,
-			}));
-		});
+		// init crumbs
+		this.setRooms();
+		this.setWaddles();
+		this.setMatchmakers();
 
 		this.server.on('connection', this.onConnection);
 		// this.events.on('error', (error) => Logger.error(error));
@@ -68,7 +63,7 @@ export class GameWorld
 		waddles,
 		cards,
 		decks,
-		matchMakers,
+		matchmakers,
 	} as ICrumbs;
 	rooms = new Map<number, Room | Igloo>();
 	maxUsers: number;
@@ -189,6 +184,8 @@ export class GameWorld
 	{
 		user.room?.remove(user);
 		user.buddies.sendOffline();
+		user.waddle?.remove(user);
+		user.minigameRoom?.remove(user);
 
 		const igloo = this.rooms.get(getIglooId(user.data.id));
 		if (igloo !== undefined && igloo.isIgloo) (igloo as Igloo).locked = true;
@@ -234,4 +231,31 @@ export class GameWorld
 
 		return spawns[Math.floor(Math.random() * spawns.length)]?.[0];
 	};
+
+	setRooms = () => this.crumbs.rooms.forEach((room) =>
+	{
+		this.rooms.set(room.id, new Room({
+			id: room.id,
+			name: room.name,
+			member: room.member,
+			maxUsers: room.maxUsers,
+			game: room.game,
+			spawn: room.spawn,
+		}));
+	});
+
+	setWaddles = () => this.crumbs.waddles.forEach((waddle) =>
+	{
+		this.rooms.get(waddle.roomId)?.waddles.set(waddle.id, new Waddle(waddle));
+	});
+
+	setMatchmakers = () => Object.entries(this.crumbs.matchmakers).forEach((mm) =>
+	{
+		const mmId = Number(mm[0]);
+		if (!Number.isNaN(mmId))
+		{
+			const room = this.rooms.get(mmId);
+			if (room !== undefined) room.matchmaker = MatchmakerFactory.createMatchmaker(mm[1], room);
+		}
+	});
 }

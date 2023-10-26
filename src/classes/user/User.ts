@@ -11,12 +11,14 @@ import { InventoryCollection } from '../../collections/InventoryCollection';
 import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';
 import { Logger } from '../../managers/LogManager';
-import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../../types/types';
+import { AnyKey, IActionMessage, IUserSafeRoom, Nullable, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { getIglooId, getSocketAddress, pick } from '../../utils/functions';
 import { GameWorld } from '../GameWorld';
+import { BaseInstance } from '../instance/BaseInstance';
 import { Igloo } from '../room/Igloo';
 import { Room } from '../room/Room';
+import { Waddle } from '../room/waddle/Waddle';
 import { PurchaseValidator } from './PurchaseValidator';
 
 export type TDbUser = Prisma.UserGetPayload<{
@@ -75,6 +77,8 @@ export class User
 	validatePurchase: PurchaseValidator;
 
 	room: Room | undefined;
+	waddle: Waddle | undefined;
+	minigameRoom: Nullable<BaseInstance> = null; // TODO: add tables
 	roomData = {
 		x: 0,
 		y: 0,
@@ -127,7 +131,7 @@ export class User
 
 	joinRoom = (roomId: number, x = 0, y = 0) =>
 	{
-		if (roomId < 0 || roomId === this.room?.data.id) return;
+		if (roomId < 0 || roomId === this.room?.data.id || this.minigameRoom || this.waddle) return;
 
 		const room = this.world.rooms.get(roomId);
 		if (room === undefined) return;

@@ -35,7 +35,7 @@ export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 	gameOver = (args: IGameOverArgs, user: User) =>
 	{
 		if (!this.schemas.gameOver!(args)) return;
-		if (!user.room?.isGame) return;
+		if (!user.room?.isGame && !user.minigameRoom) return;
 
 		user.updateCoins(args.coins, true);
 	};

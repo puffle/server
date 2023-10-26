@@ -157,7 +157,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 		if (!user.igloos.has(args.type)) return;
 
-		// TODO: use Promise.all()
+		// ? TODO: use Promise.all()
 		await igloo.clearFurniture();
 		await igloo.dbUpdate({ type: args.type, flooring: 0 });
 

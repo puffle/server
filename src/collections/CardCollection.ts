@@ -1,9 +1,10 @@
 import { Database } from '../managers/DatabaseManager';
+import { constants } from '../utils/constants';
 import { Collection } from './Collection';
 
 export class CardCollection extends Collection
 {
-	starterDeckId = 821;
+	starterDeckId = constants.STARTER_DECK_ID;
 
 	get collection() { return this.user.data.cards; }
 	has = (value: number) => this.collection.some((x) => x.cardId === value);
