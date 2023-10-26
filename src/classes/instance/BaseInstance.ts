@@ -4,15 +4,17 @@ import { User } from '../user/User';
 
 export class BaseInstance
 {
-	constructor(waddle: Waddle)
+	constructor(users: User[], waddle?: Waddle)
 	{
-		this.users = [...waddle.users];
+		this.users = users;
+		this.waddle = waddle;
 	}
 
 	id: Nullable<number> = null;
 	users: User[];
 	ready: User[] = []; // don't start until all users are ready
 	started = false;
+	waddle: Waddle | undefined;
 
 	init = () =>
 	{

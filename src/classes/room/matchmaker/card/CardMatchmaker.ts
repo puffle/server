@@ -8,13 +8,16 @@ export class CardMatchmaker extends BaseMatchmaker
 	constructor(data: IMatchmaker, room: Room)
 	{
 		super(data, room, 2, 10);
+
+		this.start();
 	}
 
-	/**
-	 * hacky way to inherit/override arrow functions
-	 * @see: https://basarat.gitbook.io/typescript/future-javascript/arrow-functions#tip-arrow-functions-and-inheritance
-	 */
-	// #superAdd = this.add;
+	start = () => setInterval(this.tick, 1000);
+
+	tick = () =>
+	{
+
+	};
 
 	override add(user: User)
 	{

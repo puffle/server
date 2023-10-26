@@ -3,7 +3,7 @@ import { User } from '../../user/User';
 import { Room } from '../Room';
 import { MatchmakerPlayer } from './MatchmakerPlayer';
 
-export class BaseMatchmaker
+export abstract class BaseMatchmaker
 {
 	constructor(data: IMatchmaker, room: Room, maxPlayers: number, matchEvery: number)
 	{
@@ -18,6 +18,8 @@ export class BaseMatchmaker
 	players: Map<number, MatchmakerPlayer> = new Map();
 	maxPlayers: number;
 	matchEvery: number;
+
+	abstract start: () => void;
 
 	// this function is being overwritten in extended classes - do not transform into an arrow function!
 	// see: https://basarat.gitbook.io/typescript/future-javascript/arrow-functions#tip-arrow-functions-and-inheritance
