@@ -6,7 +6,7 @@ export class BaseInstance
 {
 	constructor(users: User[], waddle?: Waddle)
 	{
-		this.users = users;
+		this.users = Array.from(users); // copy array instead of referecing it
 		this.waddle = waddle;
 	}
 
