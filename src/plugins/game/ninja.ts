@@ -20,6 +20,6 @@ export default class NinjaPlugin extends GamePlugin implements IGamePlugin
 	getNinja = (args: unknown, user: User) => user.send('get_ninja', {
 		rank: user.data.ninjaRank,
 		progress: user.data.ninjaProgress,
-		cards: user.data.cards, // TODO: check if this is user.data.cards or user.cards (CardCollection)
+		cards: user.cards,
 	});
 }
