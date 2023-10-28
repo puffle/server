@@ -1,4 +1,5 @@
-import { Nullable, TActionMessageArgs } from '../../types/types';
+import { Nullable } from '@n0bodysec/ts-utils';
+import { TActionMessageArgs } from '../../types/types';
 import { Waddle } from '../room/waddle/Waddle';
 import { User } from '../user/User';
 

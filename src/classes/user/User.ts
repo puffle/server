@@ -1,3 +1,4 @@
+import { Nullable } from '@n0bodysec/ts-utils';
 import { Prisma, User as PrismaUser } from '@prisma/client';
 import { clamp } from 'lodash';
 import EventEmitter from 'node:events';
@@ -11,7 +12,7 @@ import { InventoryCollection } from '../../collections/InventoryCollection';
 import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';
 import { Logger } from '../../managers/LogManager';
-import { AnyKey, IActionMessage, IUserSafeRoom, Nullable, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../../types/types';
+import { IActionMessage, IUserSafeRoom, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { getIglooId, getSocketAddress, pick } from '../../utils/functions';
 import { GameWorld } from '../GameWorld';
@@ -210,11 +211,11 @@ export class User
 		if (slot === undefined || slot === 'award') return;
 
 		const type = slot.toLowerCase();
-		if ((this.data as AnyKey)[type] === itemId) return;
+		if ((this.data as Record<string, unknown>)[type] === itemId) return;
 
 		this.dbUpdate({ [type]: itemId }).then(() =>
 		{
-			(this.data as AnyKey)[type] = itemId;
+			(this.data as Record<string, unknown>)[type] = itemId;
 		});
 
 		this.room?.send(this, 'update_player', { id: this.data.id, item: itemId, slot: type }, []);
