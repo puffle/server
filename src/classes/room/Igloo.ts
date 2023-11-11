@@ -34,6 +34,7 @@ export class Igloo extends Room
 		this.furniture = [];
 	};
 
+	/** @override */
 	override add = (user: User) =>
 	{
 		user.room = this;
@@ -66,6 +67,9 @@ export class Igloo extends Room
 		location: this.dbData.location,
 	});
 
+	/** @override */
 	override get isIgloo() { return true; } // eslint-disable-line class-methods-use-this
+
+	/** @override */
 	override get isFull() { return false; } // eslint-disable-line class-methods-use-this
 }

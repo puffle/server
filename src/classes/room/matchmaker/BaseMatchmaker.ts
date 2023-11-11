@@ -21,13 +21,11 @@ export abstract class BaseMatchmaker
 
 	abstract start: () => void;
 
-	// this function is being overwritten in extended classes - do not transform into an arrow function!
-	// see: https://basarat.gitbook.io/typescript/future-javascript/arrow-functions#tip-arrow-functions-and-inheritance
-	add(user: User)
+	add = (user: User) =>
 	{
 		this.players.set(user.data.id, new MatchmakerPlayer(user, this.matchEvery));
 		user.send('join_matchmaking');
-	}
+	};
 
 	includes = (user: User) => this.players.has(user.data.id);
 	remove = (user: User) => this.players.delete(user.data.id);

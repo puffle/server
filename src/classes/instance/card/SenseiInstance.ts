@@ -18,4 +18,6 @@ export class SenseiInstance extends CardInstance
 	};
 
 	user: User;
+
+	// TODO
 }

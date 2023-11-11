@@ -16,15 +16,19 @@ export class CardMatchmaker extends BaseMatchmaker
 
 	tick = () =>
 	{
-
+		// TODO
 	};
 
-	override add(user: User)
+	// @ts-expect-error - overwriting an arrow function
+	#superAdd = this.add;
+
+	/** @override */
+	override add = (user: User) =>
 	{
 		if (!user.cards.hasCards) return;
 
-		super.add(user);
-	}
+		this.#superAdd(user);
+	};
 
 	// TODO
 }
