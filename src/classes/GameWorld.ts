@@ -1,5 +1,5 @@
+import { clamp } from '@n0bodysec/ts-utils';
 import { verify } from 'jsonwebtoken';
-import { clamp } from 'lodash';
 import { EventEmitter } from 'node:events';
 import { Server, Socket } from 'socket.io';
 import cards from '../data/cards.json';

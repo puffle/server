@@ -1,6 +1,5 @@
-import { Nullable } from '@n0bodysec/ts-utils';
+import { clamp, Nullable } from '@n0bodysec/ts-utils';
 import { Prisma, User as PrismaUser } from '@prisma/client';
-import { clamp } from 'lodash';
 import EventEmitter from 'node:events';
 import { DisconnectReason, Socket } from 'socket.io';
 import { BuddyCollection } from '../../collections/BuddyCollection';
