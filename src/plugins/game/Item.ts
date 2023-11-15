@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin, TItemSlots } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -49,7 +49,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
 
 		const item = this.world.crumbs.items[args.item];
-		if (item === undefined || !user.inventory.items.includes(args.item)) return;
+		if (item === undefined || !user.inventory.has(args.item)) return;
 
 		user.setItem(constants.ITEM_SLOTS[item.type - 1], args.item);
 	};
@@ -66,7 +66,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
 
 		const item = user.validatePurchase.item(args.item);
-		if (!item || user.inventory.items.includes(args.item)) return;
+		if (!item || user.inventory.has(args.item)) return;
 
 		const slot = constants.ITEM_SLOTS[item.type - 1];
 		if (slot === undefined) return;

@@ -1,21 +1,7 @@
 import { ValidateFunction } from 'ajv';
-import { User } from '../classes/User';
+import { User } from '../classes/user/User';
 import { constants } from '../utils/constants';
 import { IRoom } from './crumbs';
-
-/**
- * Object.values() at type level
- */
-export type ValuesOf<T> = T[keyof T];
-
-/**
- * Get all keys where the values are of type TCondition
- */
-export type KeysOfType<TObj, TCondition> = ValuesOf<{
-	[K in keyof TObj]: TObj[K] extends TCondition ? K : never;
-}>;
-
-export type AnyKey = Record<string, unknown>;
 
 export type TActionMessageArgs = Record<string, unknown>;
 
@@ -70,7 +56,7 @@ export interface IUserSafeRoom
 export type TUserSafe = Omit<IUserSafeRoom, 'x' | 'y' | 'frame'>;
 export type TUserAnonymous = Omit<TUserSafe, 'joinTime'>;
 
-export type IRoomIgloo = Partial<IRoom> & {
+export type TRoomIgloo = Partial<IRoom> & {
 	id: number;
 	name: string;
 };

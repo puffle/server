@@ -1,18 +1,11 @@
-import { User } from '../classes/User';
 import { Database } from '../managers/DatabaseManager';
 import { removeItemFromArray } from '../utils/functions';
 import { Collection } from './Collection';
 
 export class InventoryCollection extends Collection
 {
-	constructor(user: User)
-	{
-		super(user);
-
-		this.items = this.user.data.inventory.map((item) => item.itemId);
-	}
-
-	items: number[];
+	get collection() { return this.user.data.inventory; }
+	has = (value: number) => this.collection.some((x) => x.itemId === value);
 
 	add = async (itemId: number) => Database.inventory.create({
 		data: {
@@ -21,8 +14,7 @@ export class InventoryCollection extends Collection
 		},
 	}).then(() =>
 	{
-		this.items.push(itemId);
-		this.user.data.inventory.push({ userId: this.user.data.id, itemId });
+		this.collection.push({ userId: this.user.data.id, itemId });
 	});
 
 	remove = async (itemId: number) => Database.inventory.deleteMany({
@@ -32,9 +24,8 @@ export class InventoryCollection extends Collection
 		},
 	}).then(() =>
 	{
-		removeItemFromArray(this.items, itemId);
-		removeItemFromArray(this.user.data.inventory, { userId: this.user.data.id, itemId });
+		removeItemFromArray(this.collection, { userId: this.user.data.id, itemId });
 	});
 
-	toJSON = () => this.items;
+	toJSON = () => this.collection.map((item) => item.itemId);
 }

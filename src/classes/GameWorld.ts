@@ -1,11 +1,14 @@
+import { clamp } from '@n0bodysec/ts-utils';
 import { verify } from 'jsonwebtoken';
-import { clamp } from 'lodash';
+import { EventEmitter } from 'node:events';
 import { Server, Socket } from 'socket.io';
-import { EventEmitter } from 'stream';
+import cards from '../data/cards.json';
+import decks from '../data/decks.json';
 import floorings from '../data/floorings.json';
 import furnitures from '../data/furnitures.json';
 import igloos from '../data/igloos.json';
 import items from '../data/items.json';
+import matchmakers from '../data/matchmakers.json';
 import rooms from '../data/rooms.json';
 import tables from '../data/tables.json';
 import waddles from '../data/waddles.json';
@@ -19,9 +22,11 @@ import { ICrumbs } from '../types/crumbs';
 import { IActionMessage, IGameAuth } from '../types/types';
 import { constants } from '../utils/constants';
 import { getIglooId, getSocketAddress } from '../utils/functions';
-import { User } from './User';
 import { Igloo } from './room/Igloo';
 import { Room } from './room/Room';
+import { MatchmakerFactory } from './room/matchmaker/MatchmakerFactory';
+import { Waddle } from './room/waddle/Waddle';
+import { User } from './user/User';
 
 export class GameWorld
 {
@@ -30,23 +35,15 @@ export class GameWorld
 		this.id = id;
 		this.server = server;
 		this.maxUsers = Config.data.worlds[id]?.maxUsers ?? constants.limits.MAX_USERS;
-
-		this.events = new EventEmitter({ captureRejections: true });
 		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
 
-		this.crumbs.rooms.forEach((room) =>
-		{
-			this.rooms.set(room.id, new Room({
-				id: room.id,
-				name: room.name,
-				member: room.member,
-				maxUsers: room.maxUsers,
-				game: room.game,
-				spawn: room.spawn,
-			}));
-		});
+		// init crumbs
+		this.setRooms();
+		this.setWaddles();
+		this.setMatchmakers();
 
 		this.server.on('connection', this.onConnection);
+		// this.events.on('error', (error) => Logger.error(error));
 
 		this.updatePopulation();
 	}
@@ -54,7 +51,7 @@ export class GameWorld
 	id: string;
 	server: Server;
 	pluginManager: PluginManager;
-	events: EventEmitter;
+	events = new EventEmitter({ captureRejections: true });
 	users: Map<number, User> = new Map();
 	crumbs = {
 		floorings,
@@ -64,6 +61,9 @@ export class GameWorld
 		rooms,
 		tables,
 		waddles,
+		cards,
+		decks,
+		matchmakers,
 	} as ICrumbs;
 	rooms = new Map<number, Room | Igloo>();
 	maxUsers: number;
@@ -81,7 +81,8 @@ export class GameWorld
 		if (!MyAjv.validators.actionMessage(message)) return;
 
 		Logger.info(`Received: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
-		this.events?.emit(message.action, message.args, user);
+		this.events.emit(message.action, message.args, user);
+		user.events.emit(message.action, message.args, user);
 	};
 
 	// eslint-disable-next-line class-methods-use-this
@@ -117,6 +118,7 @@ export class GameWorld
 				inventory: true,
 				furniture_inventory: true,
 				igloo_inventory: true,
+				cards: true,
 				buddies_userId: {
 					select: {
 						buddyId: true,
@@ -182,6 +184,8 @@ export class GameWorld
 	{
 		user.room?.remove(user);
 		user.buddies.sendOffline();
+		user.waddle?.remove(user);
+		user.minigameRoom?.remove(user);
 
 		const igloo = this.rooms.get(getIglooId(user.data.id));
 		if (igloo !== undefined && igloo.isIgloo) (igloo as Igloo).locked = true;
@@ -227,4 +231,31 @@ export class GameWorld
 
 		return spawns[Math.floor(Math.random() * spawns.length)]?.[0];
 	};
+
+	setRooms = () => this.crumbs.rooms.forEach((room) =>
+	{
+		this.rooms.set(room.id, new Room({
+			id: room.id,
+			name: room.name,
+			member: room.member,
+			maxUsers: room.maxUsers,
+			game: room.game,
+			spawn: room.spawn,
+		}));
+	});
+
+	setWaddles = () => this.crumbs.waddles.forEach((waddle) =>
+	{
+		this.rooms.get(waddle.roomId)?.waddles.set(waddle.id, new Waddle(waddle));
+	});
+
+	setMatchmakers = () => Object.entries(this.crumbs.matchmakers).forEach((mm) =>
+	{
+		const mmId = Number(mm[0]);
+		if (!Number.isNaN(mmId))
+		{
+			const room = this.rooms.get(mmId);
+			if (room !== undefined) room.matchmaker = MatchmakerFactory.createMatchmaker(mm[1], room);
+		}
+	});
 }

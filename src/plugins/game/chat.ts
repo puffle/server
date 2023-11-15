@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -33,10 +33,13 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			['ai', this.cmdItems],
 			['ac', this.cmdCoins],
 			['af', this.cmdFurniture],
+			['aig', this.cmdIgloo],
 			['jr', this.cmdJoinRoom],
 			['rooms', this.cmdPopulation],
 			['bc', this.cmdBroadcast],
 			['rbc', this.cmdBroadcastRoom],
+			['ajc', this.cmdJitsuCard],
+			['aja', this.cmdAllJitsuCards],
 		]);
 
 		this.events = {
@@ -156,7 +159,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 
 	cmdBroadcastRoom = (args: string[], user: User) => user.isModerator
 		&& user.room !== undefined
-		&& this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
+		&& this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast (Current Room):\n\n' + args.join(' ') } });
 
 	cmdItems = (args: string[], user: User) =>
 	{
@@ -182,5 +185,42 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (plugin === undefined) return;
 
 		(plugin as IglooPlugin).addFurniture({ furniture }, user);
+	};
+
+	cmdIgloo = (args: string[], user: User) =>
+	{
+		if (!user.isModerator) return;
+
+		const igloo = Number(args[0]);
+		if (Number.isNaN(igloo)) return;
+
+		const plugin = this.world.pluginManager.plugins.Igloo;
+		if (plugin === undefined) return;
+
+		(plugin as IglooPlugin).addIgloo({ igloo }, user);
+	};
+
+	cmdJitsuCard = (args: string[], user: User) =>
+	{
+		if (!user.isModerator) return;
+
+		const cardId = Number(args[0]);
+		const card = this.world.crumbs.cards[cardId];
+		if (card === undefined)
+		{
+			user.send('error', { error: 'Card not found!' });
+			return;
+		}
+
+		user.cards.add(cardId);
+		user.send('error', { error: `Adding card: ${card.name}` });
+	};
+
+	cmdAllJitsuCards = (args: string[], user: User) =>
+	{
+		if (!user.isModerator) return;
+		Object.keys(this.world.crumbs.cards).forEach((card) => user.cards.add(Number(card)));
+
+		user.send('error', { error: 'Adding all cards...' });
 	};
 }

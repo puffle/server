@@ -1,27 +1,32 @@
+import { clamp, Nullable } from '@n0bodysec/ts-utils';
 import { Prisma, User as PrismaUser } from '@prisma/client';
-import { clamp } from 'lodash';
+import EventEmitter from 'node:events';
 import { DisconnectReason, Socket } from 'socket.io';
-import { BuddyCollection } from '../collections/BuddyCollection';
-import { FurnitureCollection } from '../collections/FurnitureCollection';
-import { IglooCollection } from '../collections/IglooCollection';
-import { IgnoreCollection } from '../collections/IgnoreCollection';
-import { InventoryCollection } from '../collections/InventoryCollection';
-import { Config } from '../managers/ConfigManager';
-import { Database } from '../managers/DatabaseManager';
-import { Logger } from '../managers/LogManager';
-import { AnyKey, IActionMessage, IUserSafeRoom, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../types/types';
-import { constants } from '../utils/constants';
-import { getIglooId, getSocketAddress, pick } from '../utils/functions';
-import { GameWorld } from './GameWorld';
-import { Igloo } from './room/Igloo';
-import { Room } from './room/Room';
-import { PurchaseValidator } from './user/PurchaseValidator';
+import { BuddyCollection } from '../../collections/BuddyCollection';
+import { CardCollection } from '../../collections/CardCollection';
+import { FurnitureCollection } from '../../collections/FurnitureCollection';
+import { IglooCollection } from '../../collections/IglooCollection';
+import { IgnoreCollection } from '../../collections/IgnoreCollection';
+import { InventoryCollection } from '../../collections/InventoryCollection';
+import { Config } from '../../managers/ConfigManager';
+import { Database } from '../../managers/DatabaseManager';
+import { Logger } from '../../managers/LogManager';
+import { IActionMessage, IUserSafeRoom, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../../types/types';
+import { constants } from '../../utils/constants';
+import { getIglooId, getSocketAddress, pick } from '../../utils/functions';
+import { GameWorld } from '../GameWorld';
+import { BaseInstance } from '../instance/BaseInstance';
+import { Igloo } from '../room/Igloo';
+import { Room } from '../room/Room';
+import { Waddle } from '../room/waddle/Waddle';
+import { PurchaseValidator } from './PurchaseValidator';
 
 export type TDbUser = Prisma.UserGetPayload<{
 	include: {
 		inventory: true,
 		furniture_inventory: true,
 		igloo_inventory: true,
+		cards: true,
 		buddies_userId: {
 			select: {
 				buddyId: true,
@@ -53,6 +58,9 @@ export class User
 		this.buddies = new BuddyCollection(this);
 		this.ignores = new IgnoreCollection(this);
 		this.validatePurchase = new PurchaseValidator(this);
+		this.cards = new CardCollection(this);
+
+		// this.events.on('error', (error) => Logger.error(error));
 	}
 
 	socket: Socket;
@@ -65,14 +73,20 @@ export class User
 	furniture: FurnitureCollection;
 	buddies: BuddyCollection;
 	ignores: IgnoreCollection;
+	cards: CardCollection;
 	validatePurchase: PurchaseValidator;
 
 	room: Room | undefined;
+	waddle: Waddle | undefined;
+	minigameRoom: Nullable<BaseInstance> = null; // TODO: add tables
 	roomData = {
 		x: 0,
 		y: 0,
 		frame: 1,
 	};
+
+	// used for dynamic/temporary events
+	events = new EventEmitter({ captureRejections: true });
 
 	// see DatabaseManager > findAnonymousUser()
 	get getAnonymous(): TUserAnonymous
@@ -117,7 +131,7 @@ export class User
 
 	joinRoom = (roomId: number, x = 0, y = 0) =>
 	{
-		if (roomId < 0 || roomId === this.room?.data.id) return;
+		if (roomId < 0 || roomId === this.room?.data.id || this.minigameRoom || this.waddle) return;
 
 		const room = this.world.rooms.get(roomId);
 		if (room === undefined) return;
@@ -196,11 +210,11 @@ export class User
 		if (slot === undefined || slot === 'award') return;
 
 		const type = slot.toLowerCase();
-		if ((this.data as AnyKey)[type] === itemId) return;
+		if ((this.data as Record<string, unknown>)[type] === itemId) return;
 
 		this.dbUpdate({ [type]: itemId }).then(() =>
 		{
-			(this.data as AnyKey)[type] = itemId;
+			(this.data as Record<string, unknown>)[type] = itemId;
 		});
 
 		this.room?.send(this, 'update_player', { id: this.data.id, item: itemId, slot: type }, []);

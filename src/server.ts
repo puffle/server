@@ -19,11 +19,11 @@ import './utils/setup';
 	const worldName = process.argv[2] ?? 'HTTP';
 
 	MyAjv.initialize();
-	await Config.Initialize(process.argv[3]);
+	await Config.Initialize(process.argv[3] ?? join(__dirname, '..', 'config', 'config.json'));
 	await Database.Initialize();
 	Logger.initialize(Config.data.logLevel);
 
-	if (!MyAjv.initialized || !Config.initialized || !Database.initialized)
+	if (!MyAjv.initialized || !Database.initialized)
 	{
 		Logger.error(`${constants.PROJECT_NAME} is not properly initialized. Exiting...`);
 		process.exit(1);
@@ -40,7 +40,7 @@ import './utils/setup';
 				code: error.code,
 			});
 		}
-		else reply.send(error);
+		else reply.status(500).send(error);
 	});
 
 	// HTTP server

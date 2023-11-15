@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -35,7 +35,7 @@ export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 	gameOver = (args: IGameOverArgs, user: User) =>
 	{
 		if (!this.schemas.gameOver!(args)) return;
-		if (!user.room?.isGame) return;
+		if (!user.room?.isGame && !user.minigameRoom) return;
 
 		user.updateCoins(args.coins, true);
 	};

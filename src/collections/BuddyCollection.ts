@@ -1,19 +1,13 @@
-import { User } from '../classes/User';
 import { Database } from '../managers/DatabaseManager';
 import { removeItemFromArray } from '../utils/functions';
 import { Collection } from './Collection';
 
 export class BuddyCollection extends Collection
 {
-	constructor(user: User)
-	{
-		super(user);
-
-		this.user.data.buddies_userId.forEach((buddy) => this.data.set(buddy.buddyId, buddy.buddy.username));
-	}
-
-	data = new Map<number, string>();
 	requests: number[] = [];
+
+	get collection() { return this.user.data.buddies_userId; }
+	has = (value: number) => this.collection.some((x) => x.buddyId === value);
 
 	isOnline = (userId: number) => this.user.world.users.has(userId);
 
@@ -26,11 +20,11 @@ export class BuddyCollection extends Collection
 	/**
 	 * Sends a "friend offline" notification to all buddies of the current user.
 	 */
-	sendOffline = () => [...this.data.keys()].forEach((buddyId) =>
+	sendOffline = () => this.collection.forEach((buddy) =>
 	{
-		if (this.isOnline(buddyId))
+		if (this.isOnline(buddy.buddyId))
 		{
-			this.user.world.users.get(buddyId)?.send('buddy_offline', { id: this.user.data.id });
+			this.user.world.users.get(buddy.buddyId)?.send('buddy_offline', { id: this.user.data.id });
 		}
 	});
 
@@ -43,8 +37,7 @@ export class BuddyCollection extends Collection
 		},
 	}).then(() =>
 	{
-		this.data.set(userId, username);
-		this.user.data.buddies_userId.push({ buddyId: userId, buddy: { username } });
+		this.collection.push({ buddyId: userId, buddy: { username } });
 	});
 
 	#remove = async (userId: number) => Database.buddy.deleteMany({
@@ -54,10 +47,8 @@ export class BuddyCollection extends Collection
 		},
 	}).then(() =>
 	{
-		this.data.delete(userId);
-
-		const index = this.user.data.buddies_userId.findIndex((item) => item.buddyId === userId);
-		if (index > -1) this.user.data.buddies_userId.splice(index, 1);
+		const index = this.collection.findIndex((item) => item.buddyId === userId);
+		if (index > -1) this.collection.splice(index, 1);
 	});
 
 	addBuddy = (id: number, username: string, requester = false) =>
@@ -81,16 +72,16 @@ export class BuddyCollection extends Collection
 	{
 		const buddies: { id: number; username: string; online: boolean; }[] = [];
 
-		[...this.data.entries()].forEach(([id, username]) =>
+		this.collection.forEach((buddy) =>
 		{
-			const online = this.isOnline(id);
+			const online = this.isOnline(buddy.buddyId);
 			buddies.push({
-				id,
-				username,
+				id: buddy.buddyId,
+				username: buddy.buddy.username,
 				online,
 			});
 
-			if (online) this.sendOnlineTo(id);
+			if (online) this.sendOnlineTo(buddy.buddyId);
 		});
 
 		return buddies;

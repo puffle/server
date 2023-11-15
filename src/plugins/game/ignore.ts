@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
@@ -40,8 +40,8 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 
 		if (
 			args.id === user.data.id
-			|| user.buddies.data.has(args.id)
-			|| user.ignores.data.has(args.id)
+			|| user.buddies.has(args.id)
+			|| user.ignores.has(args.id)
 		) return;
 
 		const ignore = this.world.users.get(args.id);
@@ -67,7 +67,7 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!this.schemas.genericIgnoreId!(args)) return;
 
-		if (!user.ignores.data.has(args.id)) return;
+		if (!user.ignores.has(args.id)) return;
 
 		user.ignores.removeIgnore(args.id);
 	};

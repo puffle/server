@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
@@ -46,8 +46,8 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 			recipient === undefined
 			|| recipient.data.id === user.data.id
 			|| recipient.buddies.requests.includes(user.data.id)
-			|| recipient.buddies.data.has(user.data.id)
-			|| recipient.ignores.data.has(user.data.id)
+			|| recipient.buddies.has(user.data.id)
+			|| recipient.ignores.has(user.data.id)
 		) return;
 
 		recipient.buddies.requests.push(user.data.id);
@@ -58,7 +58,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
 
-		if (!user.buddies.requests.includes(args.id) || user.buddies.data.has(args.id)) return;
+		if (!user.buddies.requests.includes(args.id) || user.buddies.has(args.id)) return;
 
 		user.buddies.deleteRequest(args.id);
 
@@ -97,7 +97,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
 
-		if (!user.buddies.data.has(args.id)) return;
+		if (!user.buddies.has(args.id)) return;
 
 		user.buddies.removeBuddy(args.id);
 
@@ -123,7 +123,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		if (!this.schemas.genericBuddyId!(args)) return;
 
 		const buddy = this.world.users.get(args.id);
-		if (buddy === undefined || buddy.room === undefined || user.buddies.data.get(args.id) === undefined) return;
+		if (buddy === undefined || buddy.room === undefined || !user.buddies.has(args.id)) return;
 
 		user.send('buddy_find', {
 			find: buddy.room.data.id,

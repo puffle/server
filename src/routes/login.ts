@@ -30,7 +30,7 @@ const getWorldPopulations = async (isModerator: boolean) =>
 const returnError = (message: string, errors?: string) => ({ success: false, message, errors });
 
 // TODO: migrate to error code
-const errorMessages = Object.create({
+const errorMessages: Record<string, Record<string, string>> = Object.create({
 	username: Object.create({
 		type: 'Invalid username',
 		minLength: 'Your Penguin Name is too short. Please try again',
@@ -51,7 +51,7 @@ const getErrorMessage = (key: string, keyword: string) =>
 	const errorKey = errorMessages[key];
 
 	return errorKey !== undefined && keyword !== undefined && errorKey[keyword] !== undefined
-		? errorKey[keyword] as string | undefined || 'Unknown error'
+		? errorKey[keyword] || 'Unknown error'
 		: 'Unknown error';
 };
 
@@ -76,13 +76,13 @@ const genTokenDates = () =>
 const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: FastifyReply) =>
 {
 	// TODO: find a better way to handle ajv errors (ajv-errors package is not working as expected) and then migrate to error code
-	if (typeof req.body.username !== 'string' || req.body.username.length === 0) return reply.send(returnError(getErrorMessage('username', 'stringEmpty')));
-	if (typeof req.body.password !== 'string' || req.body.password.length === 0) return reply.send(returnError(getErrorMessage('password', 'stringEmpty')));
+	if (typeof req.body.username !== 'string' || req.body.username.length === 0) return reply.status(400).send(returnError(getErrorMessage('username', 'stringEmpty')));
+	if (typeof req.body.password !== 'string' || req.body.password.length === 0) return reply.status(400).send(returnError(getErrorMessage('password', 'stringEmpty')));
 
 	if (!MyAjv.validators.loginAuth(req.body))
 	{
 		const firstError = MyAjv.validators.loginAuth.errors?.at(0);
-		return reply.send(
+		return reply.status(400).send(
 			returnError(
 				getErrorMessage(firstError?.instancePath.slice(1) ?? '', firstError?.keyword ?? ''),
 				MyAjv.errorsText(MyAjv.validators.loginAuth.errors),
@@ -108,7 +108,7 @@ const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: Fast
 
 	if (user == null)
 	{
-		return reply.send({
+		return reply.status(404).send({
 			success: false,
 			message: 'Penguin not found. Try Again?', // TODO: migrate to error code
 		});
@@ -183,7 +183,7 @@ const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: Fast
 
 	if (!match)
 	{
-		return reply.send({
+		return reply.status(401).send({
 			success: false,
 			message: 'Incorrect password. NOTE: Passwords are CaSe SeNsiTIVE', // TODO: migrate to error code
 		});
@@ -191,7 +191,7 @@ const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: Fast
 
 	if (user.permaBan)
 	{
-		return reply.send({
+		return reply.status(403).send({
 			success: false,
 			message: 'Banned:\nYou are banned forever', // TODO: migrate to error code
 		});
@@ -200,7 +200,7 @@ const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: Fast
 	if (user.bans_userId[0] !== undefined)
 	{
 		const hours = Math.round((user.bans_userId[0].expires.getTime() - Date.now()) / 60 / 60 / 1000);
-		return reply.send({
+		return reply.status(403).send({
 			success: false,
 			message: `Banned:\nYou are banned for the next ${hours} hours`, // TODO: migrate to error code
 		});

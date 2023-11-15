@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
@@ -45,7 +45,7 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 			return;
 		}
 
-		if (!user.buddies.data.has(args.id)) return;
+		if (!user.buddies.has(args.id)) return;
 
 		const anonUser = await Database.findAnonymousUser(args.id);
 		user.send('get_player', { penguin: anonUser });

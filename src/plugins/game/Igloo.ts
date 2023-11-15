@@ -1,7 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
-import { User } from '../../classes/User';
 import { Igloo } from '../../classes/room/Igloo';
+import { User } from '../../classes/user/User';
 import { MyAjv } from '../../managers/AjvManager';
 import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';
@@ -155,9 +155,9 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		const igloo = this.getIgloo(user.data.id);
 		if (igloo === undefined || igloo !== user.room || igloo.dbData.type === args.type) return;
 
-		if (!user.igloos.data.includes(args.type)) return;
+		if (!user.igloos.has(args.type)) return;
 
-		// TODO: use Promise.all()
+		// ? TODO: use Promise.all()
 		await igloo.clearFurniture();
 		await igloo.dbUpdate({ type: args.type, flooring: 0 });
 
@@ -183,7 +183,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		args.furniture.forEach((item) =>
 		{
 			const id = item.furnitureId;
-			if (!item || !user.furniture.data.has(id)) return;
+			if (!item || !user.furniture.has(id)) return;
 
 			// update quantity
 			quantities[id] = (quantities[id] !== undefined) ? (quantities[id]! + 1) : 1;

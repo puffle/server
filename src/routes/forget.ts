@@ -12,7 +12,7 @@ const postForget = async (req: FastifyRequest<{ Body: TForgetAuth; }>, reply: Fa
 	{
 		return reply.status(400).send(
 			returnError(
-				'Forbidden',
+				'Bad Request',
 				MyAjv.errorsText(MyAjv.validators.forgetAuth.errors),
 			),
 		);
@@ -24,10 +24,10 @@ const postForget = async (req: FastifyRequest<{ Body: TForgetAuth; }>, reply: Fa
 		},
 	});
 
-	if (user == null) return reply.status(400).send(returnError('Forbidden', 'User not found'));
+	if (user == null) return reply.status(404).send(returnError('Not Found', 'User not found'));
 
 	const match = await compare(req.body.password, user.password);
-	if (!match) return reply.status(400).send(returnError('Forbidden', 'Invalid password'));
+	if (!match) return reply.status(401).send(returnError('Unauthorized', 'Invalid password'));
 
 	await Database.authToken.deleteMany({
 		where: {

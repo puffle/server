@@ -1,13 +1,13 @@
 import { Furniture, Igloo as PrismaIgloo } from '@prisma/client';
 import { Database } from '../../managers/DatabaseManager';
 import { IRoom } from '../../types/crumbs';
-import { IRoomIgloo } from '../../types/types';
-import { User } from '../User';
+import { TRoomIgloo } from '../../types/types';
+import { User } from '../user/User';
 import { Room } from './Room';
 
 export class Igloo extends Room
 {
-	constructor(ownerUsername: string, data: IRoomIgloo, dbData: PrismaIgloo, furniture: Furniture[])
+	constructor(ownerUsername: string, data: TRoomIgloo, dbData: PrismaIgloo, furniture: Furniture[])
 	{
 		data.member = 0;
 		data.maxUsers = 0;
@@ -34,6 +34,7 @@ export class Igloo extends Room
 		this.furniture = [];
 	};
 
+	/** @override */
 	override add = (user: User) =>
 	{
 		user.room = this;
@@ -66,6 +67,9 @@ export class Igloo extends Room
 		location: this.dbData.location,
 	});
 
+	/** @override */
 	override get isIgloo() { return true; } // eslint-disable-line class-methods-use-this
+
+	/** @override */
 	override get isFull() { return false; } // eslint-disable-line class-methods-use-this
 }

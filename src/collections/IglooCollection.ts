@@ -1,18 +1,11 @@
-import { User } from '../classes/User';
 import { Database } from '../managers/DatabaseManager';
 import { removeItemFromArray } from '../utils/functions';
 import { Collection } from './Collection';
 
 export class IglooCollection extends Collection
 {
-	constructor(user: User)
-	{
-		super(user);
-
-		this.data = this.user.data.igloo_inventory.map((igloo) => igloo.iglooId);
-	}
-
-	data: number[];
+	get collection() { return this.user.data.igloo_inventory; }
+	has = (value: number) => this.collection.some((x) => x.iglooId === value);
 
 	add = async (iglooId: number) => Database.iglooInventory.create({
 		data: {
@@ -21,8 +14,7 @@ export class IglooCollection extends Collection
 		},
 	}).then(() =>
 	{
-		this.data.push(iglooId);
-		this.user.data.igloo_inventory.push({ userId: this.user.data.id, iglooId });
+		this.collection.push({ userId: this.user.data.id, iglooId });
 	});
 
 	remove = async (iglooId: number) => Database.iglooInventory.deleteMany({
@@ -32,9 +24,8 @@ export class IglooCollection extends Collection
 		},
 	}).then(() =>
 	{
-		removeItemFromArray(this.data, iglooId);
-		removeItemFromArray(this.user.data.igloo_inventory, { userId: this.user.data.id, iglooId });
+		removeItemFromArray(this.collection, { userId: this.user.data.id, iglooId });
 	});
 
-	toJSON = () => this.data;
+	toJSON = () => this.collection.map((x) => x.iglooId);
 }
