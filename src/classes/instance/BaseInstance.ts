@@ -5,14 +5,14 @@ import { User } from '../user/User';
 
 export class BaseInstance
 {
-	constructor(users: User[], waddle?: Waddle)
+	constructor(users: Nullable<User>[], waddle?: Waddle)
 	{
 		this.users = Array.from(users); // copy array instead of referecing it
 		this.waddle = waddle;
 	}
 
 	id: Nullable<number> = null;
-	users: User[];
+	users: Nullable<User>[];
 	ready: User[] = []; // don't start until all users are ready
 	started = false;
 	waddle: Waddle | undefined;
@@ -21,7 +21,7 @@ export class BaseInstance
 	{
 		this.users.forEach((user) =>
 		{
-			if (this.id != null)
+			if (this.id != null && user != null)
 			{
 				this.addListeners(user);
 				user.joinRoom(this.id);
@@ -33,11 +33,13 @@ export class BaseInstance
 	addListeners = (user: User) =>
 	{
 		user.events.on('start_game', this.handleStartGame);
+		user.events.on('leave_game', this.handleLeaveGame);
 	};
 
 	removeListeners = (user: User) =>
 	{
 		user.events.off('start_game', this.handleStartGame);
+		user.events.off('leave_game', this.handleLeaveGame);
 	};
 
 	handleStartGame = (args: TActionMessageArgs, user: User) =>
@@ -47,6 +49,11 @@ export class BaseInstance
 			this.ready.push(user);
 			this.checkStart();
 		}
+	};
+
+	handleLeaveGame = (args: TActionMessageArgs, user: User) =>
+	{
+		this.remove(user);
 	};
 
 	checkStart = () =>
@@ -66,7 +73,7 @@ export class BaseInstance
 
 		// remove from users
 		const seat = this.getSeat(user);
-		this.users.splice(seat, 1);
+		this.users[seat] = null;
 
 		// remove from ready
 		this.ready = this.ready.filter((u) => u !== user);
@@ -79,6 +86,6 @@ export class BaseInstance
 	send = (action: string, args: TActionMessageArgs = {}, user: Nullable<User> = null, filter = [user]) =>
 	{
 		const users = this.users.filter((u) => !filter.includes(u));
-		users.forEach((u) => u.send(action, args));
+		users.forEach((u) => u != null && u.send(action, args));
 	};
 }

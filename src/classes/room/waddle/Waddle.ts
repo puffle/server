@@ -1,3 +1,4 @@
+import { Nullable } from '@n0bodysec/ts-utils';
 import { IWaddle } from '../../../types/crumbs';
 import { InstanceFactory } from '../../instance/InstanceFactory';
 import { User } from '../../user/User';
@@ -7,14 +8,15 @@ export class Waddle
 	constructor(data: IWaddle)
 	{
 		this.data = data;
+		this.users = new Array(data.seats).fill(null);
 	}
 
 	data: IWaddle;
-	users: User[] = [];
+	users: Nullable<User>[] = [];
 
 	get isFull()
 	{
-		return this.users.length >= this.data.seats;
+		return !this.users.includes(null);
 	}
 
 	getSeat = (user: User) => this.users.indexOf(user);
@@ -23,8 +25,8 @@ export class Waddle
 	{
 		if (this.data.game === 'card' && !user.cards.hasCards) return;
 
-		const seat = this.getSeat(user);
-		this.users.splice(seat, 1);
+		const seat = this.users.indexOf(null);
+		this.users[seat] = user;
 
 		user.waddle = this;
 
@@ -42,7 +44,7 @@ export class Waddle
 	remove = (user: User) =>
 	{
 		const seat = this.getSeat(user);
-		this.users.splice(seat, 1);
+		this.users[seat] = null;
 
 		user.waddle = undefined;
 		user.room?.send(user, 'update_waddle', { waddle: this.data.id, seat, username: null }, []);
@@ -55,5 +57,5 @@ export class Waddle
 		instance.init();
 	};
 
-	reset = () => this.users.forEach((u) => this.remove(u));
+	reset = () => this.users.forEach((u) => u != null && this.remove(u));
 }

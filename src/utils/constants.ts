@@ -34,4 +34,7 @@ export const constants = {
 	],
 
 	STARTER_DECK_ID: 821,
+	SENSEI_ROOM_ID: 951,
+	RINK_ROOM_ID: 802,
+	SLED_ROOM_ID: 999,
 } as const;

@@ -1,6 +1,6 @@
 import { clamp, Nullable } from '@n0bodysec/ts-utils';
 import { Prisma, User as PrismaUser } from '@prisma/client';
-import EventEmitter from 'node:events';
+import { EventEmitter } from 'node:events';
 import { DisconnectReason, Socket } from 'socket.io';
 import { BuddyCollection } from '../../collections/BuddyCollection';
 import { CardCollection } from '../../collections/CardCollection';

@@ -1,3 +1,4 @@
+import { Nullable } from '@n0bodysec/ts-utils';
 import { IWaddle } from '../../types/crumbs';
 import { Waddle } from '../room/waddle/Waddle';
 import { User } from '../user/User';
@@ -14,7 +15,7 @@ export class InstanceFactory
 
 	static createInstanceEx = (options: {
 		game: IWaddle['game'],
-		users: User[],
+		users: Nullable<User>[],
 		waddle?: Waddle,
 	}) => new this.types[options.game](options.users, options.waddle);
 
