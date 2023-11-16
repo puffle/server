@@ -15,11 +15,11 @@ export default class DeckPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			add_starter_deck: this.addStarterDeck,
+			add_starter_deck: this.addStarterDeck.bind(this),
 		};
 	}
 
-	addStarterDeck = (args: unknown, user: User) =>
+	addStarterDeck(args: unknown, user: User)
 	{
 		if (!this.starterDeck || user.inventory.has(this.starterDeckId)) return;
 
@@ -44,5 +44,5 @@ export default class DeckPlugin extends GamePlugin implements IGamePlugin
 			slot: 'award',
 			coins: user.data.coins,
 		});
-	};
+	}
 }

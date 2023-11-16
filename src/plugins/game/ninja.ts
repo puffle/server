@@ -12,14 +12,17 @@ export default class NinjaPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			get_ninja: this.getNinja,
+			get_ninja: this.getNinja.bind(this),
 		};
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	getNinja = (args: unknown, user: User) => user.send('get_ninja', {
-		rank: user.data.ninjaRank,
-		progress: user.data.ninjaProgress,
-		cards: user.cards,
-	});
+	getNinja(args: unknown, user: User)
+	{
+		user.send('get_ninja', {
+			rank: user.data.ninjaRank,
+			progress: user.data.ninjaProgress,
+			cards: user.cards,
+		});
+	}
 }

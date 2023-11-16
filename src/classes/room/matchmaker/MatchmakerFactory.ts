@@ -9,5 +9,5 @@ export class MatchmakerFactory
 		card: CardMatchmaker,
 	};
 
-	static createMatchmaker = (matchmaker: IMatchmaker, room: Room) => new this.types[matchmaker.game](matchmaker, room);
+	static createMatchmaker(matchmaker: IMatchmaker, room: Room) { return new this.types[matchmaker.game](matchmaker, room); }
 }

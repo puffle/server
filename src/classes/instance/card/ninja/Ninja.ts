@@ -26,25 +26,25 @@ export class Ninja
 		if (this.user) this.setDeck();
 	}
 
-	setDeck = () =>
+	setDeck()
 	{
 		if (this.user?.cards.deck === undefined) throw new CustomError('Invalid user\'s deck data provided');
 
 		// shallow copy
 		this.deck = Array.from(this.user?.cards.deck);
-	};
+	}
 
-	filterDeckRegularCards = () =>
+	filterDeckRegularCards()
 	{
 		if (this.deck === undefined) return;
 		this.deck = this.deck.filter((card) => (cards as ICrumbs['cards'])[card]?.powerId === 0);
-	};
+	}
 
-	isInDealt = (cardId: number) => this.dealt?.some((dealt) => dealt.data.id === cardId);
-	hasPlayableCards = (element: ICard['element']) => Boolean(this.getLimitedDealt(element)?.length);
-	getLimitedDealt = (element: ICard['element']) => this.dealt?.filter((dealt) => dealt.data.element !== element);
+	isInDealt(cardId: number) { return this.dealt?.some((dealt) => dealt.data.id === cardId); }
+	hasPlayableCards(element: ICard['element']) { return Boolean(this.getLimitedDealt(element)?.length); }
+	getLimitedDealt(element: ICard['element']) { return this.dealt?.filter((dealt) => dealt.data.element !== element); }
 
-	dealCards = (dealPowers = true) =>
+	dealCards(dealPowers = true)
 	{
 		if (this.dealt === undefined) throw new CustomError('`dealt` field is undefined');
 
@@ -67,9 +67,9 @@ export class Ninja
 		}
 
 		return currentDealt;
-	};
+	}
 
-	dealCard = () =>
+	dealCard()
 	{
 		if (this.deck.length < 1) this.setDeck();
 
@@ -79,9 +79,9 @@ export class Ninja
 		this.deck?.splice(randomIndex, 1);
 
 		return randomCard;
-	};
+	}
 
-	pickCard = (cardId: number) =>
+	pickCard(cardId: number)
 	{
 		if (this.opponent === undefined) throw new CustomError('Cannot find a valid opponent');
 
@@ -93,23 +93,23 @@ export class Ninja
 
 		this.opponent.send('pick_card', { card });
 		this.dealt?.splice(card, 1);
-	};
+	}
 
-	getPick = (id: number) => this.dealt?.find((card) => card.data.id === id);
+	getPick(id: number) { return this.dealt?.find((card) => card.data.id === id); }
 
-	revealCards = () =>
+	revealCards()
 	{
 		if (this.opponent === undefined) throw new CustomError('Cannot find a valid opponent');
 
 		this.send('reveal_card', { card: this.opponent.pick });
 		this.opponent.send('reveal_card', { card: this.pick });
-	};
+	}
 
-	resetTurn = () =>
+	resetTurn()
 	{
 		this.pick = null;
 		this.hasDealt = false;
-	};
+	}
 
-	send = (action: string, args = {}) => this.user?.send(action, args);
+	send(action: string, args = {}) { this.user?.send(action, args); }
 }

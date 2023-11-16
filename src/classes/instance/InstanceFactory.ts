@@ -13,15 +13,17 @@ export class InstanceFactory
 		sled: SledInstance,
 	};
 
-	static createInstanceEx = (options: {
-		game: IWaddle['game'],
-		users: Nullable<User>[],
-		waddle?: Waddle,
-	}) => new this.types[options.game](options.users, options.waddle);
+	static createInstanceEx(options: { game: IWaddle['game'], users: Nullable<User>[], waddle?: Waddle; })
+	{
+		return new this.types[options.game](options.users, options.waddle);
+	}
 
-	static createInstance = (waddle: Waddle) => this.createInstanceEx({
-		game: waddle.data.game,
-		users: waddle.users,
-		waddle,
-	});
+	static createInstance(waddle: Waddle)
+	{
+		return this.createInstanceEx({
+			game: waddle.data.game,
+			users: waddle.users,
+			waddle,
+		});
+	}
 }

@@ -36,19 +36,19 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			add_igloo: this.addIgloo,
-			add_furniture: this.addFurniture,
+			add_igloo: this.addIgloo.bind(this),
+			add_furniture: this.addFurniture.bind(this),
 
-			update_igloo: this.updateIgloo,
-			update_furniture: this.updateFurniture,
-			update_flooring: this.updateFlooring,
-			update_music: this.updateMusic,
+			update_igloo: this.updateIgloo.bind(this),
+			update_furniture: this.updateFurniture.bind(this),
+			update_flooring: this.updateFlooring.bind(this),
+			update_music: this.updateMusic.bind(this),
 
-			open_igloo: this.openIgloo,
-			close_igloo: this.closeIgloo,
+			open_igloo: this.openIgloo.bind(this),
+			close_igloo: this.closeIgloo.bind(this),
 
-			get_igloos: this.getIgloos,
-			get_igloo_open: this.getIglooOpen,
+			get_igloos: this.getIgloos.bind(this),
+			get_igloo_open: this.getIglooOpen.bind(this),
 		};
 
 		this.schemas = {
@@ -122,7 +122,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	addIgloo = async (args: IAddIglooOrGetIglooOpenArgs, user: User) =>
+	async addIgloo(args: IAddIglooOrGetIglooOpenArgs, user: User)
 	{
 		if (!this.schemas.addIglooOrGetIglooOpen!(args)) return;
 
@@ -133,9 +133,9 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		await user.updateCoins(-igloo.cost);
 
 		user.send('add_igloo', { igloo: args.igloo, coins: user.data.coins });
-	};
+	}
 
-	addFurniture = async (args: IAddFurnitureArgs, user: User) =>
+	async addFurniture(args: IAddFurnitureArgs, user: User)
 	{
 		if (!this.schemas.addFurniture!(args)) return;
 
@@ -146,9 +146,9 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 		await user.updateCoins(-furniture.cost);
 		user.send('add_furniture', { furniture: args.furniture, coins: user.data.coins });
-	};
+	}
 
-	updateIgloo = async (args: IUpdateIglooArgs, user: User) =>
+	async updateIgloo(args: IUpdateIglooArgs, user: User)
 	{
 		if (!this.schemas.updateIgloo!(args)) return;
 
@@ -167,9 +167,9 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		// TODO: add fixSync (to desync this)
 		// join_igloo is not being used on AS2, a custom event was used to update the igloo
 		igloo.refresh(user);
-	};
+	}
 
-	updateFurniture = async (args: IUpdateFurnitureArgs, user: User) =>
+	async updateFurniture(args: IUpdateFurnitureArgs, user: User)
 	{
 		if (!this.schemas.updateFurniture!(args)) return;
 
@@ -198,9 +198,9 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 		// TODO: add a custom event to update furniture without rejoin
 		if (Config.data.game.fixSync) igloo.refresh(user);
-	};
+	}
 
-	updateFlooring = async (args: IUpdateFlooringArgs, user: User) =>
+	async updateFlooring(args: IUpdateFlooringArgs, user: User)
 	{
 		if (!this.schemas.updateFlooring!(args)) return;
 
@@ -217,9 +217,9 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 
 		user.send('update_flooring', { flooring: args.flooring, coins: user.data.coins });
 		if (Config.data.game.fixSync) user.room.send(user, 'update_flooring', { flooring: args.flooring });
-	};
+	}
 
-	updateMusic = async (args: IUpdateMusicArgs, user: User) =>
+	async updateMusic(args: IUpdateMusicArgs, user: User)
 	{
 		if (!this.schemas.updateMusic!(args)) return;
 
@@ -234,34 +234,37 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 			user.send('update_music', { music: args.music });
 		}
 		else user.room.send(user, 'update_music', { music: args.music }, []);
-	};
+	}
 
-	openIgloo = (args: unknown, user: User) =>
+	openIgloo(args: unknown, user: User)
 	{
 		const igloo = this.getIgloo(user.data.id);
 		if (igloo === undefined || igloo !== user.room) return;
 
 		igloo.locked = false;
-	};
+	}
 
-	closeIgloo = (args: unknown, user: User) =>
+	closeIgloo(args: unknown, user: User)
 	{
 		const igloo = this.getIgloo(user.data.id);
 		if (igloo === undefined || igloo !== user.room) return;
 
 		igloo.locked = true;
-	};
+	}
 
-	getIgloos = (args: unknown, user: User) => user.send('get_igloos', {
-		igloos: [...this.world.rooms.values()]
-			.filter((x) => x.isIgloo && !(x as Igloo).locked)
-			.map((x) => ({
-				id: (x as Igloo).dbData.userId,
-				username: (x as Igloo).ownerUsername,
-			})),
-	});
+	getIgloos(args: unknown, user: User)
+	{
+		user.send('get_igloos', {
+			igloos: [...this.world.rooms.values()]
+				.filter((x) => x.isIgloo && !(x as Igloo).locked)
+				.map((x) => ({
+					id: (x as Igloo).dbData.userId,
+					username: (x as Igloo).ownerUsername,
+				})),
+		});
+	}
 
-	getIglooOpen = (args: IAddIglooOrGetIglooOpenArgs, user: User) =>
+	getIglooOpen(args: IAddIglooOrGetIglooOpenArgs, user: User)
 	{
 		if (!this.schemas.addIglooOrGetIglooOpen!(args)) return;
 
@@ -273,7 +276,10 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		}
 
 		user.send('get_igloo_open', { open: true });
-	};
+	}
 
-	getIgloo = (userId: number) => this.world.rooms.get(getIglooId(userId)) as Igloo | undefined;
+	getIgloo(userId: number)
+	{
+		return this.world.rooms.get(getIglooId(userId)) as Igloo | undefined;
+	}
 }

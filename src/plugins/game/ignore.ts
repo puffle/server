@@ -18,8 +18,8 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			ignore_add: this.ignoreAdd,
-			ignore_remove: this.ignoreRemove,
+			ignore_add: this.ignoreAdd.bind(this),
+			ignore_remove: this.ignoreRemove.bind(this),
 		};
 
 		this.schemas = {
@@ -34,7 +34,7 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	ignoreAdd = async (args: IGenericIgnoreArgs, user: User) =>
+	async ignoreAdd(args: IGenericIgnoreArgs, user: User)
 	{
 		if (!this.schemas.genericIgnoreId!(args)) return;
 
@@ -61,14 +61,14 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 
 		user.buddies.deleteRequest(args.id);
 		user.ignores.addIgnore(args.id, username);
-	};
+	}
 
-	ignoreRemove = (args: IGenericIgnoreArgs, user: User) =>
+	ignoreRemove(args: IGenericIgnoreArgs, user: User)
 	{
 		if (!this.schemas.genericIgnoreId!(args)) return;
 
 		if (!user.ignores.has(args.id)) return;
 
 		user.ignores.removeIgnore(args.id);
-	};
+	}
 }

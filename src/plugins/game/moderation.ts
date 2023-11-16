@@ -18,9 +18,9 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			mute_player: this.mutePlayer,
-			kick_player: this.kickPlayer,
-			ban_player: this.banPlayer,
+			mute_player: this.mutePlayer.bind(this),
+			kick_player: this.kickPlayer.bind(this),
+			ban_player: this.banPlayer.bind(this),
 		};
 
 		this.schemas = {
@@ -36,9 +36,13 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	mutePlayer = (args: unknown, user: User) => user.isModerator && user.send('error', { error: 'Not implemented' }); // TODO: implement; add ajv
+	mutePlayer(args: unknown, user: User)
+	{
+		if (!user.isModerator) return;
+		user.send('error', { error: 'Not implemented' }); // TODO: implement; add ajv
+	}
 
-	kickPlayer = (args: IKickBanPlayerArgs, user: User) =>
+	kickPlayer(args: IKickBanPlayerArgs, user: User)
 	{
 		if (!user.isModerator) return;
 		if (!this.schemas.kickBanPlayer!(args)) return;
@@ -48,8 +52,9 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 		if (recipient === undefined || user.data.rank <= recipient.data.rank) return;
 
 		recipient.close();
-	};
-	banPlayer = (args: IKickBanPlayerArgs, user: User) =>
+	}
+
+	banPlayer(args: IKickBanPlayerArgs, user: User)
 	{
 		if (!user.isModerator) return;
 		if (!this.schemas.kickBanPlayer!(args)) return;
@@ -61,9 +66,9 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 		ModerationPlugin.applyBan(user.data.id, args.id);
 
 		recipient.close();
-	};
+	}
 
-	static applyBan = async (moderatorId: number, userId: number, hours?: number, message?: string) =>
+	static async applyBan(moderatorId: number, userId: number, hours?: number, message?: string)
 	{
 		const expires = new Date(Date.now() + ((hours || 24) * 60 * 60 * 1000));
 
@@ -79,5 +84,5 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 				message: message ?? null,
 			},
 		});
-	};
+	}
 }

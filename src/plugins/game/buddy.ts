@@ -18,11 +18,11 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			buddy_request: this.buddyRequest,
-			buddy_accept: this.buddyAccept,
-			buddy_reject: this.buddyReject,
-			buddy_remove: this.buddyRemove,
-			buddy_find: this.buddyFind,
+			buddy_request: this.buddyRequest.bind(this),
+			buddy_accept: this.buddyAccept.bind(this),
+			buddy_reject: this.buddyReject.bind(this),
+			buddy_remove: this.buddyRemove.bind(this),
+			buddy_find: this.buddyFind.bind(this),
 		};
 
 		this.schemas = {
@@ -37,7 +37,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	buddyRequest = (args: IGenericBuddyArgs, user: User) =>
+	buddyRequest(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
 
@@ -52,9 +52,9 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 
 		recipient.buddies.requests.push(user.data.id);
 		recipient.send('buddy_request', { id: user.data.id, username: user.data.username });
-	};
+	}
 
-	buddyAccept = async (args: IGenericBuddyArgs, user: User) =>
+	async buddyAccept(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
 
@@ -84,16 +84,16 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		}
 
 		user.buddies.addBuddy(args.id, username);
-	};
+	}
 
-	buddyReject = (args: IGenericBuddyArgs, user: User) =>
+	buddyReject(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
 
 		user.buddies.deleteRequest(args.id);
-	};
+	}
 
-	buddyRemove = async (args: IGenericBuddyArgs, user: User) =>
+	async buddyRemove(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
 
@@ -116,9 +116,9 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 				},
 			});
 		}
-	};
+	}
 
-	buddyFind = (args: IGenericBuddyArgs, user: User) =>
+	buddyFind(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
 
@@ -130,5 +130,5 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 			igloo: buddy.room.isIgloo,
 			game: buddy.room.isGame,
 		});
-	};
+	}
 }

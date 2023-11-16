@@ -26,16 +26,16 @@ export class Igloo extends Room
 	furniture: Omit<Furniture, 'id'>[];
 	locked = true;
 
-	dbUpdate = async (data: Partial<PrismaIgloo>) => Database.igloo.update({ where: { userId: this.dbData.userId }, data });
+	async dbUpdate(data: Partial<PrismaIgloo>) { return Database.igloo.update({ where: { userId: this.dbData.userId }, data }); }
 
-	clearFurniture = async () =>
+	async clearFurniture()
 	{
 		await Database.furniture.deleteMany({ where: { userId: this.dbData.userId } });
 		this.furniture = [];
-	};
+	}
 
 	/** @override */
-	override add = (user: User) =>
+	override add(user: User)
 	{
 		user.room = this;
 		this.users.set(user.data.id, user);
@@ -43,9 +43,9 @@ export class Igloo extends Room
 
 		user.send('join_igloo', this.toJSON());
 		this.send(user, 'add_player', { user: user.getSafeRoom });
-	};
+	}
 
-	refresh = (user: User) =>
+	refresh(user: User)
 	{
 		this.users.forEach((u) =>
 		{
@@ -55,17 +55,20 @@ export class Igloo extends Room
 		});
 
 		this.send(user, 'join_igloo', this.toJSON(), []);
-	};
+	}
 
-	toJSON = () => ({
-		igloo: this.dbData.userId,
-		users: this.userValues,
-		type: this.dbData.type,
-		flooring: this.dbData.flooring,
-		music: this.dbData.music,
-		furniture: this.furniture,
-		location: this.dbData.location,
-	});
+	toJSON()
+	{
+		return {
+			igloo: this.dbData.userId,
+			users: this.userValues,
+			type: this.dbData.type,
+			flooring: this.dbData.flooring,
+			music: this.dbData.music,
+			furniture: this.furniture,
+			location: this.dbData.location,
+		};
+	}
 
 	/** @override */
 	override get isIgloo() { return true; } // eslint-disable-line class-methods-use-this

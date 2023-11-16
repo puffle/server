@@ -14,16 +14,16 @@ export default class SenseiPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			join_sensei: this.joinSensei,
+			join_sensei: this.joinSensei.bind(this),
 		};
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	joinSensei = (args: unknown, user: User) =>
+	joinSensei(args: unknown, user: User)
 	{
 		if (user.room?.data.id !== constants.SENSEI_ROOM_ID || !user.cards.hasCards) return;
 
 		// TODO: refactor this
 		(new SenseiInstance(user)).init();
-	};
+	}
 }

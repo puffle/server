@@ -23,29 +23,21 @@ export class SledInstance extends BaseInstance
 		} as JSONSchemaType<ISendMoveArgs>),
 	};
 
-	// @ts-expect-error - overwriting an arrow function
-	#superStart = this.start;
+	/** @override */
+	override addListeners(user: User)
+	{
+		user.events.on('send_move', this.sendMove.bind(this)); // this event also exists on MiniGame plugin (not implemented yet)
+		super.addListeners(user);
+	}
 
-	// @ts-expect-error - overwriting an arrow function
-	#superAddListeners = this.addListeners;
-	// @ts-expect-error - overwriting an arrow function
-	#superRemoveListeners = this.removeListeners;
+	override removeListeners(user: User)
+	{
+		user.events.off('send_move', this.sendMove.bind(this)); // this event also exists on MiniGame plugin (not implemented yet)
+		super.removeListeners(user);
+	}
 
 	/** @override */
-	override addListeners = (user: User) =>
-	{
-		user.events.on('send_move', this.sendMove); // this event also exists on MiniGame plugin (not implemented yet)
-		this.#superAddListeners(user);
-	};
-
-	override removeListeners = (user: User) =>
-	{
-		user.events.off('send_move', this.sendMove); // this event also exists on MiniGame plugin (not implemented yet)
-		this.#superRemoveListeners(user);
-	};
-
-	/** @override */
-	override start = () =>
+	override start()
 	{
 		const users = this.users.map((user) => ({
 			username: user!.data.username,
@@ -54,10 +46,10 @@ export class SledInstance extends BaseInstance
 		}));
 
 		this.send('start_game', { users });
-		this.#superStart();
-	};
+		super.start();
+	}
 
-	sendMove = (args: ISendMoveArgs, user: User) =>
+	sendMove(args: ISendMoveArgs, user: User)
 	{
 		if (!this.#schemas.sendMove(args)) return;
 
@@ -68,11 +60,11 @@ export class SledInstance extends BaseInstance
 		}
 
 		this.send('send_move', { id: this.getSeat(user), move: args.move }, user);
-	};
+	}
 
-	sendGameOver = (user: User) =>
+	sendGameOver(user: User)
 	{
 		this.remove(user);
 		user.updateCoins(this.#coins.shift() ?? this.#coinsFallback, true);
-	};
+	}
 }

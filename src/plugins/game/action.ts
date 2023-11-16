@@ -18,9 +18,9 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			send_position: this.sendPosition,
-			send_frame: this.sendFrame,
-			snowball: this.snowball,
+			send_position: this.sendPosition.bind(this),
+			send_frame: this.sendFrame.bind(this),
+			snowball: this.snowball.bind(this),
 		};
 
 		this.schemas = {
@@ -46,7 +46,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	sendPosition = (args: ISendPositionOrSnowballArgs, user: User) =>
+	sendPosition(args: ISendPositionOrSnowballArgs, user: User)
 	{
 		if (!this.schemas.sendPositionOrSnowball!(args)) return;
 
@@ -55,16 +55,20 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		user.roomData.frame = 1;
 
 		user.room?.send(user, 'send_position', { id: user.data.id, ...args });
-	};
+	}
 
-	sendFrame = (args: ISendFrameArgs, user: User) =>
+	sendFrame(args: ISendFrameArgs, user: User)
 	{
 		if (!this.schemas.sendFrame!(args)) return;
 
 		user.roomData.frame = args.set ? args.frame : 1;
 
 		user.room?.send(user, 'send_frame', { id: user.data.id, ...args });
-	};
+	}
 
-	snowball = (args: ISendPositionOrSnowballArgs, user: User) => this.schemas.sendPositionOrSnowball!(args) && user.room?.send(user, 'snowball', { id: user.data.id, ...args });
+	snowball(args: ISendPositionOrSnowballArgs, user: User)
+	{
+		if (!this.schemas.sendPositionOrSnowball!(args)) return;
+		user.room?.send(user, 'snowball', { id: user.data.id, ...args });
+	}
 }

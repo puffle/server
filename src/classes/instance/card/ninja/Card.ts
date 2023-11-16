@@ -25,11 +25,14 @@ export class Card
 
 	data: ICardData;
 
-	toJSON = () => ({
-		id: this.data.id,
-		powerId: this.data.powerId,
-		element: this.data.element,
-		color: this.data.color,
-		value: this.data.value,
-	});
+	toJSON()
+	{
+		return {
+			id: this.data.id,
+			powerId: this.data.powerId,
+			element: this.data.element,
+			color: this.data.color,
+			value: this.data.value,
+		};
+	}
 }

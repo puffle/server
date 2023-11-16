@@ -12,5 +12,5 @@ export class MatchmakerPlayer
 	user: User;
 	tick: number;
 
-	send = (action: string, args: TActionMessageArgs = {}) => this.user.send(action, args);
+	send(action: string, args: TActionMessageArgs = {}) { return this.user.send(action, args); }
 }

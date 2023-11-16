@@ -25,8 +25,8 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			get_puck: this.getPuck,
-			move_puck: this.movePuck,
+			get_puck: this.getPuck.bind(this),
+			move_puck: this.movePuck.bind(this),
 		};
 
 		this.schemas = {
@@ -44,14 +44,14 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	getPuck = (args: unknown, user: User) =>
+	getPuck(args: unknown, user: User)
 	{
 		if (user.room?.data.id !== constants.RINK_ROOM_ID) return;
 
 		user.send('get_puck', { x: this.#puckX, y: this.#puckY });
-	};
+	}
 
-	movePuck = (args: IMovePuckArgs, user: User) =>
+	movePuck(args: IMovePuckArgs, user: User)
 	{
 		if (!this.schemas.movePuck!(args)) return;
 
@@ -64,5 +64,5 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 			speedX: args.speedX,
 			speedY: args.speedY,
 		});
-	};
+	}
 }

@@ -17,7 +17,7 @@ export class BaseInstance
 	started = false;
 	waddle: Waddle | undefined;
 
-	init = () =>
+	init()
 	{
 		this.users.forEach((user) =>
 		{
@@ -28,46 +28,46 @@ export class BaseInstance
 				user.minigameRoom = this;
 			}
 		});
-	};
+	}
 
-	addListeners = (user: User) =>
+	addListeners(user: User)
 	{
-		user.events.on('start_game', this.handleStartGame);
-		user.events.on('leave_game', this.handleLeaveGame);
-	};
+		user.events.on('start_game', this.handleStartGame.bind(this));
+		user.events.on('leave_game', this.handleLeaveGame.bind(this));
+	}
 
-	removeListeners = (user: User) =>
+	removeListeners(user: User)
 	{
-		user.events.off('start_game', this.handleStartGame);
-		user.events.off('leave_game', this.handleLeaveGame);
-	};
+		user.events.off('start_game', this.handleStartGame.bind(this));
+		user.events.off('leave_game', this.handleLeaveGame.bind(this));
+	}
 
-	handleStartGame = (args: TActionMessageArgs, user: User) =>
+	handleStartGame(args: TActionMessageArgs, user: User)
 	{
 		if (!this.started && !this.ready.includes(user))
 		{
 			this.ready.push(user);
 			this.checkStart();
 		}
-	};
+	}
 
-	handleLeaveGame = (args: TActionMessageArgs, user: User) =>
+	handleLeaveGame(args: TActionMessageArgs, user: User)
 	{
 		this.remove(user);
-	};
+	}
 
-	checkStart = () =>
+	checkStart()
 	{
 		// compare with non null values in case user disconnects
 		if (this.ready.length === this.users.length)
 		{
 			this.start();
 		}
-	};
+	}
 
-	start = () => { this.started = true; };
+	start() { this.started = true; }
 
-	remove = (user: User) =>
+	remove(user: User)
 	{
 		this.removeListeners(user);
 
@@ -79,13 +79,13 @@ export class BaseInstance
 		this.ready = this.ready.filter((u) => u !== user);
 
 		user.minigameRoom = null;
-	};
+	}
 
-	getSeat = (user: User) => this.users.indexOf(user);
+	getSeat(user: User) { return this.users.indexOf(user); }
 
-	send = (action: string, args: TActionMessageArgs = {}, user: Nullable<User> = null, filter = [user]) =>
+	send(action: string, args: TActionMessageArgs = {}, user: Nullable<User> = null, filter = [user])
 	{
 		const users = this.users.filter((u) => !filter.includes(u));
 		users.forEach((u) => u != null && u.send(action, args));
-	};
+	}
 }

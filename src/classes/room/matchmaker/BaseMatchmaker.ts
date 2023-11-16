@@ -21,12 +21,12 @@ export abstract class BaseMatchmaker
 
 	abstract start: () => void;
 
-	add = (user: User) =>
+	add(user: User)
 	{
 		this.players.set(user.data.id, new MatchmakerPlayer(user, this.matchEvery));
 		user.send('join_matchmaking');
-	};
+	}
 
-	includes = (user: User) => this.players.has(user.data.id);
-	remove = (user: User) => this.players.delete(user.data.id);
+	includes(user: User) { return this.players.has(user.data.id); }
+	remove(user: User) { return this.players.delete(user.data.id); }
 }

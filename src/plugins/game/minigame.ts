@@ -17,7 +17,7 @@ export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			game_over: this.gameOver,
+			game_over: this.gameOver.bind(this),
 		};
 
 		this.schemas = {
@@ -32,11 +32,11 @@ export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	gameOver = (args: IGameOverArgs, user: User) =>
+	gameOver(args: IGameOverArgs, user: User)
 	{
 		if (!this.schemas.gameOver!(args)) return;
 		if (!user.room?.isGame && !user.minigameRoom) return;
 
 		user.updateCoins(args.coins, true);
-	};
+	}
 }

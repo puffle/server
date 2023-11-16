@@ -19,7 +19,6 @@ export class CardMatchmaker extends BaseMatchmaker
 		// TODO
 	};
 
-	// @ts-expect-error - overwriting an arrow function
 	#superAdd = this.add;
 
 	/** @override */

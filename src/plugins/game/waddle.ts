@@ -17,9 +17,9 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			get_waddles: this.getWaddles,
-			join_waddle: this.joinWaddle,
-			leaveWaddle: this.leaveWaddle,
+			get_waddles: this.getWaddles.bind(this),
+			join_waddle: this.joinWaddle.bind(this),
+			leaveWaddle: this.leaveWaddle.bind(this),
 		};
 
 		this.schemas = {
@@ -35,7 +35,7 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	getWaddles = (args: unknown, user: User) =>
+	getWaddles(args: unknown, user: User)
 	{
 		if (!user.room) return;
 
@@ -46,10 +46,10 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 		}));
 
 		user.send('get_waddles', { waddles });
-	};
+	}
 
 	// eslint-disable-next-line class-methods-use-this
-	joinWaddle = (args: IJoinWaddleArgs, user: User) =>
+	joinWaddle(args: IJoinWaddleArgs, user: User)
 	{
 		if (!this.schemas.joinWaddle!(args)) return;
 
@@ -57,8 +57,11 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 		if (!waddle || waddle.isFull || user.waddle) return;
 
 		waddle.add(user);
-	};
+	}
 
 	// eslint-disable-next-line class-methods-use-this
-	leaveWaddle = (args: unknown, user: User) => user.waddle?.remove(user);
+	leaveWaddle(args: unknown, user: User)
+	{
+		user.waddle?.remove(user);
+	}
 }

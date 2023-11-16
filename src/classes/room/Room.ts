@@ -25,7 +25,7 @@ export class Room
 	get isIgloo() { return false; } // eslint-disable-line class-methods-use-this
 	get isGame() { return this.data.game > 0; }
 
-	add = (user: User) =>
+	add(user: User)
 	{
 		user.room = this;
 		this.users.set(user.data.id, user);
@@ -43,9 +43,9 @@ export class Room
 		});
 
 		this.send(user, 'add_player', { user: user.getSafeRoom });
-	};
+	}
 
-	remove = (user: User) =>
+	remove(user: User)
 	{
 		user.room = undefined;
 		user.socket.leave(this.socketRoom);
@@ -54,13 +54,13 @@ export class Room
 		if (this.matchmaker?.includes(user)) this.matchmaker.remove(user);
 
 		this.users.delete(user.data.id);
-	};
+	}
 
-	send = (user: User, action: string, args: TActionMessageArgs = {}, filter = [user], excludeIgnored = false) =>
+	send(user: User, action: string, args: TActionMessageArgs = {}, filter = [user], excludeIgnored = false)
 	{
 		// if (user.room?.isGame) return; // ignore if the player is in a game room
 
 		this.userValuesUnsafe.filter((u) => !filter.includes(u) && !(excludeIgnored && u.ignores.has(user.data.id)))
 			.forEach((u) => u.send(action, args));
-	};
+	}
 }

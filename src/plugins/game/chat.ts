@@ -25,27 +25,27 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.commands = new Map<string, TCommand>([
-			['id', this.cmdId],
-			['users', this.cmdUsers],
-			['room', this.cmdRoom],
+			['id', this.cmdId.bind(this)],
+			['users', this.cmdUsers.bind(this)],
+			['room', this.cmdRoom.bind(this)],
 
 			// moderator commands
-			['ai', this.cmdItems],
-			['ac', this.cmdCoins],
-			['af', this.cmdFurniture],
-			['aig', this.cmdIgloo],
-			['jr', this.cmdJoinRoom],
-			['rooms', this.cmdPopulation],
-			['bc', this.cmdBroadcast],
-			['rbc', this.cmdBroadcastRoom],
-			['ajc', this.cmdJitsuCard],
-			['aja', this.cmdAllJitsuCards],
+			['ai', this.cmdItems.bind(this)],
+			['ac', this.cmdCoins.bind(this)],
+			['af', this.cmdFurniture.bind(this)],
+			['aig', this.cmdIgloo.bind(this)],
+			['jr', this.cmdJoinRoom.bind(this)],
+			['rooms', this.cmdPopulation.bind(this)],
+			['bc', this.cmdBroadcast.bind(this)],
+			['rbc', this.cmdBroadcastRoom.bind(this)],
+			['ajc', this.cmdJitsuCard.bind(this)],
+			['aja', this.cmdAllJitsuCards.bind(this)],
 		]);
 
 		this.events = {
-			send_message: this.sendMessage,
-			send_safe: this.sendSafe,
-			send_emote: this.sendEmote,
+			send_message: this.sendMessage.bind(this),
+			send_safe: this.sendSafe.bind(this),
+			send_emote: this.sendEmote.bind(this),
 		};
 
 		this.schemas = {
@@ -78,7 +78,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	sendMessage = (args: ISendMessageArgs, user: User) =>
+	sendMessage(args: ISendMessageArgs, user: User)
 	{
 		if (!this.schemas.sendMessage!(args)) return;
 		if (/[^ -~]/i.test(args.message)) return;
@@ -91,12 +91,21 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		}
 
 		user.room?.send(user, 'send_message', { id: user.data.id, ...args }, [user], true);
-	};
+	}
 
-	sendSafe = (args: ISendSafeArgs, user: User) => this.schemas.sendSafe!(args) && user.room?.send(user, 'send_safe', { id: user.data.id, ...args }, [user], true);
-	sendEmote = (args: ISendEmoteArgs, user: User) => this.schemas.sendEmote!(args) && user.room?.send(user, 'send_emote', { id: user.data.id, ...args }, [user], true);
+	sendSafe(args: ISendSafeArgs, user: User)
+	{
+		if (!this.schemas.sendSafe!(args)) return;
+		user.room?.send(user, 'send_safe', { id: user.data.id, ...args }, [user], true);
+	}
 
-	processCommand = (message: string, user: User) =>
+	sendEmote(args: ISendEmoteArgs, user: User)
+	{
+		if (!this.schemas.sendEmote!(args)) return;
+		user.room?.send(user, 'send_emote', { id: user.data.id, ...args }, [user], true);
+	}
+
+	processCommand(message: string, user: User)
 	{
 		const [command, ...args] = message.substring(1).split(' ');
 		if (!command) return;
@@ -105,16 +114,16 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (!cmd) return;
 
 		cmd(args, user);
-	};
+	}
 
 	// commands
 
-	cmdUsers = (args: string[], user: User) => user.send('error', { error: `Users online: ${this.world.population}` });
-	cmdId = (args: string[], user: User) => user.send('error', { error: `Your ID: ${user.data.id}` }); // eslint-disable-line class-methods-use-this
-	cmdRoom = (args: string[], user: User) => user.send('error', { error: `Room: ${user.room?.data.name} (${user.room?.data.id})\nUsers: ${user.room?.population}` }); // eslint-disable-line class-methods-use-this
+	cmdUsers(args: string[], user: User) { user.send('error', { error: `Users online: ${this.world.population}` }); }
+	cmdId(args: string[], user: User) { user.send('error', { error: `Your ID: ${user.data.id}` }); } // eslint-disable-line class-methods-use-this
+	cmdRoom(args: string[], user: User) { user.send('error', { error: `Room: ${user.room?.data.name} (${user.room?.data.id})\nUsers: ${user.room?.population}` }); } // eslint-disable-line class-methods-use-this
 
 	// moderator commands
-	cmdCoins = (args: string[], user: User) => // eslint-disable-line class-methods-use-this
+	cmdCoins(args: string[], user: User) // eslint-disable-line class-methods-use-this
 	{
 		if (!user.isModerator) return;
 
@@ -122,9 +131,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (Number.isNaN(coins)) return;
 
 		user.updateCoins(coins, true);
-	};
+	}
 
-	cmdJoinRoom = (args: string[], user: User) =>
+	cmdJoinRoom(args: string[], user: User)
 	{
 		if (!user.isModerator) return;
 
@@ -139,9 +148,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		}
 
 		user.joinRoom(roomId);
-	};
+	}
 
-	cmdPopulation = (args: string[], user: User) =>
+	cmdPopulation(args: string[], user: User)
 	{
 		if (!user.isModerator) return;
 
@@ -152,16 +161,22 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		const formattedString: string = roomArray.map((room) => `${room[0]}: ${room[1]}`).join(', ');
 
 		user.send('error', { error: 'Users\n\n' + formattedString });
-	};
+	}
 
-	cmdBroadcast = (args: string[], user: User) => user.isModerator
-		&& this.world.server.to(constants.JOINEDUSERS_ROOM).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
+	cmdBroadcast(args: string[], user: User)
+	{
+		if (!user.isModerator) return;
+		this.world.server.to(constants.JOINEDUSERS_ROOM).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
+	}
 
-	cmdBroadcastRoom = (args: string[], user: User) => user.isModerator
-		&& user.room !== undefined
-		&& this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast (Current Room):\n\n' + args.join(' ') } });
+	cmdBroadcastRoom(args: string[], user: User)
+	{
+		if (!user.isModerator) return;
+		if (user.room === undefined) return;
+		this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast (Current Room):\n\n' + args.join(' ') } });
+	}
 
-	cmdItems = (args: string[], user: User) =>
+	cmdItems(args: string[], user: User)
 	{
 		if (!user.isModerator) return;
 
@@ -172,9 +187,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (plugin === undefined) return;
 
 		(plugin as ItemPlugin).addItem({ item }, user);
-	};
+	}
 
-	cmdFurniture = (args: string[], user: User) =>
+	cmdFurniture(args: string[], user: User)
 	{
 		if (!user.isModerator) return;
 
@@ -185,9 +200,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (plugin === undefined) return;
 
 		(plugin as IglooPlugin).addFurniture({ furniture }, user);
-	};
+	}
 
-	cmdIgloo = (args: string[], user: User) =>
+	cmdIgloo(args: string[], user: User)
 	{
 		if (!user.isModerator) return;
 
@@ -198,9 +213,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		if (plugin === undefined) return;
 
 		(plugin as IglooPlugin).addIgloo({ igloo }, user);
-	};
+	}
 
-	cmdJitsuCard = (args: string[], user: User) =>
+	cmdJitsuCard(args: string[], user: User)
 	{
 		if (!user.isModerator) return;
 
@@ -214,13 +229,13 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 
 		user.cards.add(cardId);
 		user.send('error', { error: `Adding card: ${card.name}` });
-	};
+	}
 
-	cmdAllJitsuCards = (args: string[], user: User) =>
+	cmdAllJitsuCards(args: string[], user: User)
 	{
 		if (!user.isModerator) return;
 		Object.keys(this.world.crumbs.cards).forEach((card) => user.cards.add(Number(card)));
 
 		user.send('error', { error: 'Adding all cards...' });
-	};
+	}
 }

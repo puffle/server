@@ -18,9 +18,9 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			update_player: this.updatePlayer,
-			remove_item: this.removeItem,
-			add_item: this.addItem,
+			update_player: this.updatePlayer.bind(this),
+			remove_item: this.removeItem.bind(this),
+			add_item: this.addItem.bind(this),
 		};
 
 		this.schemas = {
@@ -44,7 +44,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	updatePlayer = (args: IUpdatePlayerOrAddItemArgs, user: User) =>
+	updatePlayer(args: IUpdatePlayerOrAddItemArgs, user: User)
 	{
 		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
 
@@ -52,16 +52,16 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		if (item === undefined || !user.inventory.has(args.item)) return;
 
 		user.setItem(constants.ITEM_SLOTS[item.type - 1], args.item);
-	};
+	}
 
-	removeItem = (args: IRemoveItemArgs, user: User) =>
+	removeItem(args: IRemoveItemArgs, user: User)
 	{
 		if (!this.schemas.removeItem!(args)) return;
 
 		user.setItem(args.type, 0);
-	};
+	}
 
-	addItem = async (args: IUpdatePlayerOrAddItemArgs, user: User) =>
+	async addItem(args: IUpdatePlayerOrAddItemArgs, user: User)
 	{
 		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
 
@@ -80,5 +80,5 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 			slot,
 			coins: user.data.coins,
 		});
-	};
+	}
 }

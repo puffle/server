@@ -18,7 +18,7 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			get_player: this.getPlayer,
+			get_player: this.getPlayer.bind(this),
 		};
 
 		this.schemas = {
@@ -33,7 +33,7 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	getPlayer = async (args: IGetPlayerArgs, user: User) =>
+	async getPlayer(args: IGetPlayerArgs, user: User)
 	{
 		if (!this.schemas.getPlayer!(args)) return;
 		// if (user.data.id === args.id) return;
@@ -49,5 +49,5 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 
 		const anonUser = await Database.findAnonymousUser(args.id);
 		user.send('get_player', { penguin: anonUser });
-	};
+	}
 }

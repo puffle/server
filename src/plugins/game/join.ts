@@ -18,8 +18,8 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.events = {
-			join_room: this.joinRoom,
-			join_igloo: this.joinIgloo,
+			join_room: this.joinRoom.bind(this),
+			join_igloo: this.joinIgloo.bind(this),
 		};
 
 		this.schemas = {
@@ -47,6 +47,15 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
-	joinRoom = (args: IJoinRoomArgs, user: User) => this.schemas.joinRoom!(args) && user.joinRoom(args.room, args.x, args.y);
-	joinIgloo = (args: IJoinIglooArgs, user: User) => this.schemas.joinIgloo!(args) && user.joinIgloo(args.igloo, args.x, args.y);
+	joinRoom(args: IJoinRoomArgs, user: User)
+	{
+		if (!this.schemas.joinRoom!(args)) return;
+		user.joinRoom(args.room, args.x, args.y);
+	}
+
+	joinIgloo(args: IJoinIglooArgs, user: User)
+	{
+		if (!this.schemas.joinIgloo!(args)) return;
+		user.joinIgloo(args.igloo, args.x, args.y);
+	}
 }
