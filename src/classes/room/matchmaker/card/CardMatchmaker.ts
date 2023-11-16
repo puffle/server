@@ -19,14 +19,12 @@ export class CardMatchmaker extends BaseMatchmaker
 		// TODO
 	};
 
-	#superAdd = this.add;
-
 	/** @override */
 	override add = (user: User) =>
 	{
 		if (!user.cards.hasCards) return;
 
-		this.#superAdd(user);
+		super.add(user);
 	};
 
 	// TODO

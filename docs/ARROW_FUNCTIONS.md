@@ -1,5 +1,10 @@
 ## Arrow functions
 
+### DEPRECATED
+We are now using conventional function syntax for important functions (such as plugins), due to the use of TypeScript decorators. However, this documentation will be left for historical purposes.
+
+---
+
 This code mainly uses arrow functions in most of the classes. Sometimes, it is necessary to override an arrow function in an inherited class, although you will notice that this is not possible.  
 Due to the context of the `this` keyword, it is difficult to overwrite this variable.
 
@@ -40,7 +45,6 @@ class Adder
 
 class Child extends Adder
 {
-	// @ts-expect-error - overwriting an arrow function
 	#superAdd = this.add;
 
 	override add = (b: number) =>
