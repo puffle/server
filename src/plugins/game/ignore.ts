@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
@@ -17,11 +18,6 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 	{
 		super(world);
 
-		this.events = {
-			ignore_add: this.ignoreAdd.bind(this),
-			ignore_remove: this.ignoreRemove.bind(this),
-		};
-
 		this.schemas = {
 			genericIgnoreId: MyAjv.compile({
 				type: 'object',
@@ -34,6 +30,7 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('ignore_add')
 	async ignoreAdd(args: IGenericIgnoreArgs, user: User)
 	{
 		if (!this.schemas.genericIgnoreId!(args)) return;
@@ -63,6 +60,7 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 		user.ignores.addIgnore(args.id, username);
 	}
 
+	@Event('ignore_remove')
 	ignoreRemove(args: IGenericIgnoreArgs, user: User)
 	{
 		if (!this.schemas.genericIgnoreId!(args)) return;

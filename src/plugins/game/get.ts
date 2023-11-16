@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
@@ -17,10 +18,6 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 	{
 		super(world);
 
-		this.events = {
-			get_player: this.getPlayer.bind(this),
-		};
-
 		this.schemas = {
 			getPlayer: MyAjv.compile({
 				type: 'object',
@@ -33,6 +30,7 @@ export default class GetPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('get_player')
 	async getPlayer(args: IGetPlayerArgs, user: User)
 	{
 		if (!this.schemas.getPlayer!(args)) return;

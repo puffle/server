@@ -1,6 +1,7 @@
 import { readdir } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import { GameWorld } from '../classes/GameWorld';
+import { IEventDecoratorMetadata } from '../decorators/event';
 import { IGamePlugin } from '../types/types';
 import { Logger } from './LogManager';
 
@@ -28,7 +29,7 @@ export class PluginManager
 			const Plugin = plugin.default;
 			const obj = new Plugin(this.world) as IGamePlugin;
 			this.plugins[obj.pluginName] = obj;
-			Logger.debug(`Loaded plugin "${obj.pluginName}" with ${Object.keys(obj.events).length} registered events`);
+			Logger.debug(`Loaded plugin: ${obj.pluginName}`);
 			this.loadEvents(obj);
 		});
 
@@ -37,16 +38,22 @@ export class PluginManager
 
 	loadEvents = (plugin: IGamePlugin) =>
 	{
-		const events = Object.keys(plugin.events);
-		events.forEach((event) =>
+		let count = 0;
+		Object.getOwnPropertyNames(Object.getPrototypeOf(plugin)).forEach((method) =>
 		{
-			if (this.world.events !== undefined)
+			const metadata = Reflect.getMetadata('PluginEvent', plugin, method) as IEventDecoratorMetadata | undefined;
+			if (metadata !== undefined)
 			{
-				Logger.debug(`Loaded event "${event}" from plugin ${plugin.pluginName}`);
-				this.world.events.on(event, plugin.events[event]!);
+				const fn = (plugin as unknown as Record<string, () => void>)[method];
+				if (typeof fn === 'function')
+				{
+					Logger.debug(`Loaded event: ${metadata.eventName} (${method}) — from plugin ${plugin.pluginName}`);
+					this.world.events.on(metadata.eventName, fn.bind(plugin));
+					count++;
+				}
 			}
 		});
 
-		Logger.debug(`Loaded ${events.length} events from plugin ${plugin.pluginName}`);
+		Logger.debug(`Loaded ${count} events from plugin ${plugin.pluginName}`);
 	};
 }

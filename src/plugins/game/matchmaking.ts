@@ -1,5 +1,5 @@
-import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { IGamePlugin } from '../../types/types';
 import { GamePlugin } from '../GamePlugin';
 
@@ -7,17 +7,8 @@ export default class MatchmakingPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Matchmaking';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.events = {
-			join_matchmaking: this.joinMatchmaking.bind(this),
-			leave_matchmaking: this.leaveMatchmaking.bind(this),
-		};
-	}
-
 	// eslint-disable-next-line class-methods-use-this
+	@Event('join_matchmaking')
 	joinMatchmaking(args: unknown, user: User)
 	{
 		if (!user.room?.matchmaker || user.room.matchmaker.includes(user)) return;
@@ -25,6 +16,7 @@ export default class MatchmakingPlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
+	@Event('leave_matchmaking')
 	leaveMatchmaking(args: unknown, user: User)
 	{
 		if (!user.room?.matchmaker || !user.room.matchmaker.includes(user)) return;

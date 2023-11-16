@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -16,12 +17,6 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 	{
 		super(world);
 
-		this.events = {
-			get_waddles: this.getWaddles.bind(this),
-			join_waddle: this.joinWaddle.bind(this),
-			leaveWaddle: this.leaveWaddle.bind(this),
-		};
-
 		this.schemas = {
 			joinWaddle: MyAjv.compile({
 				type: 'object',
@@ -35,6 +30,7 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
+	@Event('get_waddles')
 	getWaddles(args: unknown, user: User)
 	{
 		if (!user.room) return;
@@ -49,6 +45,7 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
+	@Event('join_waddle')
 	joinWaddle(args: IJoinWaddleArgs, user: User)
 	{
 		if (!this.schemas.joinWaddle!(args)) return;
@@ -60,6 +57,7 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
+	@Event('leaveWaddle')
 	leaveWaddle(args: unknown, user: User)
 	{
 		user.waddle?.remove(user);

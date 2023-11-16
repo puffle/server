@@ -44,6 +44,9 @@ dependencies:
   rate-limiter-flexible:
     specifier: ^3.0.4
     version: 3.0.4
+  reflect-metadata:
+    specifier: ^0.1.13
+    version: 0.1.13
   socket.io:
     specifier: ^4.7.2
     version: 4.7.2
@@ -2681,6 +2684,10 @@ packages:
   /real-require@0.2.0:
     resolution: {integrity: sha512-57frrGM/OCTLqLOAh0mhVA9VBMHd+9U7Zb2THMGdBUoZVOtGbJzjxsYGDJ3A9AYYCP4hn6y1TVbaOfzWtm5GFg==}
     engines: {node: '>= 12.13.0'}
+    dev: false
+
+  /reflect-metadata@0.1.13:
+    resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
     dev: false
 
   /regexp.prototype.flags@1.5.0:

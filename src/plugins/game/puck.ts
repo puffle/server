@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -24,11 +25,6 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 	{
 		super(world);
 
-		this.events = {
-			get_puck: this.getPuck.bind(this),
-			move_puck: this.movePuck.bind(this),
-		};
-
 		this.schemas = {
 			movePuck: MyAjv.compile({
 				type: 'object',
@@ -44,6 +40,7 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('get_puck')
 	getPuck(args: unknown, user: User)
 	{
 		if (user.room?.data.id !== constants.RINK_ROOM_ID) return;
@@ -51,6 +48,7 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 		user.send('get_puck', { x: this.#puckX, y: this.#puckY });
 	}
 
+	@Event('move_puck')
 	movePuck(args: IMovePuckArgs, user: User)
 	{
 		if (!this.schemas.movePuck!(args)) return;

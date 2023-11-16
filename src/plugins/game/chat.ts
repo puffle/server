@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -42,12 +43,6 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			['aja', this.cmdAllJitsuCards.bind(this)],
 		]);
 
-		this.events = {
-			send_message: this.sendMessage.bind(this),
-			send_safe: this.sendSafe.bind(this),
-			send_emote: this.sendEmote.bind(this),
-		};
-
 		this.schemas = {
 			sendMessage: MyAjv.compile({
 				type: 'object',
@@ -78,6 +73,7 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('send_message')
 	sendMessage(args: ISendMessageArgs, user: User)
 	{
 		if (!this.schemas.sendMessage!(args)) return;
@@ -93,12 +89,14 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		user.room?.send(user, 'send_message', { id: user.data.id, ...args }, [user], true);
 	}
 
+	@Event('send_safe')
 	sendSafe(args: ISendSafeArgs, user: User)
 	{
 		if (!this.schemas.sendSafe!(args)) return;
 		user.room?.send(user, 'send_safe', { id: user.data.id, ...args }, [user], true);
 	}
 
+	@Event('send_emote')
 	sendEmote(args: ISendEmoteArgs, user: User)
 	{
 		if (!this.schemas.sendEmote!(args)) return;

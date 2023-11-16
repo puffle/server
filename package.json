@@ -10,8 +10,8 @@
 	"author": "Nobody <admin@n0bodysec.com> (https://n0bodysec.com)",
 	"license": "MIT",
 	"scripts": {
-		"world:blizzard": "tsx src/server.ts Blizzard",
-		"http": "tsx src/server.ts HTTP",
+		"world:blizzard": "ts-node src/server.ts Blizzard",
+		"http": "ts-node src/server.ts HTTP",
 		"build": "tsc",
 		"pushdb": "prisma db push",
 		"lint": "eslint --rule \"linebreak-style: 'off'\" ."
@@ -44,6 +44,7 @@
 		"fastify": "^4.24.3",
 		"jsonwebtoken": "^9.0.2",
 		"rate-limiter-flexible": "^3.0.4",
+		"reflect-metadata": "^0.1.13",
 		"socket.io": "^4.7.2",
 		"winston": "^3.11.0"
 	}

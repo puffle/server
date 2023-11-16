@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -16,11 +17,6 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 	constructor(world: GameWorld)
 	{
 		super(world);
-
-		this.events = {
-			join_room: this.joinRoom.bind(this),
-			join_igloo: this.joinIgloo.bind(this),
-		};
 
 		this.schemas = {
 			joinRoom: MyAjv.compile({
@@ -47,12 +43,14 @@ export default class JoinPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('join_room')
 	joinRoom(args: IJoinRoomArgs, user: User)
 	{
 		if (!this.schemas.joinRoom!(args)) return;
 		user.joinRoom(args.room, args.x, args.y);
 	}
 
+	@Event('join_igloo')
 	joinIgloo(args: IJoinIglooArgs, user: User)
 	{
 		if (!this.schemas.joinIgloo!(args)) return;

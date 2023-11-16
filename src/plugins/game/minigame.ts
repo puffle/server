@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -16,10 +17,6 @@ export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 	{
 		super(world);
 
-		this.events = {
-			game_over: this.gameOver.bind(this),
-		};
-
 		this.schemas = {
 			gameOver: MyAjv.compile({
 				type: 'object',
@@ -32,6 +29,7 @@ export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('game_over')
 	gameOver(args: IGameOverArgs, user: User)
 	{
 		if (!this.schemas.gameOver!(args)) return;
@@ -39,4 +37,6 @@ export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 
 		user.updateCoins(args.coins, true);
 	}
+
+	// TODO
 }

@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
@@ -17,14 +18,6 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	{
 		super(world);
 
-		this.events = {
-			buddy_request: this.buddyRequest.bind(this),
-			buddy_accept: this.buddyAccept.bind(this),
-			buddy_reject: this.buddyReject.bind(this),
-			buddy_remove: this.buddyRemove.bind(this),
-			buddy_find: this.buddyFind.bind(this),
-		};
-
 		this.schemas = {
 			genericBuddyId: MyAjv.compile({
 				type: 'object',
@@ -37,6 +30,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('buddy_request')
 	buddyRequest(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
@@ -54,6 +48,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		recipient.send('buddy_request', { id: user.data.id, username: user.data.username });
 	}
 
+	@Event('buddy_accept')
 	async buddyAccept(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
@@ -86,6 +81,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		user.buddies.addBuddy(args.id, username);
 	}
 
+	@Event('buddy_reject')
 	buddyReject(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
@@ -93,6 +89,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		user.buddies.deleteRequest(args.id);
 	}
 
+	@Event('buddy_remove')
 	async buddyRemove(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;
@@ -118,6 +115,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 		}
 	}
 
+	@Event('buddy_find')
 	buddyFind(args: IGenericBuddyArgs, user: User)
 	{
 		if (!this.schemas.genericBuddyId!(args)) return;

@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin, TItemSlots } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -16,12 +17,6 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 	constructor(world: GameWorld)
 	{
 		super(world);
-
-		this.events = {
-			update_player: this.updatePlayer.bind(this),
-			remove_item: this.removeItem.bind(this),
-			add_item: this.addItem.bind(this),
-		};
 
 		this.schemas = {
 			updatePlayerOrAddItem: MyAjv.compile({
@@ -44,6 +39,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('update_player')
 	updatePlayer(args: IUpdatePlayerOrAddItemArgs, user: User)
 	{
 		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
@@ -54,6 +50,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		user.setItem(constants.ITEM_SLOTS[item.type - 1], args.item);
 	}
 
+	@Event('remove_item')
 	removeItem(args: IRemoveItemArgs, user: User)
 	{
 		if (!this.schemas.removeItem!(args)) return;
@@ -61,6 +58,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		user.setItem(args.type, 0);
 	}
 
+	@Event('add_item')
 	async addItem(args: IUpdatePlayerOrAddItemArgs, user: User)
 	{
 		if (!this.schemas.updatePlayerOrAddItem!(args)) return;

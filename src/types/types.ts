@@ -1,5 +1,4 @@
 import { ValidateFunction } from 'ajv';
-import { User } from '../classes/user/User';
 import { constants } from '../utils/constants';
 import { IRoom } from './crumbs';
 
@@ -30,7 +29,7 @@ export interface IGameAuth
 export interface IGamePlugin
 {
 	pluginName: string;
-	events: Record<string, (args: TActionMessageArgs, user: User) => void>;
+	// events: Record<string, (args: TActionMessageArgs, user: User) => void>;
 	schemas: Record<string, ValidateFunction<unknown>>;
 }
 

@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
@@ -17,12 +18,6 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	{
 		super(world);
 
-		this.events = {
-			mute_player: this.mutePlayer.bind(this),
-			kick_player: this.kickPlayer.bind(this),
-			ban_player: this.banPlayer.bind(this),
-		};
-
 		this.schemas = {
 			kickBanPlayer: MyAjv.compile({
 				type: 'object',
@@ -36,12 +31,14 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	}
 
 	// eslint-disable-next-line class-methods-use-this
+	@Event('mute_player')
 	mutePlayer(args: unknown, user: User)
 	{
 		if (!user.isModerator) return;
 		user.send('error', { error: 'Not implemented' }); // TODO: implement; add ajv
 	}
 
+	@Event('kick_player')
 	kickPlayer(args: IKickBanPlayerArgs, user: User)
 	{
 		if (!user.isModerator) return;
@@ -54,6 +51,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 		recipient.close();
 	}
 
+	@Event('ban_player')
 	banPlayer(args: IKickBanPlayerArgs, user: User)
 	{
 		if (!user.isModerator) return;

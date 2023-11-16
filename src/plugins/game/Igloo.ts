@@ -2,6 +2,7 @@ import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { Igloo } from '../../classes/room/Igloo';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';
@@ -34,22 +35,6 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 	constructor(world: GameWorld)
 	{
 		super(world);
-
-		this.events = {
-			add_igloo: this.addIgloo.bind(this),
-			add_furniture: this.addFurniture.bind(this),
-
-			update_igloo: this.updateIgloo.bind(this),
-			update_furniture: this.updateFurniture.bind(this),
-			update_flooring: this.updateFlooring.bind(this),
-			update_music: this.updateMusic.bind(this),
-
-			open_igloo: this.openIgloo.bind(this),
-			close_igloo: this.closeIgloo.bind(this),
-
-			get_igloos: this.getIgloos.bind(this),
-			get_igloo_open: this.getIglooOpen.bind(this),
-		};
 
 		this.schemas = {
 			addIglooOrGetIglooOpen: MyAjv.compile({
@@ -122,6 +107,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('add_igloo')
 	async addIgloo(args: IAddIglooOrGetIglooOpenArgs, user: User)
 	{
 		if (!this.schemas.addIglooOrGetIglooOpen!(args)) return;
@@ -135,6 +121,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		user.send('add_igloo', { igloo: args.igloo, coins: user.data.coins });
 	}
 
+	@Event('add_furniture')
 	async addFurniture(args: IAddFurnitureArgs, user: User)
 	{
 		if (!this.schemas.addFurniture!(args)) return;
@@ -148,6 +135,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		user.send('add_furniture', { furniture: args.furniture, coins: user.data.coins });
 	}
 
+	@Event('update_igloo')
 	async updateIgloo(args: IUpdateIglooArgs, user: User)
 	{
 		if (!this.schemas.updateIgloo!(args)) return;
@@ -169,6 +157,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		igloo.refresh(user);
 	}
 
+	@Event('update_furniture')
 	async updateFurniture(args: IUpdateFurnitureArgs, user: User)
 	{
 		if (!this.schemas.updateFurniture!(args)) return;
@@ -200,6 +189,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		if (Config.data.game.fixSync) igloo.refresh(user);
 	}
 
+	@Event('update_flooring')
 	async updateFlooring(args: IUpdateFlooringArgs, user: User)
 	{
 		if (!this.schemas.updateFlooring!(args)) return;
@@ -219,6 +209,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		if (Config.data.game.fixSync) user.room.send(user, 'update_flooring', { flooring: args.flooring });
 	}
 
+	@Event('update_music')
 	async updateMusic(args: IUpdateMusicArgs, user: User)
 	{
 		if (!this.schemas.updateMusic!(args)) return;
@@ -236,6 +227,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		else user.room.send(user, 'update_music', { music: args.music }, []);
 	}
 
+	@Event('open_igloo')
 	openIgloo(args: unknown, user: User)
 	{
 		const igloo = this.getIgloo(user.data.id);
@@ -244,6 +236,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		igloo.locked = false;
 	}
 
+	@Event('close_igloo')
 	closeIgloo(args: unknown, user: User)
 	{
 		const igloo = this.getIgloo(user.data.id);
@@ -252,6 +245,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		igloo.locked = true;
 	}
 
+	@Event('get_igloos')
 	getIgloos(args: unknown, user: User)
 	{
 		user.send('get_igloos', {
@@ -264,6 +258,7 @@ export default class IglooPlugin extends GamePlugin implements IGamePlugin
 		});
 	}
 
+	@Event('get_igloo_open')
 	getIglooOpen(args: IAddIglooOrGetIglooOpenArgs, user: User)
 	{
 		if (!this.schemas.addIglooOrGetIglooOpen!(args)) return;

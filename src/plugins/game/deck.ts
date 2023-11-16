@@ -1,5 +1,5 @@
-import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
@@ -10,15 +10,7 @@ export default class DeckPlugin extends GamePlugin implements IGamePlugin
 	starterDeckId = constants.STARTER_DECK_ID;
 	starterDeck = this.world.crumbs.items[this.starterDeckId];
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.events = {
-			add_starter_deck: this.addStarterDeck.bind(this),
-		};
-	}
-
+	@Event('add_starter_deck')
 	addStarterDeck(args: unknown, user: User)
 	{
 		if (!this.starterDeck || user.inventory.has(this.starterDeckId)) return;

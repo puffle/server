@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
+import { Event } from '../../decorators/event';
 import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
@@ -16,12 +17,6 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 	constructor(world: GameWorld)
 	{
 		super(world);
-
-		this.events = {
-			send_position: this.sendPosition.bind(this),
-			send_frame: this.sendFrame.bind(this),
-			snowball: this.snowball.bind(this),
-		};
 
 		this.schemas = {
 			sendPositionOrSnowball: MyAjv.compile({
@@ -46,6 +41,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		};
 	}
 
+	@Event('send_position')
 	sendPosition(args: ISendPositionOrSnowballArgs, user: User)
 	{
 		if (!this.schemas.sendPositionOrSnowball!(args)) return;
@@ -57,6 +53,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		user.room?.send(user, 'send_position', { id: user.data.id, ...args });
 	}
 
+	@Event('send_frame')
 	sendFrame(args: ISendFrameArgs, user: User)
 	{
 		if (!this.schemas.sendFrame!(args)) return;
@@ -66,6 +63,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 		user.room?.send(user, 'send_frame', { id: user.data.id, ...args });
 	}
 
+	@Event('snowball')
 	snowball(args: ISendPositionOrSnowballArgs, user: User)
 	{
 		if (!this.schemas.sendPositionOrSnowball!(args)) return;
