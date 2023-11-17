@@ -9,7 +9,6 @@ export default class SenseiPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Sensei';
 
-	// eslint-disable-next-line class-methods-use-this
 	@Event('join_sensei')
 	joinSensei(args: unknown, user: User)
 	{

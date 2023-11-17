@@ -1,39 +1,21 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import typia, { tags } from 'typia';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IGenericIgnoreArgs { id: number; }
+interface IGenericIgnoreArgs { id: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>; }
 
 export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Ignore';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			genericIgnoreId: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['id'],
-				properties: {
-					id: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
-				},
-			} as JSONSchemaType<IGenericIgnoreArgs>),
-		};
-	}
-
 	@Event('ignore_add')
 	async ignoreAdd(args: IGenericIgnoreArgs, user: User)
 	{
-		if (!this.schemas.genericIgnoreId!(args)) return;
+		if (!typia.equals(args)) return;
 
 		if (
 			args.id === user.data.id
@@ -63,8 +45,7 @@ export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 	@Event('ignore_remove')
 	ignoreRemove(args: IGenericIgnoreArgs, user: User)
 	{
-		if (!this.schemas.genericIgnoreId!(args)) return;
-
+		if (!typia.equals(args)) return;
 		if (!user.ignores.has(args.id)) return;
 
 		user.ignores.removeIgnore(args.id);

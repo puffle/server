@@ -1,59 +1,39 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import typia, { tags } from 'typia';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IJoinRoomArgs { room: number; x: number; y: number; }
-interface IJoinIglooArgs { igloo: number; x: number; y: number; }
+interface IJoinRoomArgs
+{
+	room: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>;
+	x: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.MAX_X>;
+	y: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.MAX_Y>;
+}
+
+interface IJoinIglooArgs
+{
+	igloo: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>;
+	x: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.MAX_X>;
+	y: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.MAX_Y>;
+}
 
 export default class JoinPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Join';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			joinRoom: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['room', 'x', 'y'],
-				properties: {
-					room: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-					x: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
-					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
-				},
-			} as JSONSchemaType<IJoinRoomArgs>),
-
-			joinIgloo: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['igloo', 'x', 'y'],
-				properties: {
-					igloo: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-					x: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
-					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
-				},
-			} as JSONSchemaType<IJoinIglooArgs>),
-		};
-	}
-
 	@Event('join_room')
 	joinRoom(args: IJoinRoomArgs, user: User)
 	{
-		if (!this.schemas.joinRoom!(args)) return;
+		if (!typia.equals(args)) return;
 		user.joinRoom(args.room, args.x, args.y);
 	}
 
 	@Event('join_igloo')
 	joinIgloo(args: IJoinIglooArgs, user: User)
 	{
-		if (!this.schemas.joinIgloo!(args)) return;
+		if (!typia.equals(args)) return;
 		user.joinIgloo(args.igloo, args.x, args.y);
 	}
 }

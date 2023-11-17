@@ -3,8 +3,7 @@ module.exports = {
 	parser: '@typescript-eslint/parser',
 	extends: [
 		'@n0bodysec',
-		'plugin:@typescript-eslint/eslint-recommended',
-		'plugin:@typescript-eslint/recommended',
+		'eslint:recommended',
 		'plugin:@typescript-eslint/recommended-type-checked',
 		'plugin:import/typescript',
 	],
@@ -22,4 +21,10 @@ module.exports = {
 		'@typescript-eslint/no-unsafe-member-access': 'warn',
 		'@typescript-eslint/no-unsafe-call': 'warn',
 	},
+	overrides: [{
+		files: ['src/plugins/game/*.ts'],
+		rules: {
+			'class-methods-use-this': 'off',
+		},
+	}],
 };

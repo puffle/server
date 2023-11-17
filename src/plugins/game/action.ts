@@ -1,50 +1,30 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import typia, { tags } from 'typia';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface ISendPositionOrSnowballArgs { x: number; y: number; }
-interface ISendFrameArgs { set?: boolean; frame: number; }
+interface ISendPositionOrSnowballArgs
+{
+	x: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.MAX_X>;
+	y: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.MAX_Y>;
+}
+
+interface ISendFrameArgs
+{
+	set?: boolean & tags.Default<false>;
+	frame: number & tags.Type<'uint32'> & tags.Minimum<1> & tags.Maximum<typeof constants.limits.MAX_FRAME>;
+}
 
 export default class ActionPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Action';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			sendPositionOrSnowball: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['x', 'y'],
-				properties: {
-					x: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
-					y: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_Y },
-				},
-			} as JSONSchemaType<ISendPositionOrSnowballArgs>),
-
-			sendFrame: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['frame'],
-				properties: {
-					set: { type: 'boolean', default: false, nullable: true },
-					frame: { type: 'integer', minimum: 1, maximum: constants.limits.MAX_FRAME },
-				},
-			} as JSONSchemaType<ISendFrameArgs>),
-		};
-	}
-
 	@Event('send_position')
 	sendPosition(args: ISendPositionOrSnowballArgs, user: User)
 	{
-		if (!this.schemas.sendPositionOrSnowball!(args)) return;
+		if (!typia.equals(args)) return;
 
 		user.roomData.x = args.x;
 		user.roomData.y = args.y;
@@ -56,7 +36,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 	@Event('send_frame')
 	sendFrame(args: ISendFrameArgs, user: User)
 	{
-		if (!this.schemas.sendFrame!(args)) return;
+		if (!typia.equals(args)) return;
 
 		user.roomData.frame = args.set ? args.frame : 1;
 
@@ -66,7 +46,7 @@ export default class ActionPlugin extends GamePlugin implements IGamePlugin
 	@Event('snowball')
 	snowball(args: ISendPositionOrSnowballArgs, user: User)
 	{
-		if (!this.schemas.sendPositionOrSnowball!(args)) return;
+		if (!typia.equals(args)) return;
 		user.room?.send(user, 'snowball', { id: user.data.id, ...args });
 	}
 }

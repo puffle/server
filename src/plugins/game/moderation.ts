@@ -1,36 +1,17 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import typia, { tags } from 'typia';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IKickBanPlayerArgs { id: number; }
+interface IKickBanPlayerArgs { id: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>; }
 
 export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Moderation';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			kickBanPlayer: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['id'],
-				properties: {
-					id: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-				},
-			} as JSONSchemaType<IKickBanPlayerArgs>),
-		};
-	}
-
-	// eslint-disable-next-line class-methods-use-this
 	@Event('mute_player')
 	mutePlayer(args: unknown, user: User)
 	{
@@ -42,7 +23,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	kickPlayer(args: IKickBanPlayerArgs, user: User)
 	{
 		if (!user.isModerator) return;
-		if (!this.schemas.kickBanPlayer!(args)) return;
+		if (!typia.equals(args)) return;
 		if (user.data.id === args.id) return;
 
 		const recipient = this.world.users.get(args.id);
@@ -55,7 +36,7 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 	banPlayer(args: IKickBanPlayerArgs, user: User)
 	{
 		if (!user.isModerator) return;
-		if (!this.schemas.kickBanPlayer!(args)) return;
+		if (!typia.equals(args)) return;
 		if (user.data.id === args.id) return;
 
 		const recipient = this.world.users.get(args.id);

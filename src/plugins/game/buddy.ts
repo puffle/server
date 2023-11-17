@@ -1,39 +1,21 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import typia, { tags } from 'typia';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IGenericBuddyArgs { id: number; }
+interface IGenericBuddyArgs { id: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>; }
 
 export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Buddy';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			genericBuddyId: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['id'],
-				properties: {
-					id: { type: 'integer', minimum: 0, maximum: constants.limits.MAX_X },
-				},
-			} as JSONSchemaType<IGenericBuddyArgs>),
-		};
-	}
-
 	@Event('buddy_request')
 	buddyRequest(args: IGenericBuddyArgs, user: User)
 	{
-		if (!this.schemas.genericBuddyId!(args)) return;
+		if (!typia.equals(args)) return;
 
 		const recipient = this.world.users.get(args.id);
 		if (
@@ -51,7 +33,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	@Event('buddy_accept')
 	async buddyAccept(args: IGenericBuddyArgs, user: User)
 	{
-		if (!this.schemas.genericBuddyId!(args)) return;
+		if (!typia.equals(args)) return;
 
 		if (!user.buddies.requests.includes(args.id) || user.buddies.has(args.id)) return;
 
@@ -84,7 +66,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	@Event('buddy_reject')
 	buddyReject(args: IGenericBuddyArgs, user: User)
 	{
-		if (!this.schemas.genericBuddyId!(args)) return;
+		if (!typia.equals(args)) return;
 
 		user.buddies.deleteRequest(args.id);
 	}
@@ -92,7 +74,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	@Event('buddy_remove')
 	async buddyRemove(args: IGenericBuddyArgs, user: User)
 	{
-		if (!this.schemas.genericBuddyId!(args)) return;
+		if (!typia.equals(args)) return;
 
 		if (!user.buddies.has(args.id)) return;
 
@@ -118,7 +100,7 @@ export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 	@Event('buddy_find')
 	buddyFind(args: IGenericBuddyArgs, user: User)
 	{
-		if (!this.schemas.genericBuddyId!(args)) return;
+		if (!typia.equals(args)) return;
 
 		const buddy = this.world.users.get(args.id);
 		if (buddy === undefined || buddy.room === undefined || !user.buddies.has(args.id)) return;

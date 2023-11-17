@@ -1,17 +1,16 @@
-import { JSONSchemaType } from 'ajv';
+import typia, { tags } from 'typia';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 import IglooPlugin from './Igloo';
 import ItemPlugin from './Item';
 
-interface ISendMessageArgs { message: string; }
-interface ISendSafeArgs { safe: number; }
-interface ISendEmoteArgs { emote: number; }
+interface ISendMessageArgs { message: string & tags.MinLength<1> & tags.MaxLength<48>; }
+interface ISendSafeArgs { safe: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>; }
+interface ISendEmoteArgs { emote: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>; }
 
 type TCommand = (args: string[], user: User) => void;
 
@@ -42,41 +41,12 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 			['ajc', this.cmdJitsuCard.bind(this)],
 			['aja', this.cmdAllJitsuCards.bind(this)],
 		]);
-
-		this.schemas = {
-			sendMessage: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['message'],
-				properties: {
-					message: { type: 'string', minLength: 1, maxLength: 48 },
-				},
-			} as JSONSchemaType<ISendMessageArgs>),
-
-			sendSafe: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['safe'],
-				properties: {
-					safe: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-				},
-			} as JSONSchemaType<ISendSafeArgs>),
-
-			sendEmote: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['emote'],
-				properties: {
-					emote: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-				},
-			} as JSONSchemaType<ISendEmoteArgs>),
-		};
 	}
 
 	@Event('send_message')
 	sendMessage(args: ISendMessageArgs, user: User)
 	{
-		if (!this.schemas.sendMessage!(args)) return;
+		if (!typia.equals(args)) return;
 		if (/[^ -~]/i.test(args.message)) return;
 		args.message = args.message.replace(/  +/g, ' ').trim();
 
@@ -92,14 +62,14 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 	@Event('send_safe')
 	sendSafe(args: ISendSafeArgs, user: User)
 	{
-		if (!this.schemas.sendSafe!(args)) return;
+		if (!typia.equals(args)) return;
 		user.room?.send(user, 'send_safe', { id: user.data.id, ...args }, [user], true);
 	}
 
 	@Event('send_emote')
 	sendEmote(args: ISendEmoteArgs, user: User)
 	{
-		if (!this.schemas.sendEmote!(args)) return;
+		if (!typia.equals(args)) return;
 		user.room?.send(user, 'send_emote', { id: user.data.id, ...args }, [user], true);
 	}
 
@@ -117,11 +87,11 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 	// commands
 
 	cmdUsers(args: string[], user: User) { user.send('error', { error: `Users online: ${this.world.population}` }); }
-	cmdId(args: string[], user: User) { user.send('error', { error: `Your ID: ${user.data.id}` }); } // eslint-disable-line class-methods-use-this
-	cmdRoom(args: string[], user: User) { user.send('error', { error: `Room: ${user.room?.data.name} (${user.room?.data.id})\nUsers: ${user.room?.population}` }); } // eslint-disable-line class-methods-use-this
+	cmdId(args: string[], user: User) { user.send('error', { error: `Your ID: ${user.data.id}` }); }
+	cmdRoom(args: string[], user: User) { user.send('error', { error: `Room: ${user.room?.data.name} (${user.room?.data.id})\nUsers: ${user.room?.population}` }); }
 
 	// moderator commands
-	cmdCoins(args: string[], user: User) // eslint-disable-line class-methods-use-this
+	cmdCoins(args: string[], user: User)
 	{
 		if (!user.isModerator) return;
 

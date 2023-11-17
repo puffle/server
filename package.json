@@ -14,7 +14,8 @@
 		"http": "ts-node src/server.ts HTTP",
 		"build": "tsc",
 		"pushdb": "prisma db push",
-		"lint": "eslint --rule \"linebreak-style: 'off'\" ."
+		"lint": "eslint --rule \"linebreak-style: 'off'\" .",
+		"prepare": "ts-patch install"
 	},
 	"devDependencies": {
 		"@n0bodysec/eslint-config": "^2.1.1",
@@ -27,6 +28,7 @@
 		"eslint-plugin-import": "^2.29.0",
 		"prisma": "^5.6.0",
 		"ts-node": "^10.9.1",
+		"ts-patch": "^3.0.2",
 		"tsx": "^4.1.2",
 		"typescript": "^5.2.2"
 	},
@@ -46,6 +48,7 @@
 		"rate-limiter-flexible": "^3.0.4",
 		"reflect-metadata": "^0.1.13",
 		"socket.io": "^4.7.2",
+		"typia": "^5.2.6",
 		"winston": "^3.11.0"
 	}
 }

@@ -1,39 +1,21 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import typia, { tags } from 'typia';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
 import { Database } from '../../managers/DatabaseManager';
 import { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IGetPlayerArgs { id: number; }
+interface IGetPlayerArgs { id: number & tags.Type<'uint32'> & tags.Minimum<0> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>; }
 
 export default class GetPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Get';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			getPlayer: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['id'],
-				properties: {
-					id: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-				},
-			} as JSONSchemaType<IGetPlayerArgs>),
-		};
-	}
-
 	@Event('get_player')
 	async getPlayer(args: IGetPlayerArgs, user: User)
 	{
-		if (!this.schemas.getPlayer!(args)) return;
+		if (!typia.equals(args)) return;
 		// if (user.data.id === args.id) return;
 
 		const requestedUser = this.world.users.get(args.id);

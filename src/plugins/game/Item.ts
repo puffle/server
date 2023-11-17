@@ -1,4 +1,5 @@
 import { JSONSchemaType } from 'ajv';
+import typia, { tags } from 'typia';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
@@ -7,7 +8,7 @@ import { IGamePlugin, TItemSlots } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IUpdatePlayerOrAddItemArgs { item: number; }
+interface IUpdatePlayerOrAddItemArgs { item: number & tags.Type<'uint32'> & tags.Minimum<1> & tags.Maximum<typeof constants.limits.sql.MAX_UNSIGNED_INTEGER>; }
 interface IRemoveItemArgs { type: TItemSlots; }
 
 export default class ItemPlugin extends GamePlugin implements IGamePlugin
@@ -19,15 +20,6 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 		super(world);
 
 		this.schemas = {
-			updatePlayerOrAddItem: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['item'],
-				properties: {
-					item: { type: 'integer', minimum: 1, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-				},
-			} as JSONSchemaType<IUpdatePlayerOrAddItemArgs>),
-
 			removeItem: MyAjv.compile({
 				type: 'object',
 				additionalProperties: false,
@@ -42,7 +34,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 	@Event('update_player')
 	updatePlayer(args: IUpdatePlayerOrAddItemArgs, user: User)
 	{
-		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
+		if (!typia.equals(args)) return;
 
 		const item = this.world.crumbs.items[args.item];
 		if (item === undefined || !user.inventory.has(args.item)) return;
@@ -61,7 +53,7 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 	@Event('add_item')
 	async addItem(args: IUpdatePlayerOrAddItemArgs, user: User)
 	{
-		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
+		if (!typia.equals(args)) return;
 
 		const item = user.validatePurchase.item(args.item);
 		if (!item || user.inventory.has(args.item)) return;

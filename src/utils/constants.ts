@@ -2,6 +2,8 @@ export const constants = {
 	PROJECT_NAME: 'Puffle',
 
 	limits: {
+		MIN_X: -1520,
+		MIN_Y: -960,
 		MAX_X: 1520,
 		MAX_Y: 960,
 		MAX_FRAME: 26,
