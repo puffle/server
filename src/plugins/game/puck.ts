@@ -1,16 +1,15 @@
-import { Int } from 'ts-runtime-checks';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { IGamePlugin, NumberRange, Validate } from '../../types/types';
+import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
 interface IMovePuckArgs
 {
-	x: number & Int & NumberRange<[typeof constants.limits.MAX_X_NEGATIVE, typeof constants.limits.MAX_X]>;
-	y: number & Int & NumberRange<[typeof constants.limits.MAX_Y_NEGATIVE, typeof constants.limits.MAX_Y]>;
-	speedX: number & Int & NumberRange<[-127, 127]>; // const speedX = Math.floor((this.target.x - puckX) / this.speedDiv)
-	speedY: number & Int & NumberRange<[-80, 80]>; // const speedY = Math.floor((this.target.y - puckY) / this.speedDiv)
+	x: number & IntNumberRange<[typeof constants.limits.MAX_X_NEGATIVE, typeof constants.limits.MAX_X]>;
+	y: number & IntNumberRange<[typeof constants.limits.MAX_Y_NEGATIVE, typeof constants.limits.MAX_Y]>;
+	speedX: number & IntNumberRange<[-127, 127]>; // const speedX = Math.floor((this.target.x - puckX) / this.speedDiv)
+	speedY: number & IntNumberRange<[-80, 80]>; // const speedY = Math.floor((this.target.y - puckY) / this.speedDiv)
 }
 
 export default class PuckPlugin extends GamePlugin implements IGamePlugin

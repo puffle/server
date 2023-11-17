@@ -1,12 +1,11 @@
-import { Int } from 'ts-runtime-checks';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
 import { Database } from '../../managers/DatabaseManager';
-import { IGamePlugin, NumberRange, Validate } from '../../types/types';
+import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IGenericIgnoreArgs { id: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
+interface IGenericIgnoreArgs { id: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
 
 export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 {

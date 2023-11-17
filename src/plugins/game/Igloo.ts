@@ -1,28 +1,27 @@
-import { Int } from 'ts-runtime-checks';
 import { Igloo } from '../../classes/room/Igloo';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
 import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';
-import { IGamePlugin, NumberRange, Validate } from '../../types/types';
+import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { getIglooId } from '../../utils/functions';
 import { GamePlugin } from '../GamePlugin';
 
-interface IAddIglooOrGetIglooOpenArgs { igloo: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
-interface IAddFurnitureArgs { furniture: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
-interface IUpdateIglooArgs { type: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
-interface IUpdateFlooringArgs { flooring: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
-interface IUpdateMusicArgs { music: number & Int & NumberRange<[0, typeof constants.limits.MAX_MUSIC]>; }
+interface IAddIglooOrGetIglooOpenArgs { igloo: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
+interface IAddFurnitureArgs { furniture: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
+interface IUpdateIglooArgs { type: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
+interface IUpdateFlooringArgs { flooring: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
+interface IUpdateMusicArgs { music: number & IntNumberRange<[0, typeof constants.limits.MAX_MUSIC]>; }
 
 interface IUpdateFurnitureArgs
 {
 	furniture: {
-		furnitureId: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>;
-		x: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_SMALLINT]>;
-		y: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_SMALLINT]>;
-		rotation: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_SMALLINT]>;
-		frame: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_SMALLINT]>;
+		furnitureId: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>;
+		x: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_SMALLINT]>;
+		y: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_SMALLINT]>;
+		rotation: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_SMALLINT]>;
+		frame: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_SMALLINT]>;
 	}[];
 }
 

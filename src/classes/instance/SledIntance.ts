@@ -1,10 +1,9 @@
-import { Int } from 'ts-runtime-checks';
-import { NumberRange, Validate } from '../../types/types';
+import { IntNumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { User } from '../user/User';
 import { BaseInstance } from './BaseInstance';
 
-interface ISendMoveArgs { move: number & Int & NumberRange<[1, 5]>; }
+interface ISendMoveArgs { move: number & IntNumberRange<[1, 5]>; }
 
 export class SledInstance extends BaseInstance
 {

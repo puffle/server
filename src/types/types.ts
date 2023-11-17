@@ -1,18 +1,12 @@
-import { Assert, Check, ExactProps } from 'ts-runtime-checks';
+import { Assert, ExactProps, Int, Max, MaxLen, Min, MinLen } from 'ts-runtime-checks';
 import { constants } from '../utils/constants';
 import { IRoom } from './crumbs';
 
 // ts-runtime-checks
 export type Validate<T, ReturnValue = undefined> = Assert<T, ReturnValue>;
 export type ValidateExact<T extends object, ReturnValue = undefined> = Assert<ExactProps<T, true, true>, ReturnValue>;
-export type MinInclusive<T extends string | number> = number & Check<`$self >= ${T}`, `to be greater or equal than ${T}`, 'minInclusive', T>;
-export type MaxInclusive<T extends string | number> = number & Check<`$self <= ${T}`, `to be less or equal than ${T}`, 'maxInclusive', T>;
-export type MinLenInclusive<T extends string | number> = Check<`$self.length >= ${T}`, `to have a length greater or equal than ${T}`, 'minLenInclusive', T>;
-export type MaxLenInclusive<T extends string | number> = Check<`$self.length <= ${T}`, `to have a length less or equal than ${T}`, 'maxLenInclusive', T>;
-export type NumberRange<T extends number[]> = number & Check<`$self >= ${T[0]} && $self <= ${T[1]}`, `to be in range of [${T[0]}, ${T[1]}]`, 'numberRange', T[number]>;
-export type NumberRangeExclusive<T extends number[]> = number & Check<`$self > ${T[0]} && $self < ${T[1]}`, `to be in range of (${T[0]}, ${T[1]})`, 'numberRangeExclusive', T[number]>;
-export type LenRange<T extends number[]> = string & Check<`$self.length >= ${T[0]} && $self.length <= ${T[1]}`, `to have a length in range of [${T[0]}, ${T[1]}]`, 'lenRange', T[number]>;
-export type LenRangeExclusive<T extends number[]> = string & Check<`$self.length > ${T[0]} && $self.length < ${T[1]}`, `to have a length in range of (${T[0]}, ${T[1]})`, 'lenRangeExclusive', T[number]>;
+export type IntNumberRange<T extends number[]> = Int & Min<T[0]> & Max<T[1]>;
+export type LenRange<T extends number[]> = MinLen<T[0]> & MaxLen<T[1]>;
 
 export type TActionMessageArgs = Record<string, unknown>;
 

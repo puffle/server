@@ -1,20 +1,19 @@
-import { Int } from 'ts-runtime-checks';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { IGamePlugin, NumberRange, Validate } from '../../types/types';
+import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
 interface ISendPositionOrSnowballArgs
 {
-	x: number & Int & NumberRange<[0, typeof constants.limits.MAX_X]>;
-	y: number & Int & NumberRange<[0, typeof constants.limits.MAX_Y]>;
+	x: number & IntNumberRange<[0, typeof constants.limits.MAX_X]>;
+	y: number & IntNumberRange<[0, typeof constants.limits.MAX_Y]>;
 }
 
 interface ISendFrameArgs
 {
 	set?: boolean;
-	frame: number & Int & NumberRange<[0, typeof constants.limits.MAX_FRAME]>;
+	frame: number & IntNumberRange<[0, typeof constants.limits.MAX_FRAME]>;
 }
 
 export default class ActionPlugin extends GamePlugin implements IGamePlugin

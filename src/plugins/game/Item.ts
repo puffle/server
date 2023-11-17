@@ -1,11 +1,10 @@
-import { Int } from 'ts-runtime-checks';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { IGamePlugin, NumberRange, TItemSlots, Validate } from '../../types/types';
+import { IGamePlugin, IntNumberRange, TItemSlots, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IUpdatePlayerOrAddItemArgs { item: number & Int & NumberRange<[1, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
+interface IUpdatePlayerOrAddItemArgs { item: number & IntNumberRange<[1, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
 interface IRemoveItemArgs { type: TItemSlots; }
 
 export default class ItemPlugin extends GamePlugin implements IGamePlugin

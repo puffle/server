@@ -1,16 +1,15 @@
-import { Int } from 'ts-runtime-checks';
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { IGamePlugin, LenRange, NumberRange, Validate } from '../../types/types';
+import { IGamePlugin, IntNumberRange, LenRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 import IglooPlugin from './Igloo';
 import ItemPlugin from './Item';
 
 interface ISendMessageArgs { message: string & LenRange<[1, 48]>; }
-interface ISendSafeArgs { safe: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
-interface ISendEmoteArgs { emote: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
+interface ISendSafeArgs { safe: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
+interface ISendEmoteArgs { emote: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
 
 type TCommand = (args: string[], user: User) => void;
 
