@@ -2,6 +2,7 @@ import { clamp } from '@n0bodysec/ts-utils';
 import { verify } from 'jsonwebtoken';
 import { EventEmitter } from 'node:events';
 import { Server, Socket } from 'socket.io';
+import { is } from 'ts-runtime-checks';
 import cards from '../data/cards.json';
 import decks from '../data/decks.json';
 import floorings from '../data/floorings.json';
@@ -12,14 +13,13 @@ import matchmakers from '../data/matchmakers.json';
 import rooms from '../data/rooms.json';
 import tables from '../data/tables.json';
 import waddles from '../data/waddles.json';
-import { MyAjv } from '../managers/AjvManager';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 import { Logger } from '../managers/LogManager';
 import { PluginManager } from '../managers/PluginManager';
 import { Ratelimiter } from '../managers/RatelimitManager';
 import { ICrumbs } from '../types/crumbs';
-import { IActionMessage, IGameAuth } from '../types/types';
+import { IActionMessage, IGameAuth, Validate } from '../types/types';
 import { constants } from '../utils/constants';
 import { getIglooId, getSocketAddress } from '../utils/functions';
 import { Igloo } from './room/Igloo';
@@ -70,15 +70,13 @@ export class GameWorld
 
 	get population() { return this.users.size; }
 
-	onMessage = async (message: IActionMessage, user: User) =>
+	onMessage = async (message: Validate<IActionMessage>, user: User) =>
 	{
 		if (Ratelimiter.limiters.messages)
 		{
 			const ret = await Ratelimiter.limiters.connections.consume(user.address).catch(() => false);
 			if (!ret) return;
 		}
-
-		if (!MyAjv.validators.actionMessage(message)) return;
 
 		Logger.info(`Received: ${JSON.stringify(message)} from ${user.data.username} (${user.socket.id})`);
 		this.events.emit(message.action, message.args, user);
@@ -98,12 +96,13 @@ export class GameWorld
 			if (!ret) return;
 		}
 
-		const auth = socket.handshake.auth as IGameAuth;
-		if (!MyAjv.validators.gameAuth(auth))
+		if (!is<IGameAuth>(socket.handshake.auth))
 		{
 			this.closeSocket(socket);
 			return;
 		}
+
+		const auth = socket.handshake.auth;
 
 		verify(auth.key, Config.data.crypto.secret, {
 			audience: Config.data.crypto.audience,

@@ -7,7 +7,6 @@ export default class NinjaPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Ninja';
 
-	// eslint-disable-next-line class-methods-use-this
 	@Event('get_ninja')
 	getNinja(args: unknown, user: User)
 	{

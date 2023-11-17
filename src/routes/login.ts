@@ -2,7 +2,6 @@ import { compare, hash } from 'bcrypt';
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import { sign } from 'jsonwebtoken';
 import { randomBytes, randomUUID } from 'node:crypto';
-import { MyAjv } from '../managers/AjvManager';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 import { ILoginAuth } from '../types/types';
@@ -27,19 +26,17 @@ const getWorldPopulations = async (isModerator: boolean) =>
 	return obj;
 };
 
-const returnError = (message: string, errors?: string) => ({ success: false, message, errors });
+const returnError = (message: string, errors?: string[]) => ({ success: false, message, errors });
 
 // TODO: migrate to error code
 const errorMessages: Record<string, Record<string, string>> = Object.create({
 	username: Object.create({
-		type: 'Invalid username',
 		minLength: 'Your Penguin Name is too short. Please try again',
 		maxLength: 'Your Penguin Name is too long. Please try again',
 		stringEmpty: 'You must provide your Penguin Name to enter Club Penguin',
 	}),
 
 	password: Object.create({
-		type: 'Invalid password',
 		minLength: 'Your password is too short. Please try again',
 		maxLength: 'Your password is too long. Please try again',
 		stringEmpty: 'You must provide your password to enter Club Penguin',
@@ -73,22 +70,16 @@ const genTokenDates = () =>
 	return { currentDate, validUntil };
 };
 
-const postLogin = async (req: FastifyRequest<{ Body: ILoginAuth; }>, reply: FastifyReply) =>
+const postLogin = async (req: FastifyRequest<{ Body: Partial<ILoginAuth>; }>, reply: FastifyReply) =>
 {
-	// TODO: find a better way to handle ajv errors (ajv-errors package is not working as expected) and then migrate to error code
+	// TODO: find a better way to custom error messages
 	if (typeof req.body.username !== 'string' || req.body.username.length === 0) return reply.status(400).send(returnError(getErrorMessage('username', 'stringEmpty')));
-	if (typeof req.body.password !== 'string' || req.body.password.length === 0) return reply.status(400).send(returnError(getErrorMessage('password', 'stringEmpty')));
+	if (req.body.username.length < constants.limits.MIN_USERNAME_LEN) return reply.status(400).send(returnError(getErrorMessage('username', 'minLength')));
+	if (req.body.username.length > constants.limits.MAX_USERNAME_LEN) return reply.status(400).send(returnError(getErrorMessage('username', 'maxLength')));
 
-	if (!MyAjv.validators.loginAuth(req.body))
-	{
-		const firstError = MyAjv.validators.loginAuth.errors?.at(0);
-		return reply.status(400).send(
-			returnError(
-				getErrorMessage(firstError?.instancePath.slice(1) ?? '', firstError?.keyword ?? ''),
-				MyAjv.errorsText(MyAjv.validators.loginAuth.errors),
-			),
-		);
-	}
+	if (typeof req.body.password !== 'string' || req.body.password.length === 0) return reply.status(400).send(returnError(getErrorMessage('password', 'stringEmpty')));
+	if (req.body.password.length < constants.limits.MIN_PASSWORD_LEN) return reply.status(400).send(returnError(getErrorMessage('password', 'minLength')));
+	if (req.body.password.length > constants.limits.MAX_PASSWORD_LEN) return reply.status(400).send(returnError(getErrorMessage('password', 'maxLength')));
 
 	const user = await Database.user.findUnique({
 		where: { username: req.body.username },

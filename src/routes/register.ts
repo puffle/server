@@ -1,18 +1,16 @@
 import { hash } from 'bcrypt';
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
-import { MyAjv } from '../managers/AjvManager';
+import { check } from 'ts-runtime-checks';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
+import { IRegisterAccount } from '../types/types';
 
-const craftError = (error: string) => ({
-	success: false,
-	error,
-});
+const returnError = (message: string, errors?: string[]) => ({ success: false, message, errors });
 
-const postRegister = async (req: FastifyRequest<{ Body: { username: string, password: string, email: string, color: number; }; }>, reply: FastifyReply) =>
+const postRegister = async (req: FastifyRequest<{ Body: IRegisterAccount; }>, reply: FastifyReply) =>
 {
-	req.body.color = Number(req.body.color);
-	if (!MyAjv.validators.registerAccount(req.body)) return reply.code(400).send(craftError(MyAjv.errorsText(MyAjv.validators.registerAccount.errors)));
+	const [, errors] = check<IRegisterAccount>(req.body);
+	if (errors.length) return reply.status(400).send(returnError('Bad Request', errors));
 
 	const user = await Database.user.findMany({
 		where: {
@@ -23,7 +21,7 @@ const postRegister = async (req: FastifyRequest<{ Body: { username: string, pass
 		},
 	});
 
-	if (user.length !== 0) return reply.status(409).send(craftError('The username or e-mail address is already registered in our database.'));
+	if (user.length !== 0) return reply.status(409).send(returnError('Conflict', ['The username or e-mail address is already registered in our database.']));
 
 	const newUser = await Database.user.create({
 		data: {

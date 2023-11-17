@@ -2,12 +2,19 @@ export const constants = {
 	PROJECT_NAME: 'Puffle',
 
 	limits: {
+		MAX_X_NEGATIVE: -1520,
+		MAX_Y_NEGATIVE: -960,
 		MAX_X: 1520,
 		MAX_Y: 960,
 		MAX_FRAME: 26,
 		MAX_COINS: 9999999,
 		MAX_USERS: 300, // fallback in case the loaded config world's maxUser is undefined
 		MAX_MUSIC: 999,
+
+		MIN_USERNAME_LEN: 4,
+		MAX_USERNAME_LEN: 12,
+		MIN_PASSWORD_LEN: 3,
+		MAX_PASSWORD_LEN: 128,
 
 		sql: {
 			MAX_UNSIGNED_TINYINT: 255,

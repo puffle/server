@@ -1,27 +1,16 @@
-import { JSONSchemaType } from 'ajv';
-import { MyAjv } from '../../managers/AjvManager';
+import { Int } from 'ts-runtime-checks';
+import { NumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { User } from '../user/User';
 import { BaseInstance } from './BaseInstance';
 
-interface ISendMoveArgs { move: number; }
+interface ISendMoveArgs { move: number & Int & NumberRange<[1, 5]>; }
 
 export class SledInstance extends BaseInstance
 {
 	override id = constants.SLED_ROOM_ID;
 	#coinsFallback = 0;
 	#coins = [20, 10, 5, 5];
-
-	#schemas = {
-		sendMove: MyAjv.compile({
-			type: 'object',
-			additionalProperties: false,
-			required: ['move'],
-			properties: {
-				move: { type: 'integer', minimum: 1, maximum: 5 },
-			},
-		} as JSONSchemaType<ISendMoveArgs>),
-	};
 
 	/** @override */
 	override addListeners(user: User)
@@ -49,10 +38,8 @@ export class SledInstance extends BaseInstance
 		super.start();
 	}
 
-	sendMove(args: ISendMoveArgs, user: User)
+	sendMove(args: Validate<ISendMoveArgs>, user: User)
 	{
-		if (!this.#schemas.sendMove(args)) return;
-
 		if (args.move === 5)
 		{
 			this.sendGameOver(user);

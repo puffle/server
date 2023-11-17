@@ -1,22 +1,15 @@
 import { compare } from 'bcrypt';
 import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
-import { MyAjv } from '../managers/AjvManager';
+import { check } from 'ts-runtime-checks';
 import { Database } from '../managers/DatabaseManager';
-import { TForgetAuth } from '../types/types';
+import { IForgetAuth } from '../types/types';
 
-const returnError = (message: string, errors?: string) => ({ success: false, message, errors });
+const returnError = (message: string, errors?: string[]) => ({ success: false, message, errors });
 
-const postForget = async (req: FastifyRequest<{ Body: TForgetAuth; }>, reply: FastifyReply) =>
+const postForget = async (req: FastifyRequest<{ Body: IForgetAuth; }>, reply: FastifyReply) =>
 {
-	if (!MyAjv.validators.forgetAuth(req.body))
-	{
-		return reply.status(400).send(
-			returnError(
-				'Bad Request',
-				MyAjv.errorsText(MyAjv.validators.forgetAuth.errors),
-			),
-		);
-	}
+	const [, errors] = check<IForgetAuth>(req.body);
+	if (errors.length) return reply.status(400).send(returnError('Bad Request', errors));
 
 	const user = await Database.user.findUnique({
 		where: {
@@ -24,10 +17,10 @@ const postForget = async (req: FastifyRequest<{ Body: TForgetAuth; }>, reply: Fa
 		},
 	});
 
-	if (user == null) return reply.status(404).send(returnError('Not Found', 'User not found'));
+	if (user == null) return reply.status(404).send(returnError('Not Found', ['User not found']));
 
 	const match = await compare(req.body.password, user.password);
-	if (!match) return reply.status(401).send(returnError('Unauthorized', 'Invalid password'));
+	if (!match) return reply.status(401).send(returnError('Unauthorized', ['Invalid password']));
 
 	await Database.authToken.deleteMany({
 		where: {

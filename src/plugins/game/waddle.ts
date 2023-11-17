@@ -1,35 +1,16 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import { Int } from 'ts-runtime-checks';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
-import { IGamePlugin } from '../../types/types';
+import { IGamePlugin, NumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IJoinWaddleArgs { waddle: number; }
+interface IJoinWaddleArgs { waddle: number & Int & NumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
 
 export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Waddle';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			joinWaddle: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['waddle'],
-				properties: {
-					waddle: { type: 'integer', minimum: 0, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-				},
-			} as JSONSchemaType<IJoinWaddleArgs>),
-		};
-	}
-
-	// eslint-disable-next-line class-methods-use-this
 	@Event('get_waddles')
 	getWaddles(args: unknown, user: User)
 	{
@@ -44,19 +25,15 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 		user.send('get_waddles', { waddles });
 	}
 
-	// eslint-disable-next-line class-methods-use-this
 	@Event('join_waddle')
-	joinWaddle(args: IJoinWaddleArgs, user: User)
+	joinWaddle(args: Validate<IJoinWaddleArgs>, user: User)
 	{
-		if (!this.schemas.joinWaddle!(args)) return;
-
 		const waddle = user.room?.waddles.get(args.waddle);
 		if (!waddle || waddle.isFull || user.waddle) return;
 
 		waddle.add(user);
 	}
 
-	// eslint-disable-next-line class-methods-use-this
 	@Event('leaveWaddle')
 	leaveWaddle(args: unknown, user: User)
 	{

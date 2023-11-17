@@ -1,18 +1,16 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import { Int } from 'ts-runtime-checks';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
-import { IGamePlugin } from '../../types/types';
+import { IGamePlugin, NumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
 interface IMovePuckArgs
 {
-	x: number;
-	y: number;
-	speedX: number;
-	speedY: number;
+	x: number & Int & NumberRange<[typeof constants.limits.MAX_X_NEGATIVE, typeof constants.limits.MAX_X]>;
+	y: number & Int & NumberRange<[typeof constants.limits.MAX_Y_NEGATIVE, typeof constants.limits.MAX_Y]>;
+	speedX: number & Int & NumberRange<[-127, 127]>; // const speedX = Math.floor((this.target.x - puckX) / this.speedDiv)
+	speedY: number & Int & NumberRange<[-80, 80]>; // const speedY = Math.floor((this.target.y - puckY) / this.speedDiv)
 }
 
 export default class PuckPlugin extends GamePlugin implements IGamePlugin
@@ -20,25 +18,6 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 	pluginName = 'Puck';
 	#puckX = 0;
 	#puckY = 0;
-
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			movePuck: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['x', 'y', 'speedX', 'speedY'],
-				properties: {
-					x: { type: 'integer', minimum: -constants.limits.MAX_X, maximum: constants.limits.MAX_X },
-					y: { type: 'integer', minimum: -constants.limits.MAX_Y, maximum: constants.limits.MAX_Y },
-					speedX: { type: 'integer', minimum: -127, maximum: 127 }, // const speedX = Math.floor((this.target.x - puckX) / this.speedDiv)
-					speedY: { type: 'integer', minimum: -80, maximum: 80 }, // const speedY = Math.floor((this.target.y - puckY) / this.speedDiv)
-				},
-			} as JSONSchemaType<IMovePuckArgs>),
-		};
-	}
 
 	@Event('get_puck')
 	getPuck(args: unknown, user: User)
@@ -49,10 +28,8 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 	}
 
 	@Event('move_puck')
-	movePuck(args: IMovePuckArgs, user: User)
+	movePuck(args: Validate<IMovePuckArgs>, user: User)
 	{
-		if (!this.schemas.movePuck!(args)) return;
-
 		this.#puckX = args.x;
 		this.#puckY = args.y;
 

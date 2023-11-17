@@ -8,7 +8,7 @@ You can check the current status on the [Projects tab](https://github.com/orgs/p
 ## 🃏 Features
 
 - **TypeScript**: Uses TypeScript instead of JavaScript, getting all the benefits of the language.
-- **Validation**: Strong validation of all user input thanks to [ajv](https://ajv.js.org/).
+- **Validation**: Strong validation of all user input thanks to [ts-runtime-checks](https://github.com/GoogleFeud/ts-runtime-checks).
 - **Multi-threaded**: Each world/server runs in its own node.js process efficiently.
 - ~~**Cache Manager**: Various ways of storing the cache (like [Redis](https://redis.io/)).~~ (**Not yet implemented**).
 - **ORM**: Thanks to [Prisma](https://www.prisma.io/), it is possible to use several types of databases.

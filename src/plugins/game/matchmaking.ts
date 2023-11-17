@@ -7,7 +7,6 @@ export default class MatchmakingPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Matchmaking';
 
-	// eslint-disable-next-line class-methods-use-this
 	@Event('join_matchmaking')
 	joinMatchmaking(args: unknown, user: User)
 	{
@@ -15,7 +14,6 @@ export default class MatchmakingPlugin extends GamePlugin implements IGamePlugin
 		user.room.matchmaker.add(user);
 	}
 
-	// eslint-disable-next-line class-methods-use-this
 	@Event('leave_matchmaking')
 	leaveMatchmaking(args: unknown, user: User)
 	{

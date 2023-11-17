@@ -3,7 +3,6 @@ import Fastify from 'fastify';
 import { join } from 'node:path';
 import { Server } from 'socket.io';
 import { GameWorld } from './classes/GameWorld';
-import { MyAjv } from './managers/AjvManager';
 import { Config } from './managers/ConfigManager';
 import { Database } from './managers/DatabaseManager';
 import { Logger } from './managers/LogManager';
@@ -18,12 +17,11 @@ import './utils/setup';
 
 	const worldName = process.argv[2] ?? 'HTTP';
 
-	MyAjv.initialize();
 	await Config.Initialize(process.argv[3] ?? join(__dirname, '..', 'config', 'config.json'));
 	await Database.Initialize();
 	Logger.initialize(Config.data.logLevel);
 
-	if (!MyAjv.initialized || !Database.initialized)
+	if (!Database.initialized)
 	{
 		Logger.error(`${constants.PROJECT_NAME} is not properly initialized. Exiting...`);
 		process.exit(1);

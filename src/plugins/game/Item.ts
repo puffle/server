@@ -1,49 +1,20 @@
-import { JSONSchemaType } from 'ajv';
-import { GameWorld } from '../../classes/GameWorld';
+import { Int } from 'ts-runtime-checks';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { MyAjv } from '../../managers/AjvManager';
-import { IGamePlugin, TItemSlots } from '../../types/types';
+import { IGamePlugin, NumberRange, TItemSlots, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
-interface IUpdatePlayerOrAddItemArgs { item: number; }
+interface IUpdatePlayerOrAddItemArgs { item: number & Int & NumberRange<[1, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }
 interface IRemoveItemArgs { type: TItemSlots; }
 
 export default class ItemPlugin extends GamePlugin implements IGamePlugin
 {
 	pluginName = 'Item';
 
-	constructor(world: GameWorld)
-	{
-		super(world);
-
-		this.schemas = {
-			updatePlayerOrAddItem: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['item'],
-				properties: {
-					item: { type: 'integer', minimum: 1, maximum: constants.limits.sql.MAX_UNSIGNED_INTEGER },
-				},
-			} as JSONSchemaType<IUpdatePlayerOrAddItemArgs>),
-
-			removeItem: MyAjv.compile({
-				type: 'object',
-				additionalProperties: false,
-				required: ['type'],
-				properties: {
-					type: { type: 'string', enum: constants.ITEM_SLOTS },
-				},
-			} as JSONSchemaType<IRemoveItemArgs>),
-		};
-	}
-
 	@Event('update_player')
-	updatePlayer(args: IUpdatePlayerOrAddItemArgs, user: User)
+	updatePlayer(args: Validate<IUpdatePlayerOrAddItemArgs>, user: User)
 	{
-		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
-
 		const item = this.world.crumbs.items[args.item];
 		if (item === undefined || !user.inventory.has(args.item)) return;
 
@@ -51,18 +22,14 @@ export default class ItemPlugin extends GamePlugin implements IGamePlugin
 	}
 
 	@Event('remove_item')
-	removeItem(args: IRemoveItemArgs, user: User)
+	removeItem(args: Validate<IRemoveItemArgs>, user: User)
 	{
-		if (!this.schemas.removeItem!(args)) return;
-
 		user.setItem(args.type, 0);
 	}
 
 	@Event('add_item')
-	async addItem(args: IUpdatePlayerOrAddItemArgs, user: User)
+	async addItem(args: Validate<IUpdatePlayerOrAddItemArgs>, user: User)
 	{
-		if (!this.schemas.updatePlayerOrAddItem!(args)) return;
-
 		const item = user.validatePurchase.item(args.item);
 		if (!item || user.inventory.has(args.item)) return;
 
