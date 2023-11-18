@@ -8,10 +8,10 @@ services:
       - ../:/workspaces/server:cached
     networks: [ 'puffle_dev' ]
     environment:
-      DATABASE_URL: 'mysql://user:password@mariadb:3306/puffle'
+      DATABASE_URL: 'mysql://user:password@db:3306/puffle'
     command: sleep infinity
 
-  mariadb:
+  db:
     container_name: 'puffle_devdb'
     image: mariadb:latest
     user: mysql
@@ -24,10 +24,13 @@ services:
     volumes:
       - mariadb-data:/var/lib/mysql
 
+  adminer:
+    image: adminer
+    networks: [ 'puffle_dev' ]
+
 networks:
   puffle_dev:
     external: true
 
 volumes:
   mariadb-data:
-

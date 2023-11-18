@@ -1,6 +1,7 @@
 import { GameWorld } from '../../classes/GameWorld';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
+import { Moderator } from '../../decorators/moderator';
 import { IGamePlugin, IntNumberRange, LenRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
@@ -87,20 +88,18 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 	cmdRoom(args: string[], user: User) { user.send('error', { error: `Room: ${user.room?.data.name} (${user.room?.data.id})\nUsers: ${user.room?.population}` }); }
 
 	// moderator commands
+	@Moderator
 	cmdCoins(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
-
 		const coins = Number(args[0]);
 		if (Number.isNaN(coins)) return;
 
 		user.updateCoins(coins, true);
 	}
 
+	@Moderator
 	cmdJoinRoom(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
-
 		const roomId = Number(args[0]);
 		if (Number.isNaN(roomId))
 		{
@@ -114,10 +113,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		user.joinRoom(roomId);
 	}
 
+	@Moderator
 	cmdPopulation(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
-
 		const roomArray: [string, number][] = [...this.world.rooms.values()]
 			.filter((room) => room.population !== 0)
 			.map((room) => [room.data.name, room.population]);
@@ -127,23 +125,22 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		user.send('error', { error: 'Users\n\n' + formattedString });
 	}
 
-	cmdBroadcast(args: string[], user: User)
+	@Moderator
+	cmdBroadcast(args: string[])
 	{
-		if (!user.isModerator) return;
 		this.world.server.to(constants.JOINEDUSERS_ROOM).emit('message', { action: 'error', args: { error: 'Broadcast:\n\n' + args.join(' ') } });
 	}
 
+	@Moderator
 	cmdBroadcastRoom(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
 		if (user.room === undefined) return;
 		this.world.server.to(user.room.socketRoom).emit('message', { action: 'error', args: { error: 'Broadcast (Current Room):\n\n' + args.join(' ') } });
 	}
 
+	@Moderator
 	cmdItems(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
-
 		const item = Number(args[0]);
 		if (Number.isNaN(item)) return;
 
@@ -153,10 +150,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		(plugin as ItemPlugin).addItem({ item }, user);
 	}
 
+	@Moderator
 	cmdFurniture(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
-
 		const furniture = Number(args[0]);
 		if (Number.isNaN(furniture)) return;
 
@@ -166,10 +162,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		(plugin as IglooPlugin).addFurniture({ furniture }, user);
 	}
 
+	@Moderator
 	cmdIgloo(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
-
 		const igloo = Number(args[0]);
 		if (Number.isNaN(igloo)) return;
 
@@ -179,10 +174,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		(plugin as IglooPlugin).addIgloo({ igloo }, user);
 	}
 
+	@Moderator
 	cmdJitsuCard(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
-
 		const cardId = Number(args[0]);
 		const card = this.world.crumbs.cards[cardId];
 		if (card === undefined)
@@ -195,9 +189,9 @@ export default class ChatPlugin extends GamePlugin implements IGamePlugin
 		user.send('error', { error: `Adding card: ${card.name}` });
 	}
 
+	@Moderator
 	cmdAllJitsuCards(args: string[], user: User)
 	{
-		if (!user.isModerator) return;
 		Object.keys(this.world.crumbs.cards).forEach((card) => user.cards.add(Number(card)));
 
 		user.send('error', { error: 'Adding all cards...' });

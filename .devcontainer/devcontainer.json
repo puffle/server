@@ -14,7 +14,12 @@
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [ 6111, 6112 ],
+	"forwardPorts": [
+		6111, // HTTP Server
+		6112, // Blizzard Game World
+		// "db:3306", // MySQL
+		"adminer:8080" // Adminer
+	],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",
