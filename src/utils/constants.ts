@@ -44,4 +44,7 @@ export const constants = {
 	SENSEI_ROOM_ID: 951,
 	RINK_ROOM_ID: 802,
 	SLED_ROOM_ID: 999,
+
+	HIDDEN_PENGUIN_SPEED: 5000,
+	HIDDEN_PENGUIN_ALPHA: 0.5,
 } as const;

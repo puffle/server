@@ -69,6 +69,12 @@ export interface IUserSafeRoom
 	x: number;
 	y: number;
 	frame: number;
+
+	// custom data
+	hidden?: boolean;
+	speed?: number;
+	alpha?: number;
+	scale?: number;
 }
 
 export type TUserSafe = Omit<IUserSafeRoom, 'x' | 'y' | 'frame'>;

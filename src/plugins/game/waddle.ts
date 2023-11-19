@@ -1,5 +1,6 @@
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
+import { PreventHiddenUser } from '../../decorators/hidden';
 import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
@@ -25,6 +26,7 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 	}
 
 	@Event('join_waddle')
+	@PreventHiddenUser
 	joinWaddle(args: Validate<IJoinWaddleArgs>, user: User)
 	{
 		const waddle = user.room?.waddles.get(args.waddle);
@@ -34,6 +36,7 @@ export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 	}
 
 	@Event('leaveWaddle')
+	@PreventHiddenUser
 	leaveWaddle(args: unknown, user: User)
 	{
 		user.waddle?.remove(user);

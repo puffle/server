@@ -1,5 +1,6 @@
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
+import { PreventHiddenUser } from '../../decorators/hidden';
 import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
@@ -27,6 +28,7 @@ export default class PuckPlugin extends GamePlugin implements IGamePlugin
 	}
 
 	@Event('move_puck')
+	@PreventHiddenUser
 	movePuck(args: Validate<IMovePuckArgs>, user: User)
 	{
 		this.#puckX = args.x;

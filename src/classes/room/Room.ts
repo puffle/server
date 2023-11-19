@@ -1,5 +1,6 @@
 import { IRoom } from '../../types/crumbs';
 import { TActionMessageArgs } from '../../types/types';
+import { constants } from '../../utils/constants';
 import { User } from '../user/User';
 import { BaseMatchmaker } from './matchmaker/BaseMatchmaker';
 import { Waddle } from './waddle/Waddle';
@@ -60,7 +61,13 @@ export class Room
 	{
 		// if (user.room?.isGame) return; // ignore if the player is in a game room
 
-		this.userValuesUnsafe.filter((u) => !filter.includes(u) && !(excludeIgnored && u.ignores.has(user.data.id)))
+		let excludedUsers = filter;
+		if (user.isHidden && action !== 'remove_player')
+		{
+			excludedUsers = filter.concat(this.userValuesUnsafe.filter((u) => u.data.rank < constants.FIRST_MODERATOR_RANK)); // exclude all non-staff
+		}
+
+		this.userValuesUnsafe.filter((u) => !excludedUsers.includes(u) && !(excludeIgnored && u.ignores.has(user.data.id)))
 			.forEach((u) => u.send(action, args));
 	}
 }

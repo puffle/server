@@ -85,6 +85,8 @@ export class User
 		frame: 1,
 	};
 
+	isHidden = false;
+
 	// used for dynamic/temporary events
 	events = new EventEmitter({ captureRejections: true });
 
@@ -107,7 +109,18 @@ export class User
 	}
 
 	get getSafe(): TUserSafe { return { ...this.getAnonymous, joinTime: this.data.joinTime }; }
-	get getSafeRoom(): IUserSafeRoom { return { ...this.getSafe, ...this.roomData }; }
+	get getSafeRoom(): IUserSafeRoom
+	{
+		const data = { ...this.getSafe, ...this.roomData };
+		return !this.isHidden
+			? data
+			: {
+				...data,
+				hidden: true,
+				speed: constants.HIDDEN_PENGUIN_SPEED,
+				alpha: constants.HIDDEN_PENGUIN_ALPHA,
+			};
+	}
 	get isModerator() { return this.data.rank >= constants.FIRST_MODERATOR_RANK; }
 
 	onDisconnectPre = (reason: DisconnectReason) => Logger.info(`Disconnect from: ${this.data.username} (${this.socket.id}), reason: ${reason}`);
