@@ -27,7 +27,7 @@ interface IUpdateFurnitureArgs
 
 export default class IglooPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Igloo';
+	name = 'Igloo';
 
 	@Event('add_igloo')
 	async addIgloo(args: Validate<IAddIglooOrGetIglooOpenArgs>, user: User)

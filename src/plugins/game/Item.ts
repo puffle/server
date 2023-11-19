@@ -9,7 +9,7 @@ interface IRemoveItemArgs { type: TItemSlots; }
 
 export default class ItemPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Item';
+	name = 'Item';
 
 	@Event('update_player')
 	updatePlayer(args: Validate<IUpdatePlayerOrAddItemArgs>, user: User)

@@ -10,7 +10,7 @@ interface IKickBanPlayerArgs { id: number & IntNumberRange<[0, typeof constants.
 
 export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Moderation';
+	name = 'Moderation';
 
 	@Event('mute_player')
 	@Moderator

@@ -5,7 +5,7 @@ import { GamePlugin } from '../GamePlugin';
 
 export default class MatchmakingPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Matchmaking';
+	name = 'Matchmaking';
 
 	@Event('join_matchmaking')
 	joinMatchmaking(args: unknown, user: User)

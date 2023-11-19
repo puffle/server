@@ -26,7 +26,7 @@ module.exports = {
 		}],
 	},
 	overrides: [{
-		files: ['src/plugins/game/*.ts'],
+		files: ['src/plugins/**/*.ts', 'src/commands/**/*.ts'],
 		rules: {
 			'class-methods-use-this': 'off',
 		},

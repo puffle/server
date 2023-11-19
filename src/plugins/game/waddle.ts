@@ -8,7 +8,7 @@ interface IJoinWaddleArgs { waddle: number & IntNumberRange<[0, typeof constants
 
 export default class WaddlePlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Waddle';
+	name = 'Waddle';
 
 	@Event('get_waddles')
 	getWaddles(args: unknown, user: User)

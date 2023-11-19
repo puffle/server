@@ -14,7 +14,7 @@ interface IMovePuckArgs
 
 export default class PuckPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Puck';
+	name = 'Puck';
 	#puckX = 0;
 	#puckY = 0;
 

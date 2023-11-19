@@ -7,7 +7,7 @@ import { GamePlugin } from '../GamePlugin';
 
 export default class SenseiPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Sensei';
+	name = 'Sensei';
 
 	@Event('join_sensei')
 	joinSensei(args: unknown, user: User)

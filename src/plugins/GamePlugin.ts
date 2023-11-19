@@ -3,7 +3,7 @@ import { IGamePlugin } from '../types/types';
 
 export abstract class GamePlugin implements IGamePlugin
 {
-	abstract pluginName: string;
+	abstract name: string;
 	world: GameWorld;
 	// events: Record<string, (args: any, user: User) => void> = Object.create(null);
 

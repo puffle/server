@@ -5,7 +5,7 @@ import { GamePlugin } from '../GamePlugin';
 
 export default class NinjaPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Ninja';
+	name = 'Ninja';
 
 	@Event('get_ninja')
 	getNinja(args: unknown, user: User)

@@ -9,7 +9,7 @@ interface IGenericIgnoreArgs { id: number & IntNumberRange<[0, typeof constants.
 
 export default class IgnorePlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Ignore';
+	name = 'Ignore';
 
 	@Event('ignore_add')
 	async ignoreAdd(args: Validate<IGenericIgnoreArgs>, user: User)

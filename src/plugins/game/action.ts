@@ -18,7 +18,7 @@ interface ISendFrameArgs
 
 export default class ActionPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Action';
+	name = 'Action';
 
 	@Event('send_position')
 	sendPosition(args: Validate<ISendPositionOrSnowballArgs>, user: User)

@@ -9,7 +9,7 @@ interface IGetPlayerArgs { id: number & IntNumberRange<[0, typeof constants.limi
 
 export default class GetPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Get';
+	name = 'Get';
 
 	@Event('get_player')
 	async getPlayer(args: Validate<IGetPlayerArgs>, user: User)

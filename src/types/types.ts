@@ -1,4 +1,5 @@
 import { Assert, ExactProps, Int, Max, MaxLen, Min, MinLen } from 'ts-runtime-checks';
+import { User } from '../classes/user/User';
 import { constants } from '../utils/constants';
 import { IRoom } from './crumbs';
 
@@ -41,8 +42,14 @@ export interface IGameAuth extends Omit<IForgetAuth, 'password'>
 
 export interface IGamePlugin
 {
-	pluginName: string;
+	name: string;
 	// events: Record<string, (args: TActionMessageArgs, user: User) => void>;
+}
+
+export interface IGameCommand extends IGamePlugin
+{
+	rank: number;
+	onCall: (args: string[], user: User) => void | Promise<void>;
 }
 
 export interface IUserSafeRoom

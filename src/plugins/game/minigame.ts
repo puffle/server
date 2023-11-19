@@ -8,7 +8,7 @@ interface IGameOverArgs { coins: number & IntNumberRange<[0, typeof constants.li
 
 export default class MinigamePlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Minigame';
+	name = 'Minigame';
 
 	@Event('game_over')
 	gameOver(args: Validate<IGameOverArgs>, user: User)

@@ -9,7 +9,7 @@ interface IGenericBuddyArgs { id: number & IntNumberRange<[0, typeof constants.l
 
 export default class BuddyPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Buddy';
+	name = 'Buddy';
 
 	@Event('buddy_request')
 	buddyRequest(args: Validate<IGenericBuddyArgs>, user: User)

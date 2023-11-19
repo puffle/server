@@ -6,7 +6,7 @@ import { GamePlugin } from '../GamePlugin';
 
 export default class DeckPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Deck';
+	name = 'Deck';
 	starterDeckId = constants.STARTER_DECK_ID;
 	starterDeck = this.world.crumbs.items[this.starterDeckId];
 

@@ -1,6 +1,7 @@
 import { CustomError } from '@n0bodysec/ts-utils';
 import Fastify from 'fastify';
 import { join } from 'node:path';
+import 'reflect-metadata';
 import { Server } from 'socket.io';
 import { GameWorld } from './classes/GameWorld';
 import { Config } from './managers/ConfigManager';

@@ -20,7 +20,7 @@ interface IJoinIglooArgs
 
 export default class JoinPlugin extends GamePlugin implements IGamePlugin
 {
-	pluginName = 'Join';
+	name = 'Join';
 
 	@Event('join_room')
 	joinRoom(args: Validate<IJoinRoomArgs>, user: User)

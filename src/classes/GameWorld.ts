@@ -12,6 +12,7 @@ import matchmakers from '../data/matchmakers.json';
 import rooms from '../data/rooms.json';
 import tables from '../data/tables.json';
 import waddles from '../data/waddles.json';
+import { CommandManager } from '../managers/CommandManager';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
 import { Logger } from '../managers/LogManager';
@@ -29,12 +30,13 @@ import { User } from './user/User';
 
 export class GameWorld
 {
-	constructor(id: string, server: Server, pluginsDir?: string)
+	constructor(id: string, server: Server)
 	{
 		this.id = id;
 		this.server = server;
 		this.maxUsers = Config.data.worlds[id]?.maxUsers ?? constants.limits.MAX_USERS;
-		this.pluginManager = new PluginManager(this, pluginsDir ?? 'game');
+		this.pluginManager = new PluginManager(this);
+		this.commandManager = new CommandManager(this);
 
 		// init crumbs
 		this.setRooms();
@@ -50,6 +52,7 @@ export class GameWorld
 	id: string;
 	server: Server;
 	pluginManager: PluginManager;
+	commandManager: CommandManager;
 	events = new EventEmitter({ captureRejections: true });
 	users: Map<number, User> = new Map();
 	crumbs = {
