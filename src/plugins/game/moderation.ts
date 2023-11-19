@@ -33,33 +33,15 @@ export default class ModerationPlugin extends GamePlugin implements IGamePlugin
 
 	@Event('ban_player')
 	@Moderator
-	banPlayer(args: Validate<IKickBanPlayerArgs>, user: User)
+	async banPlayer(args: Validate<IKickBanPlayerArgs>, user: User)
 	{
 		if (user.data.id === args.id) return;
 
 		const recipient = this.world.users.get(args.id);
 		if (recipient === undefined || user.data.rank <= recipient.data.rank) return;
 
-		ModerationPlugin.applyBan(user.data.id, args.id);
+		await Database.banUser(user.data.id, args.id);
 
 		recipient.close();
-	}
-
-	static async applyBan(moderatorId: number, userId: number, hours?: number, message?: string)
-	{
-		const expires = new Date(Date.now() + ((hours || 24) * 60 * 60 * 1000));
-
-		// 5th ban is a permanent ban
-		const count = await Database.ban.count({ where: { userId } });
-		if (count >= 4) await Database.user.update({ where: { id: userId }, data: { permaBan: true } });
-
-		await Database.ban.create({
-			data: {
-				userId,
-				moderatorId,
-				expires,
-				message: message ?? null,
-			},
-		});
 	}
 }
