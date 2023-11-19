@@ -66,9 +66,16 @@ export interface IUserSafeRoom
 	color: number;
 	photo: number;
 	flag: number;
+
+	// room data
 	x: number;
 	y: number;
 	frame: number;
+
+	// custom data
+	speed?: number;
+	alpha?: number;
+	scale?: number;
 }
 
 export type TUserSafe = Omit<IUserSafeRoom, 'x' | 'y' | 'frame'>;

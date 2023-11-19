@@ -79,6 +79,13 @@ export class User
 	room: Room | undefined;
 	waddle: Waddle | undefined;
 	minigameRoom: Nullable<BaseInstance> = null; // TODO: add tables
+
+	customData = {
+		speed: 0,
+		alpha: 1,
+		scale: 1,
+	};
+
 	roomData = {
 		x: 0,
 		y: 0,
@@ -107,7 +114,7 @@ export class User
 	}
 
 	get getSafe(): TUserSafe { return { ...this.getAnonymous, joinTime: this.data.joinTime }; }
-	get getSafeRoom(): IUserSafeRoom { return { ...this.getSafe, ...this.roomData }; }
+	get getSafeRoom(): IUserSafeRoom { return { ...this.getSafe, ...this.roomData, ...this.customData }; }
 	get isModerator() { return this.data.rank >= constants.FIRST_MODERATOR_RANK; }
 
 	onDisconnectPre = (reason: DisconnectReason) => Logger.info(`Disconnect from: ${this.data.username} (${this.socket.id}), reason: ${reason}`);
