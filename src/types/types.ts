@@ -1,4 +1,4 @@
-import { Assert, ExactProps, Int, Max, MaxLen, Min, MinLen } from 'ts-runtime-checks';
+import { Assert, Check, ExactProps, Int } from 'ts-runtime-checks';
 import { User } from '../classes/user/User';
 import { constants } from '../utils/constants';
 import { IRoom } from './crumbs';
@@ -6,8 +6,12 @@ import { IRoom } from './crumbs';
 // ts-runtime-checks
 export type Validate<T, ReturnValue = undefined> = Assert<T, ReturnValue>;
 export type ValidateExact<T extends object, ReturnValue = undefined> = Assert<ExactProps<T, true, true>, ReturnValue>;
-export type IntNumberRange<T extends number[]> = Int & Min<T[0]> & Max<T[1]>;
-export type LenRange<T extends number[]> = MinLen<T[0]> & MaxLen<T[1]>;
+export type MinInclusive<T extends string | number> = number & Check<`$self >= ${T}`, `to be greater or equal than ${T}`, 'minInclusive', T>;
+export type MaxInclusive<T extends string | number> = number & Check<`$self <= ${T}`, `to be less or equal than ${T}`, 'maxInclusive', T>;
+export type MinLenInclusive<T extends string | number> = Check<`$self.length >= ${T}`, `to have a length greater or equal than ${T}`, 'minLenInclusive', T>;
+export type MaxLenInclusive<T extends string | number> = Check<`$self.length <= ${T}`, `to have a length less or equal than ${T}`, 'maxLenInclusive', T>;
+export type IntNumberRange<T extends number[]> = Int & MinInclusive<T[0]> & MaxInclusive<T[1]>;
+export type LenRange<T extends number[]> = MinLenInclusive<T[0]> & MaxLenInclusive<T[1]>;
 
 export type TActionMessageArgs = Record<string, unknown>;
 

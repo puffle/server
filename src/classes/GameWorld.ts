@@ -2,6 +2,7 @@ import { clamp } from '@n0bodysec/ts-utils';
 import { verify } from 'jsonwebtoken';
 import { EventEmitter } from 'node:events';
 import { Server, Socket } from 'socket.io';
+import { is } from 'ts-runtime-checks';
 import cards from '../data/cards.json';
 import decks from '../data/decks.json';
 import floorings from '../data/floorings.json';
@@ -98,15 +99,13 @@ export class GameWorld
 			if (!ret) return;
 		}
 
-		// if (!is<IGameAuth>(socket.handshake.auth)) // the transpiled code is incorrect (the LenRange does not include the defined values)
-		const validate = (x: unknown) => !!(x as Validate<IGameAuth, false>);
-		if (!validate(socket.handshake.auth))
+		if (!is<IGameAuth>(socket.handshake.auth))
 		{
 			this.closeSocket(socket);
 			return;
 		}
 
-		const auth = socket.handshake.auth as IGameAuth;
+		const auth = socket.handshake.auth;
 
 		verify(auth.key, Config.data.crypto.secret, {
 			audience: Config.data.crypto.audience,

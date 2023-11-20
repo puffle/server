@@ -15,7 +15,8 @@
 		"build": "tsc",
 		"pushdb": "prisma db push",
 		"lint": "eslint --rule \"linebreak-style: 'off'\" .",
-		"prepare": "ts-patch install"
+		"build-tsrc": "npm --prefix node_modules/ts-runtime-checks i && npm --prefix node_modules/ts-runtime-checks run build",
+		"prepare": "ts-patch install && pnpm build-tsrc"
 	},
 	"devDependencies": {
 		"@n0bodysec/eslint-config": "^2.1.1",
@@ -29,7 +30,7 @@
 		"prisma": "^5.6.0",
 		"ts-node": "^10.9.1",
 		"ts-patch": "^3.0.2",
-		"ts-runtime-checks": "^0.4.1",
+		"ts-runtime-checks": "github:GoogleFeud/ts-runtime-checks#dev",
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
