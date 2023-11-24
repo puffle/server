@@ -2,8 +2,9 @@ import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
 import { Moderator } from '../../decorators/moderator';
 import { Database } from '../../managers/DatabaseManager';
-import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
-import { constants } from '../../utils/constants';
+import { Validate } from '../../types/types';
+import type { IGamePlugin, IntNumberRange } from '../../types/types';
+import type { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
 interface IKickBanPlayerArgs { id: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }

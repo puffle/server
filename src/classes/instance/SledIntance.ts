@@ -1,6 +1,6 @@
-import { IntNumberRange, Validate } from '../../types/types';
+import type { IntNumberRange, Validate } from '../../types/types';
 import { constants } from '../../utils/constants';
-import { User } from '../user/User';
+import type { User } from '../user/User';
 import { BaseInstance } from './BaseInstance';
 
 interface ISendMoveArgs { move: number & IntNumberRange<[1, 5]>; }

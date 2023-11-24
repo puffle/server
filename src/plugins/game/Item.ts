@@ -1,6 +1,7 @@
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { IGamePlugin, IntNumberRange, TItemSlots, Validate } from '../../types/types';
+import { Validate } from '../../types/types';
+import type { IGamePlugin, IntNumberRange, TItemSlots } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 

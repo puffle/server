@@ -1,6 +1,6 @@
 import { readdir, stat } from 'node:fs/promises';
 import { extname, join } from 'node:path';
-import { GameWorld } from '../classes/GameWorld';
+import type { GameWorld } from '../classes/GameWorld';
 import { Logger } from '../managers/LogManager';
 
 interface ILoadable { name: string; }

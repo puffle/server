@@ -1,4 +1,4 @@
-import { IGameCommand } from '../../types/types';
+import type { IGameCommand } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GameCommand } from '../GameCommand';
 

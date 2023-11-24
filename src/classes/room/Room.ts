@@ -1,8 +1,8 @@
-import { IRoom } from '../../types/crumbs';
-import { TActionMessageArgs } from '../../types/types';
-import { User } from '../user/User';
-import { BaseMatchmaker } from './matchmaker/BaseMatchmaker';
-import { Waddle } from './waddle/Waddle';
+import type { IRoom } from '../../types/crumbs';
+import type { TActionMessageArgs } from '../../types/types';
+import type { User } from '../user/User';
+import type { BaseMatchmaker } from './matchmaker/BaseMatchmaker';
+import type { Waddle } from './waddle/Waddle';
 
 export class Room
 {

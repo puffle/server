@@ -1,7 +1,7 @@
 import { join } from 'node:path';
-import { GameWorld } from '../classes/GameWorld';
-import { User } from '../classes/user/User';
-import { IGameCommand } from '../types/types';
+import type { GameWorld } from '../classes/GameWorld';
+import type { User } from '../classes/user/User';
+import type { IGameCommand } from '../types/types';
 import { Loadable } from '../utils/Loadable';
 import { constants } from '../utils/constants';
 

@@ -1,5 +1,5 @@
-import { GameWorld } from '../classes/GameWorld';
-import { IGamePlugin } from '../types/types';
+import type { GameWorld } from '../classes/GameWorld';
+import type { IGamePlugin } from '../types/types';
 
 export abstract class GamePlugin implements IGamePlugin
 {

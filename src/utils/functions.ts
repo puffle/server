@@ -1,4 +1,4 @@
-import { Socket } from 'socket.io';
+import type { Socket } from 'socket.io';
 import { Config } from '../managers/ConfigManager';
 
 export const getIglooId = (userId: number) => Config.data.game.iglooIdOffset + userId;

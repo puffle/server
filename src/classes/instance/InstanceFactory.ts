@@ -1,8 +1,8 @@
-import { Nullable } from '@n0bodysec/ts-utils';
-import { IWaddle } from '../../types/crumbs';
-import { Waddle } from '../room/waddle/Waddle';
-import { User } from '../user/User';
-import { BaseInstance } from './BaseInstance';
+import type { Nullable } from '@n0bodysec/ts-utils';
+import type { IWaddle } from '../../types/crumbs';
+import type { Waddle } from '../room/waddle/Waddle';
+import type { User } from '../user/User';
+import type { BaseInstance } from './BaseInstance';
 import { SledInstance } from './SledIntance';
 import { CardInstance } from './card/CardInstance';
 

@@ -1,7 +1,7 @@
 import { join } from 'node:path';
-import { GameWorld } from '../classes/GameWorld';
+import type { GameWorld } from '../classes/GameWorld';
 import { GetPluginEventMetadata } from '../decorators/event';
-import { IGamePlugin } from '../types/types';
+import type { IGamePlugin } from '../types/types';
 import { Loadable } from '../utils/Loadable';
 import { Logger } from './LogManager';
 

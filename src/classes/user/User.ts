@@ -1,7 +1,8 @@
-import { clamp, Nullable } from '@n0bodysec/ts-utils';
-import { Prisma, User as PrismaUser } from '@prisma/client';
+import type { Nullable } from '@n0bodysec/ts-utils';
+import { clamp } from '@n0bodysec/ts-utils';
+import type { Prisma, User as PrismaUser } from '@prisma/client';
 import { EventEmitter } from 'node:events';
-import { DisconnectReason, Socket } from 'socket.io';
+import type { DisconnectReason, Socket } from 'socket.io';
 import { BuddyCollection } from '../../collections/BuddyCollection';
 import { CardCollection } from '../../collections/CardCollection';
 import { FurnitureCollection } from '../../collections/FurnitureCollection';
@@ -11,14 +12,14 @@ import { InventoryCollection } from '../../collections/InventoryCollection';
 import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';
 import { Logger } from '../../managers/LogManager';
-import { IActionMessage, IUserSafeRoom, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../../types/types';
+import type { IActionMessage, IUserSafeRoom, TActionMessageArgs, TItemSlots, TUserAnonymous, TUserSafe } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { getIglooId, getSocketAddress, pick } from '../../utils/functions';
-import { GameWorld } from '../GameWorld';
-import { BaseInstance } from '../instance/BaseInstance';
+import type { GameWorld } from '../GameWorld';
+import type { BaseInstance } from '../instance/BaseInstance';
 import { Igloo } from '../room/Igloo';
-import { Room } from '../room/Room';
-import { Waddle } from '../room/waddle/Waddle';
+import type { Room } from '../room/Room';
+import type { Waddle } from '../room/waddle/Waddle';
 import { PurchaseValidator } from './PurchaseValidator';
 
 export type TDbUser = Prisma.UserGetPayload<{

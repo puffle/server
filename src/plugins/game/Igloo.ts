@@ -1,10 +1,11 @@
-import { Igloo } from '../../classes/room/Igloo';
+import type { Igloo } from '../../classes/room/Igloo';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
 import { Config } from '../../managers/ConfigManager';
 import { Database } from '../../managers/DatabaseManager';
-import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
-import { constants } from '../../utils/constants';
+import { Validate } from '../../types/types';
+import type { IGamePlugin, IntNumberRange } from '../../types/types';
+import type { constants } from '../../utils/constants';
 import { getIglooId } from '../../utils/functions';
 import { GamePlugin } from '../GamePlugin';
 

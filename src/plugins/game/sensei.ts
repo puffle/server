@@ -1,7 +1,7 @@
 import { SenseiInstance } from '../../classes/instance/card/SenseiInstance';
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { IGamePlugin } from '../../types/types';
+import type { IGamePlugin } from '../../types/types';
 import { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 

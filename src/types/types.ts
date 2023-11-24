@@ -1,7 +1,7 @@
-import { Assert, ExactProps, Int, Max, MaxLen, Min, MinLen } from 'ts-runtime-checks';
-import { User } from '../classes/user/User';
-import { constants } from '../utils/constants';
-import { IRoom } from './crumbs';
+import type { Assert, ExactProps, Int, Max, MaxLen, Min, MinLen } from 'ts-runtime-checks';
+import type { User } from '../classes/user/User';
+import type { constants } from '../utils/constants';
+import type { IRoom } from './crumbs';
 
 // ts-runtime-checks
 export type Validate<T, ReturnValue = undefined> = Assert<T, ReturnValue>;

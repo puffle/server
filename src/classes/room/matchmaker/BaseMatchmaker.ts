@@ -1,6 +1,6 @@
-import { IMatchmaker } from '../../../types/crumbs';
-import { User } from '../../user/User';
-import { Room } from '../Room';
+import type { IMatchmaker } from '../../../types/crumbs';
+import type { User } from '../../user/User';
+import type { Room } from '../Room';
 import { MatchmakerPlayer } from './MatchmakerPlayer';
 
 export abstract class BaseMatchmaker

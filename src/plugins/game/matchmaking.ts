@@ -1,6 +1,6 @@
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { IGamePlugin } from '../../types/types';
+import type { IGamePlugin } from '../../types/types';
 import { GamePlugin } from '../GamePlugin';
 
 export default class MatchmakingPlugin extends GamePlugin implements IGamePlugin

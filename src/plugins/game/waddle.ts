@@ -1,7 +1,8 @@
 import { User } from '../../classes/user/User';
 import { Event } from '../../decorators/event';
-import { IGamePlugin, IntNumberRange, Validate } from '../../types/types';
-import { constants } from '../../utils/constants';
+import { Validate } from '../../types/types';
+import type { IGamePlugin, IntNumberRange } from '../../types/types';
+import type { constants } from '../../utils/constants';
 import { GamePlugin } from '../GamePlugin';
 
 interface IJoinWaddleArgs { waddle: number & IntNumberRange<[0, typeof constants.limits.sql.MAX_UNSIGNED_INTEGER]>; }

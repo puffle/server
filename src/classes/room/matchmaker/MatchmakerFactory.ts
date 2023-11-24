@@ -1,5 +1,5 @@
-import { IMatchmaker } from '../../../types/crumbs';
-import { Room } from '../Room';
+import type { IMatchmaker } from '../../../types/crumbs';
+import type { Room } from '../Room';
 import { CardMatchmaker } from './card/CardMatchmaker';
 
 type TMatchmakers = typeof CardMatchmaker;

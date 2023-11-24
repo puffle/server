@@ -1,5 +1,5 @@
-import { TActionMessageArgs } from '../../../types/types';
-import { User } from '../../user/User';
+import type { TActionMessageArgs } from '../../../types/types';
+import type { User } from '../../user/User';
 
 export class MatchmakerPlayer
 {

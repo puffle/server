@@ -1,6 +1,6 @@
-import { User } from '../../classes/user/User';
-import ItemPlugin from '../../plugins/game/Item';
-import { IGameCommand } from '../../types/types';
+import type { User } from '../../classes/user/User';
+import type ItemPlugin from '../../plugins/game/Item';
+import type { IGameCommand } from '../../types/types';
 import { GameCommand } from '../GameCommand';
 
 export default class Command extends GameCommand implements IGameCommand

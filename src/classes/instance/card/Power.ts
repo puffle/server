@@ -1,4 +1,4 @@
-import { ICard } from '../../../types/crumbs';
+import type { ICard } from '../../../types/crumbs';
 
 export class Power
 {

@@ -1,5 +1,6 @@
 import { greenBright } from 'colorette';
-import { addColors, createLogger, format, LeveledLogMethod, transports, Logger as WinstonLogger } from 'winston';
+import type { LeveledLogMethod, Logger as WinstonLogger } from 'winston';
+import { addColors, createLogger, format, transports } from 'winston';
 
 interface ILogManager extends WinstonLogger
 {

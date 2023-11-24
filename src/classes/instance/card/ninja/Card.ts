@@ -1,5 +1,5 @@
 import cards from '../../../../data/cards.json';
-import { ICard, ICrumbs } from '../../../../types/crumbs';
+import type { ICard, ICrumbs } from '../../../../types/crumbs';
 
 export interface ICardData extends Omit<ICard, 'name' | 'setId'>
 {

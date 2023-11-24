@@ -1,4 +1,4 @@
-import { IGamePlugin } from '../types/types';
+import type { IGamePlugin } from '../types/types';
 
 export interface IEventDecoratorMetadata { eventName: string; }
 

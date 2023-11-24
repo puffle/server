@@ -1,7 +1,7 @@
-import { Nullable } from '@n0bodysec/ts-utils';
-import { IWaddle } from '../../../types/crumbs';
+import type { Nullable } from '@n0bodysec/ts-utils';
+import type { IWaddle } from '../../../types/crumbs';
 import { InstanceFactory } from '../../instance/InstanceFactory';
-import { User } from '../../user/User';
+import type { User } from '../../user/User';
 
 export class Waddle
 {

@@ -1,7 +1,7 @@
 import { CustomError } from '@n0bodysec/ts-utils';
 import cards from '../../../../data/cards.json';
-import { ICard, ICrumbs } from '../../../../types/crumbs';
-import { User } from '../../../user/User';
+import type { ICard, ICrumbs } from '../../../../types/crumbs';
+import type { User } from '../../../user/User';
 import { Card } from './Card';
 
 export class Ninja

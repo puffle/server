@@ -1,5 +1,5 @@
 import { CustomError } from '@n0bodysec/ts-utils';
-import { Card } from './Card';
+import type { Card } from './Card';
 import { Ninja } from './Ninja';
 
 export class SenseiNinja extends Ninja

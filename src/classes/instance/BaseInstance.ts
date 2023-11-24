@@ -1,7 +1,7 @@
-import { Nullable } from '@n0bodysec/ts-utils';
-import { TActionMessageArgs } from '../../types/types';
-import { Waddle } from '../room/waddle/Waddle';
-import { User } from '../user/User';
+import type { Nullable } from '@n0bodysec/ts-utils';
+import type { TActionMessageArgs } from '../../types/types';
+import type { Waddle } from '../room/waddle/Waddle';
+import type { User } from '../user/User';
 
 export class BaseInstance
 {

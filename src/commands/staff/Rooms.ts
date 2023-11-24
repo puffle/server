@@ -1,5 +1,5 @@
-import { User } from '../../classes/user/User';
-import { IGameCommand } from '../../types/types';
+import type { User } from '../../classes/user/User';
+import type { IGameCommand } from '../../types/types';
 import { GameCommand } from '../GameCommand';
 
 export default class Command extends GameCommand implements IGameCommand

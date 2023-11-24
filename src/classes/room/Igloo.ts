@@ -1,8 +1,8 @@
-import { Furniture, Igloo as PrismaIgloo } from '@prisma/client';
+import type { Furniture, Igloo as PrismaIgloo } from '@prisma/client';
 import { Database } from '../../managers/DatabaseManager';
-import { IRoom } from '../../types/crumbs';
-import { TRoomIgloo } from '../../types/types';
-import { User } from '../user/User';
+import type { IRoom } from '../../types/crumbs';
+import type { TRoomIgloo } from '../../types/types';
+import type { User } from '../user/User';
 import { Room } from './Room';
 
 export class Igloo extends Room

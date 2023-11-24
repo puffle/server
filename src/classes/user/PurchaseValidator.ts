@@ -1,6 +1,6 @@
-import { ICrumbs, IItem } from '../../types/crumbs';
-import { Igloo } from '../room/Igloo';
-import { User } from './User';
+import type { ICrumbs, IItem } from '../../types/crumbs';
+import type { Igloo } from '../room/Igloo';
+import type { User } from './User';
 
 export class PurchaseValidator
 {

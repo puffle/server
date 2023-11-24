@@ -1,10 +1,10 @@
 import { compare, hash } from 'bcrypt';
-import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import { sign } from 'jsonwebtoken';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
-import { ILoginAuth } from '../types/types';
+import type { ILoginAuth } from '../types/types';
 import { constants } from '../utils/constants';
 
 const getWorldPopulations = async (isModerator: boolean) =>

@@ -1,4 +1,4 @@
-import { User } from '../../user/User';
+import type { User } from '../../user/User';
 import { CardInstance } from './CardInstance';
 
 export class SenseiInstance extends CardInstance

@@ -1,9 +1,9 @@
 import { hash } from 'bcrypt';
-import { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyPluginCallback, FastifyReply, FastifyRequest } from 'fastify';
 import { check } from 'ts-runtime-checks';
 import { Config } from '../managers/ConfigManager';
 import { Database } from '../managers/DatabaseManager';
-import { IRegisterAccount } from '../types/types';
+import type { IRegisterAccount } from '../types/types';
 
 const returnError = (message: string, errors?: string[]) => ({ success: false, message, errors });
 
